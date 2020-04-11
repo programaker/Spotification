@@ -5,6 +5,7 @@ val LogbackVersion = "1.2.3"
 val BetterMonadicForVersion = "0.3.1"
 val KindProjectorVersion = "0.10.3"
 val RefinedVersion = "0.9.13"
+val ZIOVersion = "1.0.0-RC18-2"
 
 lazy val root = (project in file("."))
   .settings(
@@ -13,19 +14,21 @@ lazy val root = (project in file("."))
     version := "1.0",
     scalaVersion := "2.13.1",
     libraryDependencies ++= Seq(
-      "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
-      "org.http4s"      %% "http4s-blaze-client" % Http4sVersion,
-      "org.http4s"      %% "http4s-circe"        % Http4sVersion,
-      "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
+      "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
+      "org.http4s" %% "http4s-blaze-client" % Http4sVersion,
+      "org.http4s" %% "http4s-circe" % Http4sVersion,
+      "org.http4s" %% "http4s-dsl" % Http4sVersion,
 
-      "io.circe"        %% "circe-generic"       % CirceVersion,
-      "io.circe"        %% "circe-refined"       % CirceVersion,
+      "io.circe" %% "circe-generic" % CirceVersion,
+      "io.circe" %% "circe-refined" % CirceVersion,
 
-      "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
+      "ch.qos.logback" % "logback-classic" % LogbackVersion,
 
-      "eu.timepit"      %% "refined"             % RefinedVersion,
+      "eu.timepit" %% "refined" % RefinedVersion,
 
-      "org.specs2"      %% "specs2-core"         % Specs2Version   % "test"
+      "dev.zio" %% "zio" % ZIOVersion,
+
+      "org.specs2" %% "specs2-core" % Specs2Version % Test
     ),
     addCompilerPlugin("org.typelevel" %% "kind-projector"     % KindProjectorVersion),
     addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion)

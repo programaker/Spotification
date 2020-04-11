@@ -6,6 +6,7 @@ val BetterMonadicForVersion = "0.3.1"
 val KindProjectorVersion = "0.10.3"
 val RefinedVersion = "0.9.13"
 val ZIOVersion = "1.0.0-RC18-2"
+val ZIOInteropCats = "2.0.0.0-RC12"
 
 lazy val root = (project in file("."))
   .settings(
@@ -27,11 +28,12 @@ lazy val root = (project in file("."))
       "eu.timepit" %% "refined" % RefinedVersion,
 
       "dev.zio" %% "zio" % ZIOVersion,
+      "dev.zio" %% "zio-interop-cats" % ZIOInteropCats,
 
       "org.specs2" %% "specs2-core" % Specs2Version % Test
     ),
-    addCompilerPlugin("org.typelevel" %% "kind-projector"     % KindProjectorVersion),
-    addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion)
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % KindProjectorVersion),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion)
   )
 
 ThisBuild / wartremoverWarnings ++= Warts.allBut(

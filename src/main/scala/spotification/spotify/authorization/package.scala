@@ -8,6 +8,7 @@ package object authorization {
   object Authorization {
     trait Service {
       def authorize(req: AuthorizationRequest): ZIO[Credentials, AuthorizationError, AuthorizationResponse]
+      def apiToken(req: ApiTokenRequest): ZIO[Credentials, Nothing, Nothing]
     }
   }
 }

@@ -1,7 +1,7 @@
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MinSize, Size}
-import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed}
+import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 
 package object spotification {
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
@@ -10,5 +10,5 @@ package object spotification {
   type HexString32R = Size[32] And HexStringSpec
   type HexString32 = String Refined HexString32R
 
-  type UriString = String Refined UriString
+  type UriString = String Refined Uri
 }

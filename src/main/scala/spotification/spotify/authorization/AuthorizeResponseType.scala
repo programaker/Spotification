@@ -1,8 +1,8 @@
 package spotification.spotify.authorization
 
-final class AuthorizeResponseType private (val value: String) extends AnyVal
+sealed abstract class AuthorizeResponseType(val name: String)
 
 object AuthorizeResponseType {
-  val Code: AuthorizeResponseType = new AuthorizeResponseType("code")
-  val Token: AuthorizeResponseType = new AuthorizeResponseType("token")
+  object Code extends AuthorizeResponseType("code")
+  object Token extends AuthorizeResponseType("token")
 }

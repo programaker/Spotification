@@ -1,10 +1,13 @@
 package spotification.spotify
 
-import eu.timepit.refined.api.Refined
-import spotification.NonBlankString
-import zio.Has
+import zio.{Has, ZIO}
 
 package object authorization {
-  type ClientId = String Refined NonBlankString
-  type Authorization = Has[AuthorizationService]
+  type Authorization = Has[Authorization.Service]
+
+  object Authorization {
+    trait Service {
+      def authorize(req: AuthorizationRequest): ZIO[Credentials, AuthorizationError, AuthorizationResponse]
+    }
+  }
 }

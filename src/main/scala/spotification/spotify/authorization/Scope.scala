@@ -1,12 +1,12 @@
 package spotification.spotify.authorization
 
-final class Scope private (val name: String) extends AnyVal
+sealed abstract class Scope(val name: String)
 
 object Scope {
   object Playlists {
-    val ReadCollaborative: Scope = new Scope("playlist-read-collaborative")
-    val ModifyPublic: Scope = new Scope("playlist-modify-public")
-    val ReadPrivate: Scope = new Scope("playlist-read-private")
-    val ModifyPrivate: Scope = new Scope("playlist-modify-private")
+    object ReadCollaborative extends Scope("playlist-read-collaborative")
+    object ModifyPublic extends Scope("playlist-modify-public")
+    object ReadPrivate extends Scope("playlist-read-private")
+    object ModifyPrivate extends Scope("playlist-modify-private")
   }
 }

@@ -10,7 +10,7 @@ object AuthorizationRequest {
   implicit val AuthorizationRequestQsp: ToQueryStringParams[AuthorizationRequest] = req => {
     val required: Map[String, String] = Map(
       "client_id"     -> req.credentials.clientId,
-      "response_type" -> AuthorizeResponseType.Code.name,
+      "response_type" -> ResponseType.Code.name,
       "redirect_uri"  -> encode(req.credentials.redirectUri)
     )
 

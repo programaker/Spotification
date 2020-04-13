@@ -1,5 +1,5 @@
 package spotification.spotify.authorization
 
-import spotification.NonBlankString
+import spotification.spotify.NonBlankString
 
 final case class RefreshToken(value: NonBlankString)

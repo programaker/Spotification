@@ -1,6 +1,6 @@
 package spotification.spotify.authorization
 
-import spotification.NonBlankString
+import spotification.spotify.NonBlankString
 
 sealed abstract class AuthorizationError extends Exception with Product with Serializable
 

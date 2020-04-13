@@ -6,7 +6,7 @@ package object authorization {
   type Authorization = Has[AuthorizationService]
 
   trait AuthorizationService {
-    def authorize(req: AuthorizationRequest): IO[AuthorizationError, AuthorizationResponse]
+    def authorize(req: AuthorizationRequest): Task[Unit]
     def requestToken(req: TokenRequest): Task[TokenResponse]
     def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse]
   }

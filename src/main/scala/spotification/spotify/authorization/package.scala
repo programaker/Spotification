@@ -1,6 +1,6 @@
 package spotification.spotify
 
-import zio.{Has, ZIO}
+import zio.{Has, RIO, ZIO}
 
 package object authorization {
   type Authorization = Has[Authorization.Service]
@@ -8,7 +8,8 @@ package object authorization {
   object Authorization {
     trait Service {
       def authorize(req: AuthorizationRequest): ZIO[Credentials, AuthorizationError, AuthorizationResponse]
-      def apiToken(req: ApiTokenRequest): ZIO[Credentials, Nothing, Nothing]
+      def requestToken(req: TokenRequest): RIO[Credentials, TokenResponse]
+      def refreshToken(req: RefreshTokenRequest): RIO[Credentials, RefreshTokenResponse]
     }
   }
 }

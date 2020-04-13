@@ -1,6 +1,6 @@
 package spotification.spotify
 
-import zio.{Has, IO, RIO, Task, ZIO}
+import zio.{Has, RIO, Task, ZIO}
 
 package object authorization {
   type Authorization = Has[AuthorizationService]
@@ -11,7 +11,7 @@ package object authorization {
     def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse]
   }
 
-  def authorize(req: AuthorizationRequest): ZIO[Authorization, AuthorizationError, AuthorizationResponse] =
+  def authorize(req: AuthorizationRequest): RIO[Authorization, Unit] =
     ZIO.accessM(_.get.authorize(req))
 
   def requestToken(req: TokenRequest): RIO[Authorization, TokenResponse] =

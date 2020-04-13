@@ -8,11 +8,12 @@ import zio.Task
 import zio.interop.catz._
 
 final class LiveAuthorizationService(credentials: Credentials, httpClient: Client[Task]) extends AuthorizationService {
-  private val authorizeUrl: Uri = uri"https://accounts.spotify.com/authorize"
-  private val apiTokenUrl: Uri = uri"https://accounts.spotify.com/api/token"
+  private val accountsUri: Uri = uri"https://accounts.spotify.com"
+  private val authorizeUri: Uri = accountsUri.withPath("/authorize")
+  private val apiTokenUri: Uri = accountsUri.withPath("/api/token")
 
   override def authorize(req: AuthorizationRequest): Task[Unit] =
-    Task(authorizeUrl)
+    Task(authorizeUri)
       .map(_.withQueryParams(toQueryStringParams(req)))
       .map(httpClient.expect[Unit](_))
 

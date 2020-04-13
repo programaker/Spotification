@@ -1,5 +1,5 @@
-package spotification.spotify.authorization
+package spotification.spotifyapi.authorization
 
-import spotification.spotify.{HexString32, UriString}
+import spotification.spotifyapi.{HexString32, UriString}
 
 final case class Credentials(clientId: HexString32, clientSecret: HexString32, redirectUri: UriString)

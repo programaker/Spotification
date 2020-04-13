@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.spotifyapi.authorization
 
 sealed abstract class GrantType(val name: String) extends Product with Serializable
 

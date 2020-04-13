@@ -1,6 +1,6 @@
-package spotification.spotify.authorization
+package spotification.spotifyapi.authorization
 
-import spotification.spotify.PositiveInt
+import spotification.spotifyapi.PositiveInt
 
 final case class TokenResponse(
   accessToken: AccessToken,

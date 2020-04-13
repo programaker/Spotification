@@ -1,8 +1,8 @@
-package spotification.spotify.authorization
+package spotification.spotifyapi.authorization
 
 import eu.timepit.refined.auto._
-import spotification.spotify.encode
-import spotification.spotify.{NonBlankString, ToQueryStringParams}
+import spotification.spotifyapi.encode
+import spotification.spotifyapi.{NonBlankString, ToQueryStringParams}
 
 final case class AuthorizationRequest(credentials: Credentials, scopes: List[Scope], state: Option[NonBlankString])
 

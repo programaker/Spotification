@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.spotifyapi.authorization
 
 sealed abstract class ResponseType(val name: String)
 

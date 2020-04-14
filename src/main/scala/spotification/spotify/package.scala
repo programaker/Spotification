@@ -2,15 +2,12 @@ package spotification
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
-import java.util.Base64
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MinSize, Size}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
-import eu.timepit.refined.auto._
-import spotification.spotify.authorization.{AccessToken, Credentials}
 
 package object spotify {
 
@@ -35,15 +32,6 @@ package object spotify {
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
   def encode: String => String =
     URLEncoder.encode(_, UTF_8.toString)
-
-  def base64Credentials(credentials: Credentials): String =
-    Base64.getEncoder.encodeToString(s"${credentials.clientId}:${credentials.clientSecret}".getBytes(UTF_8))
-
-  def authorizationBasicHeader(credentials: Credentials): String =
-    s"Authorization: Basic ${base64Credentials(credentials)}"
-
-  def authorizationBearerHeader(accessToken: AccessToken): String =
-    s"Authorization: Bearer ${accessToken.value}"
 
   def toQueryStringParams[T: ToQueryStringParams](t: T): Map[String, String] =
     ToQueryStringParams[T].convert(t)

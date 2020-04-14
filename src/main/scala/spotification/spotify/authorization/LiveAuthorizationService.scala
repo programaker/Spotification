@@ -12,10 +12,10 @@ final class LiveAuthorizationService(credentials: Credentials, httpClient: Clien
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")
 
-  override def authorize(req: AuthorizationRequest): Task[Unit] =
+  override def authorize(req: AuthorizeRequest): Task[Unit] =
     Task(authorizeUri)
       .map(_.withQueryParams(toQueryStringParams(req)))
-      .map(httpClient.expect[Unit](_))
+      .flatMap(httpClient.expect[Unit])
 
   override def requestToken(req: TokenRequest): Task[TokenResponse] = ???
 

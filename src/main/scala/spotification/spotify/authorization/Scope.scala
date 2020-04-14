@@ -1,4 +1,4 @@
-package spotification.spotifyapi.authorization
+package spotification.spotify.authorization
 
 sealed abstract class Scope(val name: String)
 

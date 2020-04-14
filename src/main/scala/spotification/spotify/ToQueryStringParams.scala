@@ -1,4 +1,4 @@
-package spotification.spotifyapi
+package spotification.spotify
 
 trait ToQueryStringParams[T] {
   def convert(t: T): Map[String, String]

@@ -1,4 +1,4 @@
-package spotification.spotifyapi
+package spotification.spotify
 
 import zio.{Has, RIO, Task, ZIO}
 

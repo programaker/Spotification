@@ -1,9 +1,9 @@
-package spotification.spotifyapi.authorization
+package spotification.spotify.authorization
 
 import org.http4s.Uri
 import org.http4s.implicits._
 import org.http4s.client._
-import spotification.spotifyapi._
+import spotification.spotify._
 import zio.Task
 import zio.interop.catz._
 

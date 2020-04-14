@@ -1,6 +1,6 @@
-package spotification.spotifyapi.authorization
+package spotification.spotify.authorization
 
-import spotification.spotifyapi.NonBlankString
+import spotification.spotify.NonBlankString
 
 sealed abstract class AuthorizationResponse extends Product with Serializable
 

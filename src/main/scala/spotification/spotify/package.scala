@@ -10,9 +10,9 @@ import eu.timepit.refined.collection.{MinSize, Size}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 import eu.timepit.refined.auto._
-import spotification.spotifyapi.authorization.{AccessToken, Credentials}
+import spotification.spotify.authorization.{AccessToken, Credentials}
 
-package object spotifyapi {
+package object spotify {
 
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR

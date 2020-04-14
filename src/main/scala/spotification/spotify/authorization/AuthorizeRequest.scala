@@ -3,7 +3,7 @@ package spotification.spotify.authorization
 import cats.data.NonEmptyList
 import cats.implicits._
 import eu.timepit.refined.auto._
-import spotification.spotify.{encode, NonBlankString}
+import spotification.spotify.NonBlankString
 
 final case class AuthorizeRequest(
   client_id: String,

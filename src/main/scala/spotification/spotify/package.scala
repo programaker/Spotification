@@ -39,10 +39,17 @@ package object spotify {
   def encode: String => String =
     URLEncoder.encode(_, UTF_8.toString)
 
+  /**
+   * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be
+   * used to build query string parameters or x-www-form-urlencodeds.</p>
+   * <p></p>
+   * <p>The function only acts on fields of type `String` (required fields)
+   * and `Option[String]` (optional fields); everything else will be ignored.</p>
+   */
   def toParams[T <: Product](t: T)(implicit toMap: ToMap.Aux[T, Symbol, Any]): Map[String, String] =
     t.toMap[Symbol, Any].flatMap {
-      case (k, v: String) => Some(k.name -> encode(v))
-      case (k, Some(v))   => Some(k.name -> encode(s"$v"))
-      case _              => None
+      case (k, v: String)       => Some(k.name -> encode(v))
+      case (k, Some(v: String)) => Some(k.name -> encode(v))
+      case _                    => None
     }
 }

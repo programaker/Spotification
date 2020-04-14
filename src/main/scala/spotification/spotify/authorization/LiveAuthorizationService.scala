@@ -17,7 +17,7 @@ final class LiveAuthorizationService(credentials: Credentials, httpClient: Clien
       .map(_.withQueryParams(toQueryStringParams(req)))
       .flatMap(httpClient.expect[Unit])
 
-  override def requestToken(req: TokenRequest): Task[TokenResponse] = ???
+  override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = ???
 
   override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] = ???
 }

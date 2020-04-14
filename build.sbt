@@ -41,7 +41,9 @@ ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Nothing,
   Wart.ImplicitParameter,
   Wart.Any,
-  Wart.StringPlusAny
+  Wart.StringPlusAny,
+  Wart.Serializable,
+  Wart.JavaSerializable
 )
 
 ThisBuild / scalacOptions ++= Seq(

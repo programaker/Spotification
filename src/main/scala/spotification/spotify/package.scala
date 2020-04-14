@@ -5,16 +5,22 @@ import java.nio.charset.StandardCharsets.UTF_8
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
-import eu.timepit.refined.collection.{MinSize, Size}
+import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
+import shapeless.ops.product.ToMap
+import shapeless.syntax.std.product._
 
 package object spotify {
 
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR
 
-  type HexString32R = Size[32] And HexStringSpec
+  // Size[N] refinement does not work for Strings,
+  // but MinSize[N] and MaxSize[N] do somehow =S
+  type StringLength[N] = MinSize[N] And MaxSize[N]
+
+  type HexString32R = StringLength[32] And HexStringSpec
   type HexString32 = String Refined HexString32R
 
   type UriString = String Refined Uri
@@ -33,7 +39,10 @@ package object spotify {
   def encode: String => String =
     URLEncoder.encode(_, UTF_8.toString)
 
-  def toQueryStringParams[T: ToQueryStringParams](t: T): Map[String, String] =
-    ToQueryStringParams[T].convert(t)
-
+  def toParams[T <: Product](t: T)(implicit toMap: ToMap.Aux[T, Symbol, Any]): Map[String, String] =
+    t.toMap[Symbol, Any].flatMap {
+      case (k, v: String) => Some(k.name -> encode(v))
+      case (k, Some(v))   => Some(k.name -> encode(s"$v"))
+      case _              => None
+    }
 }

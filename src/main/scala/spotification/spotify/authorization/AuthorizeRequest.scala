@@ -1,24 +1,31 @@
 package spotification.spotify.authorization
 
+import cats.data.NonEmptyList
+import cats.implicits._
 import eu.timepit.refined.auto._
-import spotification.spotify.encode
-import spotification.spotify.{NonBlankString, ToQueryStringParams}
+import spotification.spotify.{encode, NonBlankString}
 
-final case class AuthorizeRequest(credentials: Credentials, scopes: List[Scope], state: Option[NonBlankString])
+final case class AuthorizeRequest(
+  client_id: String,
+  response_type: String,
+  redirect_uri: String,
+  state: Option[String],
+  scope: Option[String],
+  show_dialog: Option[String]
+)
 
 object AuthorizeRequest {
-  implicit val AuthorizationRequestQsp: ToQueryStringParams[AuthorizeRequest] = req => {
-    val required: Map[String, String] = Map(
-      "client_id"     -> req.credentials.clientId,
-      "response_type" -> "code",
-      "redirect_uri"  -> encode(req.credentials.redirectUri)
+  def of(
+    credentials: Credentials,
+    scopes: Option[NonEmptyList[Scope]],
+    state: Option[NonBlankString]
+  ): AuthorizeRequest =
+    AuthorizeRequest(
+      client_id = credentials.clientId,
+      response_type = "code",
+      redirect_uri = credentials.redirectUri,
+      state = state.map(_.value),
+      scope = scopes.map(_.map(_.name).mkString_(" ")),
+      show_dialog = None // defaults to false, which is what we want
     )
-
-    val withScopes = req.scopes match {
-      case Nil  => required
-      case list => required + ("scope" -> list.map(_.name).mkString(encode(" ")))
-    }
-
-    req.state.fold(withScopes)(st => withScopes + ("state" -> st))
-  }
 }

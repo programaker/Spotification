@@ -10,15 +10,15 @@ object AuthorizationRequest {
   implicit val AuthorizationRequestQsp: ToQueryStringParams[AuthorizationRequest] = req => {
     val required: Map[String, String] = Map(
       "client_id"     -> req.credentials.clientId,
-      "response_type" -> ResponseType.Code.name,
+      "response_type" -> "code",
       "redirect_uri"  -> encode(req.credentials.redirectUri)
     )
 
     val withScopes = req.scopes match {
       case Nil  => required
-      case list => required + ("scope" -> list.map(_.name).mkString(" "))
+      case list => required + ("scope" -> list.map(_.name).mkString(encode(" ")))
     }
 
-    req.state.fold(withScopes)(st => withScopes + ("state" -> st))
+    req.state.fold(withScopes)((withScopes + _) compose ("state" -> _))
   }
 }

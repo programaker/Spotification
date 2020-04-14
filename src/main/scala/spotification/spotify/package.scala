@@ -33,8 +33,8 @@ package object spotify {
   //
   // URLEncoder.encode("https://bar.com", UTF_8.toString)
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  def encode(uri: UriString): String =
-    URLEncoder.encode(uri, UTF_8.toString)
+  def encode: String => String =
+    URLEncoder.encode(_, UTF_8.toString)
 
   def base64Credentials(credentials: Credentials): String =
     Base64.getEncoder.encodeToString(s"${credentials.clientId}:${credentials.clientSecret}".getBytes(UTF_8))

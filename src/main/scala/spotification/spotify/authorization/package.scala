@@ -24,13 +24,13 @@ package object authorization {
   def refreshToken(req: RefreshTokenRequest): RIO[Authorization, RefreshTokenResponse] =
     ZIO.accessM(_.get.refreshToken(req))
 
-  def base64Credentials(credentials: Credentials): String =
-    Base64.getEncoder.encodeToString(s"${credentials.clientId}:${credentials.clientSecret}".getBytes(UTF_8))
-
   def authorizationBasicHeader(credentials: Credentials): String =
     s"Authorization: Basic ${base64Credentials(credentials)}"
 
   def authorizationBearerHeader(accessToken: AccessToken): String =
     s"Authorization: Bearer ${accessToken.value}"
+
+  def base64Credentials(credentials: Credentials): String =
+    Base64.getEncoder.encodeToString(s"${credentials.clientId}:${credentials.clientSecret}".getBytes(UTF_8))
 
 }

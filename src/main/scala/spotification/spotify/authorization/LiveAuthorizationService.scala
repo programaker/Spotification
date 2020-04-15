@@ -47,7 +47,7 @@ final class LiveAuthorizationService(httpClient: Client[Task]) extends Authoriza
   private def apiTokenRequest[T <: Product, R](
     credentials: Credentials,
     req: T
-  )(implicit d: Decoder[R], m: ToMapAux[T]): Task[R] = {
+  )(implicit m: ToMapAux[T], d: Decoder[R]): Task[R] = {
     val params = toParams(req)
 
     val urlForm = UrlForm(params.toSeq: _*)

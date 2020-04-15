@@ -16,7 +16,7 @@ import io.circe.jawn
 //it is required to make Circe work with Refined Types
 import io.circe.refined._
 
-final class LiveAuthorizationService(credentials: Credentials, httpClient: Client[Task]) extends AuthorizationService {
+final class LiveAuthorizationService(httpClient: Client[Task]) extends AuthorizationService {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")

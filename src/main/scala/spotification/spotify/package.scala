@@ -28,6 +28,8 @@ package object spotify {
   type PositiveIntR = Positive
   type PositiveInt = Int Refined Positive
 
+  type ToMapAux[T] = ToMap.Aux[T, Symbol, Any]
+
   // HTTP4s Uri should be able to encode query params, but in my tests
   // URIs are not properly encoded:
   //
@@ -46,7 +48,7 @@ package object spotify {
    * <p>The function only acts on fields of type `String` (required fields)
    * and `Option[String]` (optional fields); everything else will be ignored.</p>
    */
-  def toParams[T <: Product](t: T)(implicit toMap: ToMap.Aux[T, Symbol, Any]): Map[String, String] =
+  def toParams[T <: Product](t: T)(implicit toMap: ToMapAux[T]): Map[String, String] =
     t.toMap[Symbol, Any].flatMap {
       case (k, v: String)       => Some(k.name -> encode(v))
       case (k, Some(v: String)) => Some(k.name -> encode(v))

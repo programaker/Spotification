@@ -3,8 +3,9 @@ package spotification.spotify.authorization
 import spotification.spotify.PositiveInt
 
 final case class AccessTokenResponse(
-  accessToken: AccessToken,
-  refreshToken: RefreshToken,
-  expiresIn: PositiveInt,
-  scopes: List[Scope]
+  access_token: AccessToken,
+  refresh_token: RefreshToken,
+  expires_in: PositiveInt,
+  scope: String,
+  token_type: String
 )

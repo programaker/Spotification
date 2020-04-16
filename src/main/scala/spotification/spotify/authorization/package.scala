@@ -7,23 +7,6 @@ import zio.{Has, RIO, Task, ZIO}
 
 package object authorization {
 
-  type Authorization = Has[AuthorizationService]
-
-  trait AuthorizationService {
-    def authorize(req: AuthorizeRequest): Task[Unit]
-    def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse]
-    def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse]
-  }
-
-  def authorize(req: AuthorizeRequest): RIO[Authorization, Unit] =
-    ZIO.accessM(_.get.authorize(req))
-
-  def requestToken(req: AccessTokenRequest): RIO[Authorization, AccessTokenResponse] =
-    ZIO.accessM(_.get.requestToken(req))
-
-  def refreshToken(req: RefreshTokenRequest): RIO[Authorization, RefreshTokenResponse] =
-    ZIO.accessM(_.get.refreshToken(req))
-
   def authorizationBasicHeader(credentials: Credentials): String =
     s"Authorization: Basic ${base64Credentials(credentials)}"
 

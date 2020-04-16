@@ -11,6 +11,7 @@ import zio.Task
 import zio.interop.catz._
 import io.circe.generic.auto._
 import io.circe.{jawn, Decoder}
+import spotification.spotify.authorization.module.AuthorizationService
 
 // ==========
 // Despite IntelliJ telling that `import io.circe.refined._` is not being used,

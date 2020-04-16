@@ -39,15 +39,15 @@ final class LiveAuthorizationService(httpClient: Client[Task]) extends Authoriza
   }
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] =
-    apiTokenRequest[AccessTokenRequest, AccessTokenResponse](req.credentials, req)
+    apiTokenRequest[AccessTokenRequest, AccessTokenResponse](req, req.credentials)
 
   override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] =
-    apiTokenRequest[RefreshTokenRequest, RefreshTokenResponse](req.credentials, req)
+    apiTokenRequest[RefreshTokenRequest, RefreshTokenResponse](req, req.credentials)
 
-  private def apiTokenRequest[T <: Product, R](
-    credentials: Credentials,
-    req: T
-  )(implicit m: ToMapAux[T], d: Decoder[R]): Task[R] = {
+  private def apiTokenRequest[A <: Product, B](
+    req: A,
+    credentials: Credentials
+  )(implicit m: ToMapAux[A], d: Decoder[B]): Task[B] = {
     val params = toParams(req)
 
     val urlForm = UrlForm(params.toSeq: _*)
@@ -57,6 +57,6 @@ final class LiveAuthorizationService(httpClient: Client[Task]) extends Authoriza
 
     httpClient
       .expect[String](post)
-      .flatMap(s => Task.fromEither(jawn.decode[R](s)))
+      .flatMap(s => Task.fromEither(jawn.decode[B](s)))
   }
 }

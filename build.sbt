@@ -1,12 +1,13 @@
-val Http4sVersion = "0.21.3"
-val CirceVersion = "0.13.0"
-val Specs2Version = "4.8.3"
-val LogbackVersion = "1.2.3"
-val BetterMonadicForVersion = "0.3.1"
-val KindProjectorVersion = "0.10.3"
-val RefinedVersion = "0.9.13"
-val ZIOVersion = "1.0.0-RC18-2"
-val ZIOInteropCats = "2.0.0.0-RC12"
+val http4sV = "0.21.3"
+val circeV = "0.13.0"
+val specs2V = "4.8.3"
+val logbackV = "1.2.3"
+val betterMonadicForV = "0.3.1"
+val kindProjectorV = "0.10.3"
+val refinedV = "0.9.13"
+val zioV = "1.0.0-RC18-2"
+val zioInteropCatsV = "2.0.0.0-RC12"
+val pureConfigV = "0.12.3"
 
 lazy val root = (project in file("."))
   .settings(
@@ -15,25 +16,28 @@ lazy val root = (project in file("."))
     version := "1.0",
     scalaVersion := "2.13.1",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
-      "org.http4s" %% "http4s-blaze-client" % Http4sVersion,
-      "org.http4s" %% "http4s-circe" % Http4sVersion,
-      "org.http4s" %% "http4s-dsl" % Http4sVersion,
+      "org.http4s" %% "http4s-blaze-server" % http4sV,
+      "org.http4s" %% "http4s-blaze-client" % http4sV,
+      "org.http4s" %% "http4s-circe" % http4sV,
+      "org.http4s" %% "http4s-dsl" % http4sV,
 
-      "io.circe" %% "circe-generic" % CirceVersion,
-      "io.circe" %% "circe-refined" % CirceVersion,
+      "io.circe" %% "circe-generic" % circeV,
+      "io.circe" %% "circe-refined" % circeV,
 
-      "ch.qos.logback" % "logback-classic" % LogbackVersion,
+      "ch.qos.logback" % "logback-classic" % logbackV,
 
-      "eu.timepit" %% "refined" % RefinedVersion,
+      "eu.timepit" %% "refined" % refinedV,
+      "eu.timepit" %% "refined-pureconfig" % refinedV,
 
-      "dev.zio" %% "zio" % ZIOVersion,
-      "dev.zio" %% "zio-interop-cats" % ZIOInteropCats,
+      "dev.zio" %% "zio" % zioV,
+      "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
 
-      "org.specs2" %% "specs2-core" % Specs2Version % Test
+      "com.github.pureconfig" %% "pureconfig" % pureConfigV,
+
+      "org.specs2" %% "specs2-core" % specs2V % Test
     ),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % KindProjectorVersion),
-    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion)
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorV),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForV)
   )
 
 ThisBuild / wartremoverWarnings ++= Warts.allBut(

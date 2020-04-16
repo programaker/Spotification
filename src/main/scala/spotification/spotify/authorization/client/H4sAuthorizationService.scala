@@ -1,17 +1,17 @@
-package spotification.spotify.authorization
+package spotification.spotify.authorization.client
 
+import io.circe.generic.auto._
+import io.circe.{jawn, Decoder}
 import org.http4s.Method._
 import org.http4s.client._
 import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.headers.{Authorization => H4sAuthorization}
 import org.http4s.implicits._
-import org.http4s.{AuthScheme, Uri, UrlForm, Credentials => H4sCredentials}
+import org.http4s.{Uri, UrlForm}
 import spotification.spotify._
+import spotification.spotify.authorization._
+import spotification.spotify.authorization.module.AuthorizationService
 import zio.Task
 import zio.interop.catz._
-import io.circe.generic.auto._
-import io.circe.{jawn, Decoder}
-import spotification.spotify.authorization.module.AuthorizationService
 
 // ==========
 // Despite IntelliJ telling that `import io.circe.refined._` is not being used,
@@ -19,7 +19,7 @@ import spotification.spotify.authorization.module.AuthorizationService
 // ==========
 import io.circe.refined._
 
-final class LiveAuthorizationService(httpClient: Client[Task]) extends AuthorizationService {
+final class H4sAuthorizationService(httpClient: Client[Task]) extends AuthorizationService {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")
@@ -49,12 +49,8 @@ final class LiveAuthorizationService(httpClient: Client[Task]) extends Authoriza
     req: A,
     credentials: Credentials
   )(implicit m: ToMapAux[A], d: Decoder[B]): Task[B] = {
-    val params = toParams(req)
-
-    val urlForm = UrlForm(params.toSeq: _*)
-    val basic = base64Credentials(credentials)
-    val header = H4sAuthorization(H4sCredentials.Token(AuthScheme.Basic, basic))
-    val post = POST(urlForm, apiTokenUri, header)
+    val params = toParams(req).toSeq
+    val post = POST(UrlForm(params: _*), apiTokenUri, authorizationBasicHeader(credentials))
 
     httpClient
       .expect[String](post)

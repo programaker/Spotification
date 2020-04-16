@@ -1,7 +1,8 @@
 package spotification.config
 
-import zio.{Has, RIO, Task, ZIO}
+import zio.{Has, Layer, RIO, Task, ZIO, ZLayer}
 
+/** ZIO module for Configuration */
 object module {
 
   type Configuration = Has[ConfigService]
@@ -10,6 +11,10 @@ object module {
     def readConfig: Task[AppConfig]
   }
 
-  def readConfig: RIO[Configuration, AppConfig] = ZIO.accessM(_.get.readConfig)
+  val readConfig: RIO[Configuration, AppConfig] =
+    ZIO.accessM(_.get.readConfig)
+
+  val configLayer: Layer[Nothing, Configuration] =
+    ZLayer.succeed(new PureConfigService)
 
 }

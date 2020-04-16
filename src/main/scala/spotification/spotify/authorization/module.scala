@@ -1,6 +1,7 @@
 package spotification.spotify.authorization
 
-import zio.{Has, RIO, Task, ZIO}
+import spotification.spotify.authorization.client.{H4sAuthorizationService, HttpClient}
+import zio.{Has, RIO, Task, ZIO, ZLayer}
 
 /** ZIO module for Authorization */
 object module {
@@ -21,5 +22,8 @@ object module {
 
   def refreshToken(req: RefreshTokenRequest): RIO[Authorization, RefreshTokenResponse] =
     ZIO.accessM(_.get.refreshToken(req))
+
+  val authorizationLayer: ZLayer[HttpClient, Nothing, Authorization] =
+    ZLayer.fromFunction(new H4sAuthorizationService(_))
 
 }

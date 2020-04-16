@@ -3,7 +3,6 @@ package spotification.spotify.authorization.client
 import io.circe.generic.auto._
 import io.circe.{jawn, Decoder}
 import org.http4s.Method._
-import org.http4s.client._
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
@@ -19,7 +18,7 @@ import zio.interop.catz._
 // ==========
 import io.circe.refined._
 
-final class H4sAuthorizationService(httpClient: Client[Task]) extends AuthorizationService {
+final class H4sAuthorizationService(httpClient: HttpClient) extends AuthorizationService {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")

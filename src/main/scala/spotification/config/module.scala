@@ -11,4 +11,5 @@ object module {
   }
 
   def readConfig: RIO[Configuration, AppConfig] = ZIO.accessM(_.get.readConfig)
+
 }

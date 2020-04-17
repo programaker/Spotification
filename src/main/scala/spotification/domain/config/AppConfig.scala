@@ -6,5 +6,5 @@ import spotification.domain.{NonBlankString, UriString}
 final case class AppConfig(
   credentials: Credentials,
   redirectUri: UriString,
-  scopes: List[NonBlankString]
+  scopes: Option[List[NonBlankString]]
 )

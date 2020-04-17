@@ -1,10 +1,10 @@
-package spotification.spotify.authorization
+package spotification.domain.spotify.authorization
 
-import spotification.spotify.PositiveInt
+import spotification.domain.PositiveInt
 
 final case class RefreshTokenResponse(
   access_token: AccessToken,
   token_type: String,
   expires_in: PositiveInt,
-  scope: String
+  scope: Option[String]
 )

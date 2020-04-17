@@ -1,9 +1,8 @@
-package spotification.spotify.authorization
+package spotification.domain.spotify.authorization
 
-import spotification.spotify.{NonBlankString, UriString}
+import spotification.domain.{NonBlankString, UriString}
 import eu.timepit.refined.auto._
 
-// TODO => hide this type-unsafe constructor
 final case class AccessTokenRequest(
   credentials: Credentials,
   grant_type: String,

@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.domain.spotify.authorization
 
 import eu.timepit.refined.auto._
 

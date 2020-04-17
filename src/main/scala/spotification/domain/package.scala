@@ -11,7 +11,7 @@ import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 import shapeless.ops.product.ToMap
 import shapeless.syntax.std.product._
 
-package object spotify {
+package object domain {
 
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR
@@ -38,8 +38,7 @@ package object spotify {
   //
   // URLEncoder.encode("https://bar.com", UTF_8.toString)
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  val encode: String => String =
-    URLEncoder.encode(_, UTF_8.toString)
+  val encode: String => String = URLEncoder.encode(_, UTF_8.toString)
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be
@@ -54,4 +53,5 @@ package object spotify {
       case (k, Some(v: String)) => Some(k.name -> encode(v))
       case _                    => None
     }
+
 }

@@ -1,7 +1,7 @@
-package spotification.config
+package spotification.infra.config
 
 import pureconfig.ConfigSource
-import spotification.config.module.ConfigService
+import spotification.domain.config.{AppConfig, ConfigService}
 import zio.{IO, Task}
 
 //==========
@@ -11,7 +11,7 @@ import zio.{IO, Task}
 import pureconfig.generic.auto._
 import eu.timepit.refined.pureconfig._
 
-class PureConfigService extends ConfigService {
+final class PureConfigService extends ConfigService {
   override val readConfig: Task[AppConfig] =
     IO.fromEither(ConfigSource.default.load[AppConfig])
       .mapError(_.prettyPrint())

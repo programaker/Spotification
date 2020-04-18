@@ -41,7 +41,7 @@ package object domain {
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
   def encode: String => String = URLEncoder.encode(_, UTF_8)
 
-  def base64: String => String = (Base64.getEncoder.encodeToString(_)) compose (_.getBytes(UTF_8))
+  def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be

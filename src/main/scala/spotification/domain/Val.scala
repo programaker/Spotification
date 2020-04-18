@@ -16,7 +16,7 @@ object Val {
 
   /* Eq instances for Vals */
   implicit def valEq[A: Eq]: Eq[Val[A]] = (v1: Val[A], v2: Val[A]) => v1.value === v2.value
-  implicit def refinedValEq[A: Eq, P]: Eq[ValR[A, P]] = (v1: ValR[A, P], v2: ValR[A, P]) => v1 === v2
+  implicit def refinedValEq[A: Eq, P]: Eq[ValR[A, P]] = (v1: ValR[A, P], v2: ValR[A, P]) => v1.value === v2.value
 
   /* Show instances for Vals */
   implicit def valShow[A: Show]: Show[Val[A]] = (v: Val[A]) => v.value.show

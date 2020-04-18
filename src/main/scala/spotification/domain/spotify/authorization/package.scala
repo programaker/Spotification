@@ -1,28 +1,18 @@
 package spotification.domain.spotify
 
-import spotification.domain.{base64, HexString32, NonBlankString}
+import spotification.domain.{base64, HexString32, NonBlankString, Val}
 import zio.{Has, RIO, ZIO}
+import cats.implicits._
 
 package object authorization {
 
   type Authorization = Has[AuthorizationService]
 
-  final case class AccessToken(value: NonBlankString) {
-    override def toString: String = value.toString
-  }
+  final case class AccessToken(value: NonBlankString) extends Val[NonBlankString]
+  final case class RefreshToken(value: NonBlankString) extends Val[NonBlankString]
 
-  final case class RefreshToken(value: NonBlankString) {
-    override def toString: String = value.toString
-  }
-
-  final case class ClientId(value: HexString32) {
-    override def toString: String = value.toString
-  }
-
-  final case class ClientSecret(value: HexString32) {
-    override def toString: String = value.toString
-  }
-
+  final case class ClientId(value: HexString32) extends Val[HexString32]
+  final case class ClientSecret(value: HexString32) extends Val[HexString32]
   final case class Credentials(clientId: ClientId, clientSecret: ClientSecret)
 
   def authorize(req: AuthorizeRequest): RIO[Authorization, Unit] =
@@ -35,6 +25,6 @@ package object authorization {
     ZIO.accessM(_.get.refreshToken(req))
 
   def base64Credentials(credentials: Credentials): String =
-    base64(s"${credentials.clientId}:${credentials.clientSecret}")
+    base64(show"${credentials.clientId}:${credentials.clientSecret}")
 
 }

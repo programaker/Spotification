@@ -21,7 +21,7 @@ object AuthorizeRequest {
     state: Option[NonBlankString]
   ): AuthorizeRequest =
     AuthorizeRequest(
-      client_id = credentials.clientId.value,
+      client_id = credentials.clientId,
       response_type = "code",
       redirect_uri = redirectUri,
       state = state.map(_.value),

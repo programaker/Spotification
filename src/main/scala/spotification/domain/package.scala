@@ -4,6 +4,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
+import cats.Eq
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
@@ -11,6 +12,7 @@ import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 import shapeless.ops.product.ToMap
 import shapeless.syntax.std.product._
+import cats.implicits._
 
 package object domain {
 
@@ -56,5 +58,9 @@ package object domain {
       case (k, Some(v: String)) => Some(k.name -> encode(v))
       case _                    => None
     }
+
+  /** Eq instance for all Refined types */
+  implicit def refinedEq[T: Eq, R]: Eq[Refined[T, R]] =
+    (x: Refined[T, R], y: Refined[T, R]) => x.value === y.value
 
 }

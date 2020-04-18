@@ -38,7 +38,7 @@ package object domain {
   //
   // URLEncoder.encode("https://bar.com", UTF_8.toString)
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  val encode: String => String = URLEncoder.encode(_, UTF_8.toString)
+  def encode: String => String = URLEncoder.encode(_, UTF_8)
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be

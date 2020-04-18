@@ -12,7 +12,7 @@ import pureconfig.generic.auto._
 import eu.timepit.refined.pureconfig._
 
 final class PureConfigService extends ConfigService {
-  override val readConfig: Task[AppConfig] =
+  override def readConfig: Task[AppConfig] =
     IO.fromEither(ConfigSource.default.load[AppConfig])
       .mapError(_.prettyPrint())
       .absorbWith(new Exception(_))

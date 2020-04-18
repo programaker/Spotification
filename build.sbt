@@ -68,5 +68,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-Ywarn-unused:locals",
   "-Ywarn-unused:params",
   "-Ywarn-unused:patvars",
-  "-Ywarn-unused:privates"
+  "-Ywarn-unused:privates",
+
+  "-Ymacro-annotations"
 )

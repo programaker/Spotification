@@ -5,7 +5,9 @@ import spotification.domain.config.{AppConfig, ConfigService}
 import zio.{IO, Task}
 
 //==========
-// IntelliJ is complaining about `import pureconfig.generic.auto._` and `import eu.timepit.refined.pureconfig._`
+// IntelliJ is complaining about:
+// import pureconfig.generic.auto._
+// import eu.timepit.refined.pureconfig._
 // not being used, but without them it does not compile
 //==========
 import pureconfig.generic.auto._

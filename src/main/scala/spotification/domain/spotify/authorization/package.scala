@@ -1,13 +1,29 @@
 package spotification.domain.spotify
 
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.Base64
-
+import spotification.domain.{base64, HexString32, NonBlankString}
 import zio.{Has, RIO, ZIO}
 
 package object authorization {
 
   type Authorization = Has[AuthorizationService]
+
+  final case class AccessToken(value: NonBlankString) {
+    override def toString: String = value.toString
+  }
+
+  final case class RefreshToken(value: NonBlankString) {
+    override def toString: String = value.toString
+  }
+
+  final case class ClientId(value: HexString32) {
+    override def toString: String = value.toString
+  }
+
+  final case class ClientSecret(value: HexString32) {
+    override def toString: String = value.toString
+  }
+
+  final case class Credentials(clientId: ClientId, clientSecret: ClientSecret)
 
   def authorize(req: AuthorizeRequest): RIO[Authorization, Unit] =
     ZIO.accessM(_.get.authorize(req))
@@ -19,6 +35,6 @@ package object authorization {
     ZIO.accessM(_.get.refreshToken(req))
 
   def base64Credentials(credentials: Credentials): String =
-    Base64.getEncoder.encodeToString(s"${credentials.clientId}:${credentials.clientSecret}".getBytes(UTF_8))
+    base64(s"${credentials.clientId}:${credentials.clientSecret}")
 
 }

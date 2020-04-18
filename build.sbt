@@ -27,6 +27,7 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic" % logbackV,
 
       "eu.timepit" %% "refined" % refinedV,
+      "eu.timepit" %% "refined-cats" % refinedV,
       "eu.timepit" %% "refined-pureconfig" % refinedV,
 
       "dev.zio" %% "zio" % zioV,

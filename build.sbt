@@ -8,6 +8,7 @@ val refinedV = "0.9.13"
 val zioV = "1.0.0-RC18-2"
 val zioInteropCatsV = "2.0.0.0-RC12"
 val pureConfigV = "0.12.3"
+val simulacrumV = "1.0.0"
 
 lazy val root = (project in file("."))
   .settings(
@@ -34,6 +35,8 @@ lazy val root = (project in file("."))
       "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
 
       "com.github.pureconfig" %% "pureconfig" % pureConfigV,
+
+      "org.typelevel" %% "simulacrum" % simulacrumV,
 
       "org.specs2" %% "specs2-core" % specs2V % Test
     ),

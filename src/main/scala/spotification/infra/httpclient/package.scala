@@ -13,9 +13,9 @@ import spotification.domain.spotify.authorization._
 import zio.{Task, ZLayer}
 import eu.timepit.refined.auto._
 import shapeless.ops.product.ToMap
-import spotification.domain.Val
-import shapeless.syntax.std.product._
+import spotification.domain.{GrantType, ResponseType, Val}
 import cats.implicits._
+import spotification.domain.scope.{joinScopes, Scope}
 
 package object httpclient {
 
@@ -45,10 +45,10 @@ package object httpclient {
 
   def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 
-  def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
-    base64(show"$clientId:$clientSecret")
+  def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String = base64(show"$clientId:$clientSecret")
 
   type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
+  type ParamMap = Map[String, String]
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be
@@ -58,7 +58,7 @@ package object httpclient {
    * and `Option[String]` (optional fields); everything else will be ignored.</p>
    */
   def toParams[A <: Product](a: A)(implicit toMap: ToMapAux[A]): Map[String, String] =
-    a.toMap[Symbol, Any].flatMap {
+    toMap(a).flatMap {
       case (k, v: String)        => Some(k.name -> encode(v))
       case (k, Some(v: String))  => Some(k.name -> encode(v))
       case (k, v: Refined[_, _]) => Some(k.name -> encode(s"$v"))
@@ -66,4 +66,12 @@ package object httpclient {
       case _                     => None
     }
 
+  def addScopeParam(params: ParamMap, scopes: List[Scope]): ParamMap =
+    params + ("scope" -> joinScopes(scopes))
+
+  def addGrantTypeParam(params: ParamMap, grantType: GrantType): ParamMap =
+    params + ("grant_type" -> grantType)
+
+  def addResponseTypeParam(params: ParamMap, responseType: ResponseType): ParamMap =
+    params + ("response_type" -> responseType)
 }

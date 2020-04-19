@@ -1,12 +1,12 @@
 package spotification.infra.httpclient
 
+import eu.timepit.refined.auto._
 import io.circe.generic.auto._
 import io.circe.{jawn, Decoder}
 import org.http4s.Method._
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
-import spotification.domain.scope._
 import spotification.domain.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
@@ -35,24 +35,37 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   override def authorize(req: AuthorizeRequest): Task[Unit] = {
     val params = toParams(req)
 
-    // `scope` can't be generically build due to the required List[Scope] => String transformation
-    val paramsWithScope = req.scope.fold(params)(s => params + ("scope" -> joinScopes(s)))
+    // `scope` can't be generically built due to the required
+    // List[Scope] => space-separated-String transformation
+    val params2 = req.scope.fold(params)(addScopeParam(params, _))
 
-    httpClient.expect[Unit](authorizeUri.withQueryParams(paramsWithScope))
+    // response_type is always the same, that's why it is not in the Request type
+    val params3 = addResponseTypeParam(params2, "code")
+
+    httpClient.expect[Unit](authorizeUri.withQueryParams(params3))
   }
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params = toParams(req)
-    apiTokenRequest[AccessTokenResponse](params, req.client_id, req.client_secret)
+
+    // grant_type is always the same, that's why it is not in the Request type
+    val params2 = addGrantTypeParam(params, "authorization_code")
+
+    apiTokenRequest[AccessTokenResponse](params2, req.client_id, req.client_secret)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Product"))
   override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] = {
     val params = toParams(req)
-    apiTokenRequest[RefreshTokenResponse](params, req.client_id, req.client_secret)
+
+    // grant_type is always the same, that's why it is not in the Request type
+    val params2 = addGrantTypeParam(params, "refresh_token")
+
+    apiTokenRequest[RefreshTokenResponse](params2, req.client_id, req.client_secret)
   }
 
   private def apiTokenRequest[B: Decoder](
-    params: Map[String, String],
+    params: ParamMap,
     clientId: ClientId,
     clientSecret: ClientSecret
   ): Task[B] = {

@@ -15,7 +15,7 @@ import eu.timepit.refined.cats._
  * derive typeclass instances for @newtypes, then I prefer to pay the
  * (I believe small) memory cost of tiny types than lose the productivity
  * and maintainability of auto derivation */
-abstract class Val[+A: Show] {
+abstract class Val[+A: Show] extends Product with Serializable {
   def value: A
   override def toString: String = show"$value"
 }

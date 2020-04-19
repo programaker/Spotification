@@ -4,7 +4,7 @@ import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.client.Client
 import org.http4s.headers
-import spotification.domain.spotify.authorization.{base64Credentials, AccessToken, Authorization, Credentials}
+import spotification.domain.spotify.authorization._
 import zio.{Task, ZLayer}
 import eu.timepit.refined.auto._
 
@@ -15,8 +15,8 @@ package object httpclient {
   type H4sAuthorization = org.http4s.headers.Authorization
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
-  def authorizationBasicHeader(credentials: Credentials): H4sAuthorization =
-    H4sAuthorization(Token(Basic, base64Credentials(credentials)))
+  def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
+    H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))
 
   def authorizationBearerHeader(accessToken: AccessToken): headers.Authorization =
     H4sAuthorization(Token(Bearer, accessToken.value))

@@ -1,21 +1,28 @@
 package spotification.domain.spotify.authorization
 
-import spotification.domain.{NonBlankString, UriString}
+import spotification.domain.{GrantType, NonBlankString, UriString}
 import eu.timepit.refined.auto._
 
 final case class AccessTokenRequest(
-  credentials: Credentials,
-  grant_type: String,
-  code: String,
-  redirect_uri: String
+  client_id: ClientId,
+  client_secret: ClientSecret,
+  grant_type: GrantType, //TODO fixed value, can be removed
+  code: NonBlankString,
+  redirect_uri: UriString
 )
 
 object AccessTokenRequest {
-  def of(credentials: Credentials, redirectUri: UriString, code: NonBlankString): AccessTokenRequest =
+  def of(
+    client_id: ClientId,
+    client_secret: ClientSecret,
+    code: NonBlankString,
+    redirect_uri: UriString
+  ): AccessTokenRequest =
     AccessTokenRequest(
-      credentials = credentials,
+      client_id = client_id,
+      client_secret = client_secret,
       grant_type = "authorization_code",
       code = code,
-      redirect_uri = redirectUri
+      redirect_uri = redirect_uri
     )
 }

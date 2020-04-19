@@ -7,6 +7,7 @@ import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
 import spotification.domain._
+import spotification.domain.scope._
 import spotification.domain.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
@@ -34,21 +35,29 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   // (the "callback" of the authorization process). So here we just return Unit
   override def authorize(req: AuthorizeRequest): Task[Unit] = {
     val params = toParams(req)
-    httpClient.expect[Unit](authorizeUri.withQueryParams(params))
+
+    // `scope` can't be generically build due to the required List[Scope] => String transformation
+    val paramsWithScope = req.scope.fold(params)(s => params + ("scope" -> joinScopes(s)))
+
+    httpClient.expect[Unit](authorizeUri.withQueryParams(paramsWithScope))
   }
 
-  override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] =
-    apiTokenRequest[AccessTokenRequest, AccessTokenResponse](req, req.credentials)
+  override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
+    val params = toParams(req)
+    apiTokenRequest[AccessTokenResponse](params, req.client_id, req.client_secret)
+  }
 
-  override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] =
-    apiTokenRequest[RefreshTokenRequest, RefreshTokenResponse](req, req.credentials)
+  override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] = {
+    val params = toParams(req)
+    apiTokenRequest[RefreshTokenResponse](params, req.client_id, req.client_secret)
+  }
 
-  private def apiTokenRequest[A <: Product, B](
-    req: A,
-    credentials: Credentials
-  )(implicit m: ToMapAux[A], d: Decoder[B]): Task[B] = {
-    val params = toParams(req).toSeq
-    val post = POST(UrlForm(params: _*), apiTokenUri, authorizationBasicHeader(credentials))
+  private def apiTokenRequest[B: Decoder](
+    params: Map[String, String],
+    clientId: ClientId,
+    clientSecret: ClientSecret
+  ): Task[B] = {
+    val post = POST(UrlForm(params.toSeq: _*), apiTokenUri, authorizationBasicHeader(clientId, clientSecret))
 
     httpClient
       .expect[String](post)

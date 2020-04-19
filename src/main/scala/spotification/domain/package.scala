@@ -5,8 +5,9 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.boolean.{And, Not}
+import eu.timepit.refined.boolean.{And, Not, Or}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
+import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 import shapeless.ops.product.ToMap
@@ -29,6 +30,15 @@ package object domain {
   type PositiveIntR = Positive
   type PositiveInt = Int Refined Positive
 
+  type ResponseTypeR = Equal["code"] //it's the only one that appeared until now
+  type ResponseType = String Refined ResponseTypeR
+
+  type GrantTypeR = Equal["authorization_code"] Or Equal["refresh_token"]
+  type GrantType = String Refined GrantTypeR
+
+  type TokenTypeR = Equal["Bearer"]
+  type TokenType = String Refined TokenTypeR
+
   type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
 
   // HTTP4s Uri should be able to encode query params, but in my tests
@@ -50,11 +60,13 @@ package object domain {
    * <p>The function only acts on fields of type `String` (required fields)
    * and `Option[String]` (optional fields); everything else will be ignored.</p>
    */
-  def toParams[A <: Product](t: A)(implicit toMap: ToMapAux[A]): Map[String, String] =
-    t.toMap[Symbol, Any].flatMap {
-      case (k, v: String)       => Some(k.name -> encode(v))
-      case (k, Some(v: String)) => Some(k.name -> encode(v))
-      case _                    => None
+  def toParams[A <: Product](a: A)(implicit toMap: ToMapAux[A]): Map[String, String] =
+    a.toMap[Symbol, Any].flatMap {
+      case (k, v: String)        => Some(k.name -> encode(v))
+      case (k, Some(v: String))  => Some(k.name -> encode(v))
+      case (k, v: Refined[_, _]) => Some(k.name -> encode(s"$v"))
+      case (k, v: Val[_])        => Some(k.name -> encode(s"$v"))
+      case _                     => None
     }
 
 }

@@ -1,10 +1,12 @@
 package spotification.domain.config
 
-import spotification.domain.spotify.authorization.Credentials
-import spotification.domain.{NonBlankString, UriString}
+import spotification.domain.UriString
+import spotification.domain.scope.Scope
+import spotification.domain.spotify.authorization.{ClientId, ClientSecret}
 
 final case class AppConfig(
-  credentials: Credentials,
+  clientId: ClientId,
+  clientSecret: ClientSecret,
   redirectUri: UriString,
-  scopes: Option[List[NonBlankString]]
+  scopes: Option[List[Scope]]
 )

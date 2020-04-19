@@ -13,7 +13,7 @@ import spotification.domain.spotify.authorization._
 import zio.{Task, ZLayer}
 import eu.timepit.refined.auto._
 import shapeless.ops.product.ToMap
-import spotification.domain.{GrantType, ResponseType, Val}
+import spotification.domain.Val
 import cats.implicits._
 import spotification.domain.scope.{joinScopes, Scope}
 
@@ -69,9 +69,4 @@ package object httpclient {
   def addScopeParam(params: ParamMap, scopes: List[Scope]): ParamMap =
     params + ("scope" -> joinScopes(scopes))
 
-  def addGrantTypeParam(params: ParamMap, grantType: GrantType): ParamMap =
-    params + ("grant_type" -> grantType)
-
-  def addResponseTypeParam(params: ParamMap, responseType: ResponseType): ParamMap =
-    params + ("response_type" -> responseType)
 }

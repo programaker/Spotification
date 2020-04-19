@@ -1,11 +1,12 @@
 package spotification
 
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.boolean.{And, Not, Or}
+import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
+import eu.timepit.refined.auto._
 
 package object domain {
 
@@ -24,11 +25,23 @@ package object domain {
   type PositiveIntR = Positive
   type PositiveInt = Int Refined Positive
 
-  type ResponseTypeR = Equal["code"] //it's the only one that appeared until now
-  type ResponseType = String Refined ResponseTypeR
+  type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
+  type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
+  object AuthorizationResponseType {
+    val Code: AuthorizationResponseType = "code"
+  }
 
-  type GrantTypeR = Equal["authorization_code"] Or Equal["refresh_token"]
-  type GrantType = String Refined GrantTypeR
+  type AccessTokenGrantTypeR = Equal["authorization_code"]
+  type AccessTokenGrantType = String Refined AccessTokenGrantTypeR
+  object AccessTokenGrantType {
+    val AuthorizationCode: AccessTokenGrantType = "authorization_code"
+  }
+
+  type RefreshTokenGrantTypeR = Equal["refresh_token"]
+  type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeR
+  object RefreshTokenGrantType {
+    val RefreshToken: RefreshTokenGrantType = "refresh_token"
+  }
 
   type TokenTypeR = Equal["Bearer"]
   type TokenType = String Refined TokenTypeR

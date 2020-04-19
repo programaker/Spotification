@@ -1,6 +1,5 @@
 package spotification.infra.httpclient
 
-import eu.timepit.refined.auto._
 import io.circe.generic.auto._
 import io.circe.{jawn, Decoder}
 import org.http4s.Method._
@@ -39,29 +38,18 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
     // List[Scope] => space-separated-String transformation
     val params2 = req.scope.fold(params)(addScopeParam(params, _))
 
-    // response_type is always the same, that's why it is not in the Request type
-    val params3 = addResponseTypeParam(params2, "code")
-
-    httpClient.expect[Unit](authorizeUri.withQueryParams(params3))
+    httpClient.expect[Unit](authorizeUri.withQueryParams(params2))
   }
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params = toParams(req)
-
-    // grant_type is always the same, that's why it is not in the Request type
-    val params2 = addGrantTypeParam(params, "authorization_code")
-
-    apiTokenRequest[AccessTokenResponse](params2, req.client_id, req.client_secret)
+    apiTokenRequest[AccessTokenResponse](params, req.client_id, req.client_secret)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Product"))
   override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] = {
     val params = toParams(req)
-
-    // grant_type is always the same, that's why it is not in the Request type
-    val params2 = addGrantTypeParam(params, "refresh_token")
-
-    apiTokenRequest[RefreshTokenResponse](params2, req.client_id, req.client_secret)
+    apiTokenRequest[RefreshTokenResponse](params, req.client_id, req.client_secret)
   }
 
   private def apiTokenRequest[B: Decoder](

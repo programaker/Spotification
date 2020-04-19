@@ -6,7 +6,6 @@ import org.http4s.Method._
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
-import spotification.domain._
 import spotification.domain.scope._
 import spotification.domain.spotify.authorization._
 import zio.Task

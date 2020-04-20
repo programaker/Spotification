@@ -9,8 +9,6 @@ import eu.timepit.refined.auto._
 
 object scope {
 
-  val ScopeSeparator: String = " "
-
   type PlaylistScopeR =
     Equal["playlist-read-collaborative"] Or
       Equal["playlist-modify-public"] Or
@@ -20,9 +18,10 @@ object scope {
   type ScopeR = PlaylistScopeR //we can add more scopes later
   type Scope = String Refined ScopeR
 
-  def parseScope(rawScope: NonBlankString): Either[String, List[Scope]] =
+  def parseScope(rawScope: SpaceSeparatedString): Either[String, List[Scope]] =
     rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
 
-  def joinScopes(scopes: List[Scope]): String = scopes.mkString(ScopeSeparator)
+  def joinScopes(scopes: List[Scope]): Either[String, SpaceSeparatedString] =
+    refineV[SpaceSeparatedStringR](scopes.mkString(" "))
 
 }

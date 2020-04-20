@@ -46,4 +46,7 @@ package object domain {
   type TokenTypeR = Equal["Bearer"]
   type TokenType = String Refined TokenTypeR
 
+  type SpaceSeparatedStringR = MatchesRegex["""^\S+(\s\S+)*$"""]
+  type SpaceSeparatedString = String Refined SpaceSeparatedStringR
+
 }

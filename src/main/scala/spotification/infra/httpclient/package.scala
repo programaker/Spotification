@@ -15,13 +15,15 @@ import eu.timepit.refined.auto._
 import shapeless.ops.product.ToMap
 import spotification.domain.Val
 import cats.implicits._
+import org.http4s.client.dsl.Http4sClientDsl
 import spotification.domain.scope.{joinScopes, Scope}
 
 package object httpclient {
 
   type H4sClient = Client[Task]
+  type H4sClientDsl = Http4sClientDsl[Task]
 
-  val authorizationLayer: ZLayer[H4sClient, Nothing, Authorization] =
+  val AuthorizationLayer: ZLayer[H4sClient, Nothing, Authorization] =
     ZLayer.fromFunction(new H4sAuthorizationService(_))
 
   type H4sAuthorization = org.http4s.headers.Authorization
@@ -57,7 +59,7 @@ package object httpclient {
    * <p>The function only acts on fields of type `String` (required fields)
    * and `Option[String]` (optional fields); everything else will be ignored.</p>
    */
-  def toParams[A <: Product](a: A)(implicit toMap: ToMapAux[A]): Map[String, String] =
+  def toParams[A <: Product](a: A)(implicit toMap: ToMapAux[A]): ParamMap =
     toMap(a).flatMap {
       case (k, v: String)        => Some(k.name -> encode(v))
       case (k, Some(v: String))  => Some(k.name -> encode(v))
@@ -66,7 +68,7 @@ package object httpclient {
       case _                     => None
     }
 
-  def addScopeParam(params: ParamMap, scopes: List[Scope]): ParamMap =
-    params + ("scope" -> joinScopes(scopes))
+  def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
+    joinScopes(scopes).map(s => params + ("scope" -> s))
 
 }

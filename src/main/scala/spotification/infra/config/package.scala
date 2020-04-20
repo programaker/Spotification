@@ -5,6 +5,6 @@ import zio.{Layer, ZLayer}
 
 package object config {
 
-  val configLayer: Layer[Nothing, Configuration] = ZLayer.succeed(new PureConfigService)
+  val ConfigLayer: Layer[Nothing, Configuration] = ZLayer.succeed(new PureConfigService)
 
 }

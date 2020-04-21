@@ -16,7 +16,7 @@ import shapeless.ops.product.ToMap
 import spotification.domain.Val
 import cats.implicits._
 import org.http4s.client.dsl.Http4sClientDsl
-import spotification.domain.scope.{joinScopes, Scope}
+import scope.{joinScopes, Scope}
 
 package object httpclient {
 

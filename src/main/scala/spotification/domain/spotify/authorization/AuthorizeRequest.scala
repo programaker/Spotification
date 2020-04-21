@@ -1,6 +1,6 @@
 package spotification.domain.spotify.authorization
 
-import spotification.domain.scope.Scope
+import scope.Scope
 import spotification.domain.{AuthorizationResponseType, NonBlankString, UriString}
 
 final case class AuthorizeRequest(

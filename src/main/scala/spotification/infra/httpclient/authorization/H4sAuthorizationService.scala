@@ -6,6 +6,7 @@ import org.http4s.Method._
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
 import spotification.domain.spotify.authorization._
+import spotification.infra.httpclient.authorization._
 import zio.Task
 import zio.interop.catz._
 import cats.implicits._
@@ -16,7 +17,7 @@ import cats.implicits._
 // ==========
 import io.circe.refined._
 
-final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationService with H4sClientDsl {
+final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization.Service with H4sClientDsl {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")

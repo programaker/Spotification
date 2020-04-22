@@ -1,6 +1,6 @@
 package spotification.domain.spotify.authorization
 
-import spotification.domain.{AccessTokenGrantType, NonBlankString, UriString}
+import spotification.domain._
 
 final case class AccessTokenRequest(
   client_id: ClientId,

@@ -1,9 +1,11 @@
 package spotification.domain.spotify
 
-import spotification.domain.{HexString32, NonBlankString, Val}
-import zio.{Has, RIO, ZIO}
+import spotification.domain.{HexString32, NonBlankString, Val, base64}
 import cats.implicits._
 import eu.timepit.refined.cats._
+import eu.timepit.refined.generic.Equal
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 
 package object authorization {
 
@@ -13,15 +15,28 @@ package object authorization {
   final case class ClientId(value: HexString32) extends Val[HexString32]
   final case class ClientSecret(value: HexString32) extends Val[HexString32]
 
-  type Authorization = Has[AuthorizationService]
+  type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
+  type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
+  object AuthorizationResponseType {
+    val Code: AuthorizationResponseType = "code"
+  }
 
-  def authorize(req: AuthorizeRequest): RIO[Authorization, Unit] =
-    ZIO.accessM(_.get.authorize(req))
+  type AccessTokenGrantTypeR = Equal["authorization_code"]
+  type AccessTokenGrantType = String Refined AccessTokenGrantTypeR
+  object AccessTokenGrantType {
+    val AuthorizationCode: AccessTokenGrantType = "authorization_code"
+  }
 
-  def requestToken(req: AccessTokenRequest): RIO[Authorization, AccessTokenResponse] =
-    ZIO.accessM(_.get.requestToken(req))
+  type RefreshTokenGrantTypeR = Equal["refresh_token"]
+  type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeR
+  object RefreshTokenGrantType {
+    val RefreshToken: RefreshTokenGrantType = "refresh_token"
+  }
 
-  def refreshToken(req: RefreshTokenRequest): RIO[Authorization, RefreshTokenResponse] =
-    ZIO.accessM(_.get.refreshToken(req))
+  type TokenTypeR = Equal["Bearer"]
+  type TokenType = String Refined TokenTypeR
+
+  def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
+    base64(show"$clientId:$clientSecret")
 
 }

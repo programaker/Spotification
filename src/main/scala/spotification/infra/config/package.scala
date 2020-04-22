@@ -1,10 +1,26 @@
 package spotification.infra
 
-import spotification.domain.config.Configuration
 import zio.{Layer, ZLayer}
+import zio.Task
+import spotification.domain.config.AppConfig
+import zio.Has
+import zio.RIO
+import zio.ZIO
 
 package object config {
 
-  val ConfigLayer: Layer[Nothing, Configuration] = ZLayer.succeed(new PureConfigService)
+  type Config = Has[Config.Service]
+
+  object Config {
+    trait Service {
+      def readConfig: Task[AppConfig]
+    }
+
+    val readConfig: RIO[Config, AppConfig] =
+      ZIO.accessM(_.get.readConfig)
+
+    val ConfigLayer: Layer[Nothing, Config] =
+      ZLayer.succeed(new PureConfigService)
+  }
 
 }

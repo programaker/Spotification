@@ -1,12 +1,14 @@
 package spotification
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Base64
+
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
-import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
-import eu.timepit.refined.auto._
 
 package object domain {
 
@@ -25,28 +27,19 @@ package object domain {
   type PositiveIntR = Positive
   type PositiveInt = Int Refined Positive
 
-  type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
-  type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
-  object AuthorizationResponseType {
-    val Code: AuthorizationResponseType = "code"
-  }
-
-  type AccessTokenGrantTypeR = Equal["authorization_code"]
-  type AccessTokenGrantType = String Refined AccessTokenGrantTypeR
-  object AccessTokenGrantType {
-    val AuthorizationCode: AccessTokenGrantType = "authorization_code"
-  }
-
-  type RefreshTokenGrantTypeR = Equal["refresh_token"]
-  type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeR
-  object RefreshTokenGrantType {
-    val RefreshToken: RefreshTokenGrantType = "refresh_token"
-  }
-
-  type TokenTypeR = Equal["Bearer"]
-  type TokenType = String Refined TokenTypeR
-
   type SpaceSeparatedStringR = MatchesRegex["""^(\w|[-])+(\s(\w|[-])+)*$"""]
   type SpaceSeparatedString = String Refined SpaceSeparatedStringR
+
+  // HTTP4s Uri should be able to encode query params, but in my tests
+  // URIs are not properly encoded:
+  //
+  // uri"https://foo.com".withQueryParam("redirect_uri", "https://bar.com")
+  // > org.http4s.Uri = https://foo.com?redirect_uri=https%3A//bar.com <- did not encode `//`
+  //
+  // URLEncoder.encode("https://bar.com", UTF_8.toString)
+  // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
+  val encode: String => String = URLEncoder.encode(_, UTF_8)
+
+  def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 
 }

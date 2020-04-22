@@ -43,7 +43,7 @@ package object httpclient {
   //
   // URLEncoder.encode("https://bar.com", UTF_8.toString)
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  def encode: String => String = URLEncoder.encode(_, UTF_8)
+  val encode: String => String = URLEncoder.encode(_, UTF_8)
 
   def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 

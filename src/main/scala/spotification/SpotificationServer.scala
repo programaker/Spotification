@@ -35,4 +35,5 @@ object SpotificationServer {
         .serve
     } yield exitCode
   }.drain
+
 }

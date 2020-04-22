@@ -8,7 +8,7 @@ import org.http4s.dsl.Http4sDsl
 object SpotificationRoutes {
 
   def jokeRoutes[F[_]: Sync](J: Jokes[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
     HttpRoutes.of[F] {
       case GET -> Root / "joke" =>
@@ -20,14 +20,15 @@ object SpotificationRoutes {
   }
 
   def helloWorldRoutes[F[_]: Sync](H: HelloWorld[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
     HttpRoutes.of[F] {
       case GET -> Root / "hello" / name =>
         for {
           greeting <- H.hello(HelloWorld.Name(name))
-          resp <- Ok(greeting)
+          resp     <- Ok(greeting)
         } yield resp
     }
   }
+
 }

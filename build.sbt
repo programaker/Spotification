@@ -73,6 +73,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-Ywarn-value-discard",
   "-Ywarn-unused:imports",
   "-Ywarn-unused:implicits",
+  "-Ywarn-unused:explicits",
   "-Ywarn-unused:locals",
   "-Ywarn-unused:params",
   "-Ywarn-unused:patvars",

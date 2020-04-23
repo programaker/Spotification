@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
     name := "spotification",
     version := "1.0",
     scalaVersion := "2.13.1",
+
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-server" % http4sV,
       "org.http4s" %% "http4s-blaze-client" % http4sV,
@@ -40,8 +41,11 @@ lazy val root = (project in file("."))
 
       "org.specs2" %% "specs2-core" % specs2V % Test
     ),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorV),
-    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % betterMonadicForV)
+    
+    Seq(
+      "org.typelevel" %% "kind-projector" % kindProjectorV,
+      "com.olegpy" %% "better-monadic-for" % betterMonadicForV
+    ).map(addCompilerPlugin)
   )
 
 ThisBuild / wartremoverWarnings ++= Warts.allBut(

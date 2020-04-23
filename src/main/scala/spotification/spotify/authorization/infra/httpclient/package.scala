@@ -1,17 +1,14 @@
-package spotification.infra.httpclient
+package spotification.spotify.authorization.infra
 
+import spotification.common.infra.httpclient.H4sClient
 import zio.ZLayer
 import zio.Has
-import spotification.domain.spotify.authorization.RefreshTokenResponse
-import spotification.domain.spotify.authorization.RefreshTokenRequest
-import spotification.domain.spotify.authorization.AccessTokenResponse
-import spotification.domain.spotify.authorization.AccessTokenRequest
 import zio.ZIO
-import spotification.domain.spotify.authorization.AuthorizeRequest
+import spotification.spotify.authorization.domain._
 import zio.RIO
 import zio.Task
 
-package object authorization {
+package object httpclient {
 
   type Authorization = Has[Authorization.Service]
 

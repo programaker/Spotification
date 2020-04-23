@@ -1,12 +1,12 @@
-package spotification.domain.spotify.authorization
+package spotification.spotify.authorization.domain
 
 import cats.implicits._
 import eu.timepit.refined._
-import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
-import spotification.domain.{SpaceSeparatedString, SpaceSeparatedStringR}
+import spotification.common.domain.{SpaceSeparatedString, SpaceSeparatedStringR}
 
 object scope {
 

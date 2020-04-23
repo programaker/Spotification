@@ -1,15 +1,15 @@
-package spotification.infra.httpclient
+package spotification.spotify.authorization.infra.httpclient
 
 import io.circe.generic.auto._
 import io.circe.{jawn, Decoder}
 import org.http4s.Method._
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
-import spotification.domain.spotify.authorization._
-import spotification.infra.httpclient.authorization._
 import zio.Task
 import zio.interop.catz._
 import cats.implicits._
+import spotification.common.infra.httpclient._
+import spotification.spotify.authorization.domain._
 
 // ==========
 // Despite IntelliJ telling that `import io.circe.refined._` is not being used,

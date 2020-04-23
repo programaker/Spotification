@@ -1,13 +1,13 @@
-package spotification.infra
+package spotification.config
 
+import spotification.config.domain.AppConfig
 import zio.{Layer, ZLayer}
 import zio.Task
-import spotification.domain.config.AppConfig
 import zio.Has
 import zio.RIO
 import zio.ZIO
 
-package object config {
+package object infra {
 
   type Config = Has[Config.Service]
 

@@ -1,4 +1,4 @@
-package spotification
+package spotification.common
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8

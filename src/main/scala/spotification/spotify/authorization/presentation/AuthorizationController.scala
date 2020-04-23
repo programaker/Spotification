@@ -1,4 +1,4 @@
-package spotification.presentation
+package spotification.spotify.authorization.presentation
 
 import org.http4s.HttpRoutes
 import zio.Task

@@ -1,13 +1,13 @@
-package spotification.domain.spotify
+package spotification.spotify.authorization
 
-import spotification.domain.{HexString32, NonBlankString, Val, base64}
 import cats.implicits._
 import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import spotification.common.domain.{base64, HexString32, NonBlankString, Val}
 
-package object authorization {
+package object domain {
 
   final case class AccessToken(value: NonBlankString) extends Val[NonBlankString]
   final case class RefreshToken(value: NonBlankString) extends Val[NonBlankString]

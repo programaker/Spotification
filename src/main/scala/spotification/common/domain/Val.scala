@@ -1,4 +1,4 @@
-package spotification.domain
+package spotification.common.domain
 
 import cats.{Eq, Show}
 import cats.implicits._

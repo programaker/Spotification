@@ -1,17 +1,18 @@
-package spotification.infra
+package spotification.common.infra
 
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.client.Client
-import eu.timepit.refined.auto._
 import shapeless.ops.product.ToMap
-import spotification.domain.Val
 import org.http4s.client.dsl.Http4sClientDsl
+import spotification.common.domain.Val
 import zio.Task
-import spotification.domain._
-import spotification.domain.spotify.authorization._
-import spotification.domain.spotify.authorization.scope._
+import spotification.common.domain._
+import spotification.spotify.authorization.domain._
+import spotification.spotify.authorization.domain.scope._
+import spotification.spotify.authorization.domain.{AccessToken, ClientId, ClientSecret}
 
 package object httpclient {
 

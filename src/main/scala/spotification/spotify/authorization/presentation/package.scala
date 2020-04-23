@@ -1,4 +1,4 @@
-package spotification
+package spotification.spotify.authorization
 
 import org.http4s.dsl.Http4sDsl
 import zio.Task

@@ -2,34 +2,20 @@ package spotification.infra
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import org.http4s.AuthScheme.{Basic, Bearer}
-import org.http4s.Credentials.Token
 import org.http4s.client.Client
-import shapeless.ops.product.ToMap
 import org.http4s.client.dsl.Http4sClientDsl
-import zio.{Task, ZLayer}
+import shapeless.ops.product.ToMap
 import spotification.core._
 import spotification.core.spotify.authorization._
+import zio.Task
 
-package object httpclient {
+package object httpclient extends AuthorizationM {
 
   type H4sClient = Client[Task]
   val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
 
-  type H4sAuthorization = org.http4s.headers.Authorization
-  val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
-
   type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
   type ParamMap = Map[String, String]
-
-  val authorizationLayer: ZLayer[H4sClient, Nothing, Authorization] =
-    ZLayer.fromFunction(new H4sAuthorizationService(_))
-
-  def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
-    H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))
-
-  def authorizationBearerHeader(accessToken: AccessToken): H4sAuthorization =
-    H4sAuthorization(Token(Bearer, accessToken.value))
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be

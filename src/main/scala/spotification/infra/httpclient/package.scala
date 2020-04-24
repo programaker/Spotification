@@ -12,10 +12,11 @@ import zio.Task
 package object httpclient extends AuthorizationM {
 
   type H4sClient = Client[Task]
-  val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
-
   type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
   type ParamMap = Map[String, String]
+
+  val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
+  val JsonCodecs: JsonSupport[Nothing, Nothing] = new JsonSupport[Nothing, Nothing] {}
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be
@@ -29,7 +30,6 @@ package object httpclient extends AuthorizationM {
       case (k, v: String)        => Some(k.name -> encode(v))
       case (k, Some(v: String))  => Some(k.name -> encode(v))
       case (k, v: Refined[_, _]) => Some(k.name -> encode(s"$v"))
-      case (k, v: Val[_])        => Some(k.name -> encode(s"$v"))
       case _                     => None
     }
 

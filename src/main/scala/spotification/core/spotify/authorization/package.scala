@@ -2,19 +2,24 @@ package spotification.core.spotify
 
 import cats.implicits._
 import eu.timepit.refined._
-import eu.timepit.refined.cats._
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.auto._
 import eu.timepit.refined.generic.Equal
+import io.estatico.newtype.macros.newtype
 import spotification.core._
 import spotification.core.config.{AppConfig, Config}
 import zio.{IO, RIO, ZIO}
 
 // ==========
-// Despite IntelliJ telling that `import zio.interop.catz._` is not being used,
-// it is required to make mapN work
+// Despite IntelliJ telling that
+// `import eu.timepit.refined.cats._`
+// `import zio.interop.catz._`
+// `import spotification.core.newtype._`
+// are not being used, they are required to compile
 // ==========
+import eu.timepit.refined.cats._
 import zio.interop.catz._
+import spotification.core.newtype._
 
 package object authorization extends ScopeM with AuthorizationM {
 
@@ -42,11 +47,11 @@ package object authorization extends ScopeM with AuthorizationM {
   type AuthorizationEnv = Config with Authorization
   type AuthorizationIO[A] = RIO[AuthorizationEnv, A]
 
-  final case class AccessToken(value: NonBlankString) extends Val[NonBlankString]
-  final case class RefreshToken(value: NonBlankString) extends Val[NonBlankString]
+  @newtype case class AccessToken(value: NonBlankString)
+  @newtype case class RefreshToken(value: NonBlankString)
 
-  final case class ClientId(value: HexString32) extends Val[HexString32]
-  final case class ClientSecret(value: HexString32) extends Val[HexString32]
+  @newtype case class ClientId(value: HexString32)
+  @newtype case class ClientSecret(value: HexString32)
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")

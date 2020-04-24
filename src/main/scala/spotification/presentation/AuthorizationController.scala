@@ -12,6 +12,7 @@ import zio.interop.catz._
 import io.circe.refined._
 
 object AuthorizationController {
+
   private val EndPoint: String = "authorize"
   private val Callback: String = "callback"
 

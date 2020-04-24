@@ -12,6 +12,7 @@ import zio.{IO, Task}
 //==========
 import pureconfig.generic.auto._
 import eu.timepit.refined.pureconfig._
+import newtype._
 
 final class PureConfigService extends Config.Service {
   override val readConfig: Task[AppConfig] =

@@ -9,6 +9,7 @@ val zioV = "1.0.0-RC18-2"
 val zioInteropCatsV = "2.0.0.0-RC12"
 val pureConfigV = "0.12.3"
 val simulacrumV = "1.0.0"
+val newtypeV = "0.4.3"
 
 lazy val root = (project in file("."))
   .settings(
@@ -32,6 +33,8 @@ lazy val root = (project in file("."))
       "eu.timepit" %% "refined-cats" % refinedV,
       "eu.timepit" %% "refined-pureconfig" % refinedV,
 
+      "io.estatico" %% "newtype" % newtypeV,
+
       "dev.zio" %% "zio" % zioV,
       "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
 
@@ -54,6 +57,7 @@ ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.ImplicitParameter,
   Wart.Any,
   Wart.StringPlusAny,
+  Wart.ImplicitConversion,
   Wart.Serializable,
   Wart.JavaSerializable
 )

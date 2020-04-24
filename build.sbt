@@ -15,7 +15,7 @@ lazy val root = (project in file("."))
     organization := "com.github.programaker",
     name := "spotification",
     version := "1.0",
-    scalaVersion := "2.13.1",
+    scalaVersion := "2.13.2",
 
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-server" % http4sV,

@@ -6,6 +6,11 @@ import spotification.spotify.authorization.infra.httpclient._
 import zio.RIO
 import spotification.config.infra.Config
 import spotification.common.domain.NonBlankStringR
+
+// ==========
+// Despite IntelliJ telling that `import zio.interop.catz._` is not being used,
+// it is required to make mapN work
+// ==========
 import zio.interop.catz._
 
 package object application {

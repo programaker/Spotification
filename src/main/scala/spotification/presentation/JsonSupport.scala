@@ -1,4 +1,4 @@
-package spotification.common.presentation
+package spotification.presentation
 
 import io.circe.Encoder
 import org.http4s.EntityEncoder

@@ -1,7 +1,7 @@
-package spotification.common.domain
+package spotification.core
 
-import cats.{Eq, Show}
 import cats.implicits._
+import cats.{Eq, Show}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.cats._
 

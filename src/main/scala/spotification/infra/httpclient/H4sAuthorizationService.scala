@@ -1,15 +1,14 @@
-package spotification.spotify.authorization.infra.httpclient
+package spotification.infra.httpclient
 
+import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
+import spotification.core.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
-import cats.implicits._
-import spotification.common.infra.httpclient._
-import spotification.spotify.authorization.domain._
 
 // ==========
 // Despite IntelliJ telling that `import io.circe.refined._` is not being used,
@@ -29,7 +28,6 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   // but it works fine on sbt, so don't panic!
   // ==========
 
-  // There is an `AuthorizeResponse`, but it will be sent through the `redirect_uri`,
   // (the "callback" of the authorization process). So here we just return Unit
   override def authorize(req: AuthorizeRequest): Task[Unit] = {
     val params = toParams(req)

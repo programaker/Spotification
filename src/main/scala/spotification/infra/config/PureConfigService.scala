@@ -1,7 +1,7 @@
-package spotification.config.infra
+package spotification.infra.config
 
 import pureconfig.ConfigSource
-import spotification.config.domain.AppConfig
+import spotification.core.config.{AppConfig, Config}
 import zio.{IO, Task}
 
 //==========

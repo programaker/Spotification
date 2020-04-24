@@ -1,9 +1,9 @@
-package spotification.spotify.authorization.presentation
+package spotification.presentation
 
-import org.http4s.HttpRoutes
-import spotification.spotify.authorization.application._
-import zio.interop.catz._
 import io.circe.generic.auto._
+import org.http4s.HttpRoutes
+import spotification.core.spotify.authorization.{AuthorizationIO, _}
+import zio.interop.catz._
 
 // ==========
 // Despite IntelliJ telling that `import io.circe.refined._` is not being used,
@@ -15,8 +15,8 @@ object AuthorizationController {
   private val EndPoint: String = "authorize"
   private val Callback: String = "callback"
 
-  import H4sAuthorizationDsl._
   import AuthorizationJsonCodec._
+  import H4sAuthorizationDsl._
 
   val authorizeRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
     case GET -> Root / EndPoint =>

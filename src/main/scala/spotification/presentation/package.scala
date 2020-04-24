@@ -1,10 +1,9 @@
-package spotification.spotify.authorization
+package spotification
 
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
-import spotification.common.presentation.JsonSupport
-import spotification.spotify.authorization.application._
+import spotification.core.spotify.authorization.{AuthorizationEnv, AuthorizationIO}
 
 package object presentation {
 

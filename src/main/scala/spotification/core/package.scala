@@ -1,4 +1,4 @@
-package spotification.common
+package spotification
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
@@ -10,7 +10,7 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
 
-package object domain {
+package object core {
 
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR

@@ -1,7 +1,7 @@
-package spotification.spotify.authorization.domain
+package spotification.core.spotify.authorization
 
-import spotification.common.domain.{NonBlankString, UriString}
-import spotification.spotify.authorization.domain.scope.Scope
+import spotification.core._
+import spotification.core.spotify.authorization.scope.Scope
 
 final case class AuthorizeRequest(
   client_id: ClientId,

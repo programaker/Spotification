@@ -16,7 +16,7 @@ import zio.{Has, IO, RIO, Task, ZIO}
 // ==========
 import zio.interop.catz._
 
-package object authorization {
+package object authorization extends Scope {
 
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeR

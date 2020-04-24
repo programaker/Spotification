@@ -8,7 +8,7 @@ import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
 import spotification.core.{SpaceSeparatedString, SpaceSeparatedStringR}
 
-object scope {
+private[authorization] trait Scope {
 
   type PlaylistScopeR =
     Equal["playlist-read-collaborative"] Or

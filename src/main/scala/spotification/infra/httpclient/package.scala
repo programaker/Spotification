@@ -9,8 +9,7 @@ import shapeless.ops.product.ToMap
 import org.http4s.client.dsl.Http4sClientDsl
 import zio.{Task, ZLayer}
 import spotification.core._
-import spotification.core.spotify.authorization.{AccessToken, Authorization, ClientId, ClientSecret, base64Credentials}
-import spotification.core.spotify.authorization.scope._
+import spotification.core.spotify.authorization._
 
 package object httpclient {
 

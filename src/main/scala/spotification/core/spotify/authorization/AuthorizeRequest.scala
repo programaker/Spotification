@@ -1,7 +1,6 @@
 package spotification.core.spotify.authorization
 
 import spotification.core._
-import spotification.core.spotify.authorization.scope.Scope
 
 final case class AuthorizeRequest(
   client_id: ClientId,

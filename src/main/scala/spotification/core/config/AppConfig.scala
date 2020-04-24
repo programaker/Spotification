@@ -1,7 +1,6 @@
 package spotification.core.config
 
 import spotification.core.UriString
-import spotification.core.spotify.authorization.scope.Scope
 import spotification.core.spotify.authorization._
 
 final case class AppConfig(

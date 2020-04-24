@@ -13,7 +13,7 @@ import spotification.spotify.authorization.domain.scope._
 package object httpclient {
 
   type H4sClient = Client[Task]
-  type H4sClientDsl = Http4sClientDsl[Task]
+  val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
 
   type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
   type ParamMap = Map[String, String]

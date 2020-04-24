@@ -1,7 +1,7 @@
 package spotification.spotify.authorization.infra.httpclient
 
 import io.circe.generic.auto._
-import io.circe.{jawn, Decoder}
+import io.circe.{Decoder, jawn}
 import org.http4s.Method._
 import org.http4s.implicits._
 import org.http4s.{Uri, UrlForm}
@@ -17,10 +17,12 @@ import spotification.spotify.authorization.domain._
 // ==========
 import io.circe.refined._
 
-final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization.Service with H4sClientDsl {
+final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization.Service {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")
+
+  import H4sTaskClientDsl._
 
   // ==========
   // IntelliJ says that No implicits where found for ToMapAux in `toParams(_)` function,

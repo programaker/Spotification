@@ -1,22 +1,26 @@
 package spotification.presentation
 
-import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import spotification.core.spotify.authorization.{AuthorizationIO, _}
-import zio.interop.catz._
 
 // ==========
-// Despite IntelliJ telling that `import io.circe.refined._` is not being used,
-// it is required to make Circe work with Refined Types
+// Despite IntelliJ telling that
+// `import io.circe.refined._`
+// `import io.circe.generic.auto._`
+// `import zio.interop.catz._`
+// `import spotification.infra.json._`
+// are not being used, they are required to compile
 // ==========
 import io.circe.refined._
+import io.circe.generic.auto._
+import zio.interop.catz._
+import spotification.infra.json._
 
 object AuthorizationController {
 
   private val EndPoint: String = "authorize"
   private val Callback: String = "callback"
 
-  import AuthorizationJsonCodec._
   import H4sAuthorizationDsl._
 
   val authorizeRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {

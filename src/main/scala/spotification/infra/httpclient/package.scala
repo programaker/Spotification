@@ -16,7 +16,6 @@ package object httpclient extends AuthorizationM {
   type ParamMap = Map[String, String]
 
   val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
-  val JsonCodecs: JsonSupport[Nothing, Nothing] = new JsonSupport[Nothing, Nothing] {}
 
   /**
    * <p>Turns any Product type (ex: case classes) into a `Map[String, String]` that can be

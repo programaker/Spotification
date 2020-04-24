@@ -13,11 +13,11 @@ import zio.interop.catz._
 // ==========
 // Despite IntelliJ telling that
 // `import io.circe.refined._`
-// `JsonCodecs._`
+// `import spotification.infra.json._`
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
-import JsonCodecs._
+import spotification.infra.json._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization.Service {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"

@@ -8,7 +8,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.generic.Equal
 import spotification.core._
 import spotification.core.config.{AppConfig, Config}
-import zio.{Has, IO, RIO, Task, ZIO}
+import zio.{IO, RIO, ZIO}
 
 // ==========
 // Despite IntelliJ telling that `import zio.interop.catz._` is not being used,
@@ -16,7 +16,7 @@ import zio.{Has, IO, RIO, Task, ZIO}
 // ==========
 import zio.interop.catz._
 
-package object authorization extends Scope {
+package object authorization extends ScopeM with AuthorizationM {
 
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
@@ -47,24 +47,6 @@ package object authorization extends Scope {
 
   final case class ClientId(value: HexString32) extends Val[HexString32]
   final case class ClientSecret(value: HexString32) extends Val[HexString32]
-
-  type Authorization = Has[Authorization.Service]
-  object Authorization {
-    trait Service {
-      def authorize(req: AuthorizeRequest): Task[Unit]
-      def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse]
-      def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse]
-    }
-
-    def authorize(req: AuthorizeRequest): RIO[Authorization, Unit] =
-      ZIO.accessM(_.get.authorize(req))
-
-    def requestToken(req: AccessTokenRequest): RIO[Authorization, AccessTokenResponse] =
-      ZIO.accessM(_.get.requestToken(req))
-
-    def refreshToken(req: RefreshTokenRequest): RIO[Authorization, RefreshTokenResponse] =
-      ZIO.accessM(_.get.refreshToken(req))
-  }
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")

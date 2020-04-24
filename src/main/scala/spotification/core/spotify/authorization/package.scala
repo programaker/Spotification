@@ -83,10 +83,14 @@ package object authorization extends ScopeM with AuthorizationM {
     Config.readConfig.map(buildAuthorizeRequest).flatMap(Authorization.authorize)
 
   // TODO => do state validation
-  def authorizationCallbackProgram(rawCode: String, rawState: Option[String]): AuthorizationIO[AccessTokenResponse] = {
+  def authorizeCallbackProgram(rawCode: String, rawState: Option[String]): AuthorizationIO[AccessTokenResponse] = {
     val config = Config.readConfig
     val code = refineRIO[NonBlankStringR, Config, String](rawCode)
     (config, code).mapN(buildAccessTokenRequest).flatMap(Authorization.requestToken)
   }
+
+  // TODO => do state validation
+  def authorizeCallbackErrorProgram(error: String, rawState: Option[String]): AuthorizationIO[AuthorizeErrorResponse] =
+    refineRIO[NonBlankStringR, AuthorizationEnv, String](error).map(AuthorizeErrorResponse)
 
 }

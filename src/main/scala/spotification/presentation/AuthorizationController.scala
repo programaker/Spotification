@@ -28,10 +28,10 @@ object AuthorizationController {
       authorizeProgram.foldM(handleError, _ => Ok())
 
     case GET -> Root / EndPoint / Callback :? CodeQP(code) +& StateQP(state) =>
-      authorizationCallbackProgram(code, state).foldM(handleError, resp => Ok(resp))
+      authorizeCallbackProgram(code, state).foldM(handleError, Ok(_))
 
     case GET -> Root / EndPoint / Callback :? ErrorQP(error) +& StateQP(state) =>
-      Ok()
+      authorizeCallbackErrorProgram(error, state).foldM(handleError, Ok(_))
   }
 
   private def handleError(e: Throwable): AuthorizationResponse = InternalServerError(e.getMessage)

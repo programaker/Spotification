@@ -1,17 +1,17 @@
 package spotification.core.config
 
-import zio.{Has, RIO, Task, ZIO}
+import zio.{Has, RIO, ZIO}
 
 private[config] trait ConfigM {
 
-  type Config = Has[Config.Service]
-  object Config {
-    trait Service {
-      def readConfig: Task[AppConfig]
-    }
+  type SpotifyConfigModule = Has[SpotifyConfig]
+  object SpotifyConfigModule {
+    val spotifyConfig: RIO[SpotifyConfigModule, SpotifyConfig] = ZIO.access(_.get)
+  }
 
-    val readConfig: RIO[Config, AppConfig] =
-      ZIO.accessM(_.get.readConfig)
+  type ServerConfigModule = Has[ServerConfig]
+  object ServerConfigModule {
+    val spotifyConfig: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)
   }
 
 }

@@ -7,7 +7,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
 import spotification.core._
-import spotification.core.config.{AppConfig, Config}
+import spotification.core.config.{SpotifyConfig, SpotifyConfigModule}
 import zio.{IO, RIO, ZIO}
 
 // ==========
@@ -47,7 +47,7 @@ package object authorization extends ScopeM with AuthorizationM {
     val Bearer: TokenType = "Bearer"
   }
 
-  type AuthorizationEnv = Config with Authorization
+  type AuthorizationEnv = SpotifyConfigModule with AuthorizationModule
   type AuthorizationIO[A] = RIO[AuthorizationEnv, A]
 
   @newtype case class AccessToken(value: NonBlankString)
@@ -65,7 +65,7 @@ package object authorization extends ScopeM with AuthorizationM {
   def refineRIO[P, R, A](a: A)(implicit v: Validate[A, P]): RIO[R, Refined[A, P]] =
     refineZIO[P, R, A](a).absorbWith(new Exception(_))
 
-  def buildAuthorizeRequest(cfg: AppConfig): AuthorizeRequest = AuthorizeRequest(
+  def buildAuthorizeRequest(cfg: SpotifyConfig): AuthorizeRequest = AuthorizeRequest(
     client_id = cfg.clientId,
     redirect_uri = cfg.redirectUri,
     response_type = AuthorizationResponseType.Code,
@@ -74,7 +74,7 @@ package object authorization extends ScopeM with AuthorizationM {
     show_dialog = None //defaults to false, which is what we want
   )
 
-  def buildAccessTokenRequest(cfg: AppConfig, code: NonBlankString): AccessTokenRequest = AccessTokenRequest(
+  def buildAccessTokenRequest(cfg: SpotifyConfig, code: NonBlankString): AccessTokenRequest = AccessTokenRequest(
     client_id = cfg.clientId,
     client_secret = cfg.clientSecret,
     grant_type = AccessTokenGrantType.AuthorizationCode,
@@ -83,13 +83,13 @@ package object authorization extends ScopeM with AuthorizationM {
   )
 
   val authorizeProgram: AuthorizationIO[Unit] =
-    Config.readConfig.map(buildAuthorizeRequest).flatMap(Authorization.authorize)
+    SpotifyConfigModule.spotifyConfig.map(buildAuthorizeRequest).flatMap(AuthorizationModule.authorize)
 
   // TODO => do state validation
   def authorizeCallbackProgram(rawCode: String, rawState: Option[String]): AuthorizationIO[AccessTokenResponse] = {
-    val config = Config.readConfig
-    val code = refineRIO[NonBlankStringR, Config, String](rawCode)
-    (config, code).mapN(buildAccessTokenRequest).flatMap(Authorization.requestToken)
+    val config = SpotifyConfigModule.spotifyConfig
+    val code = refineRIO[NonBlankStringR, SpotifyConfigModule, String](rawCode)
+    (config, code).mapN(buildAccessTokenRequest).flatMap(AuthorizationModule.requestToken)
   }
 
   // TODO => do state validation

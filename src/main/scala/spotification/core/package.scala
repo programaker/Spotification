@@ -8,7 +8,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
-import eu.timepit.refined.string.{HexStringSpec, MatchesRegex, Trimmed, Uri}
+import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 
 package object core extends NewTypeM {
 
@@ -29,6 +29,9 @@ package object core extends NewTypeM {
 
   type SpaceSeparatedStringR = MatchesRegex["""^(\w|[-])+(\s(\w|[-])+)*$"""]
   type SpaceSeparatedString = String Refined SpaceSeparatedStringR
+
+  type HostR = IPv4
+  type Host = String Refined HostR
 
   // HTTP4s Uri should be able to encode query params, but in my tests
   // URIs are not properly encoded:

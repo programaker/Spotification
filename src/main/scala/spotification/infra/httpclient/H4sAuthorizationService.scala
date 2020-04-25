@@ -19,7 +19,7 @@ import zio.interop.catz._
 import io.circe.refined._
 import spotification.infra.json._
 
-final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization.Service {
+final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"
   private val authorizeUri: Uri = accountsUri.withPath("/authorize")
   private val apiTokenUri: Uri = accountsUri.withPath("/api/token")

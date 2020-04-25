@@ -11,7 +11,7 @@ private[httpclient] trait AuthorizationM {
   type H4sAuthorization = org.http4s.headers.Authorization
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
-  val authorizationLayer: ZLayer[H4sClient, Nothing, Authorization] =
+  val authorizationLayer: ZLayer[H4sClient, Nothing, AuthorizationModule] =
     ZLayer.fromFunction(new H4sAuthorizationService(_))
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =

@@ -23,7 +23,7 @@ object AuthorizationController {
 
   import H4sAuthorizationDsl._
 
-  val authorizeRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
+  val authorizationRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
     case GET -> Root / EndPoint =>
       authorizeProgram.foldM(handleError, _ => Ok())
 

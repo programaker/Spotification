@@ -43,6 +43,9 @@ package object authorization extends ScopeM with AuthorizationM {
 
   type TokenTypeR = Equal["Bearer"]
   type TokenType = String Refined TokenTypeR
+  object TokenType {
+    val Bearer: TokenType = "Bearer"
+  }
 
   type AuthorizationEnv = Config with Authorization
   type AuthorizationIO[A] = RIO[AuthorizationEnv, A]

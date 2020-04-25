@@ -1,6 +1,6 @@
 package spotification.presentation
 
-import org.http4s.HttpRoutes
+import org.http4s.{HttpRoutes, Response}
 import spotification.core.spotify.authorization.{AuthorizationIO, _}
 
 // ==========
@@ -17,22 +17,17 @@ import zio.interop.catz._
 import spotification.infra.json._
 
 object AuthorizationController {
-
-  private val EndPoint: String = "authorize"
+  import H4sAuthorizationDsl._
   private val Callback: String = "callback"
 
-  import H4sAuthorizationDsl._
-
   val authorizationRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
-    case GET -> Root / EndPoint =>
-      authorizeProgram.foldM(handleError, _ => Ok())
+    case GET -> Root =>
+      authorizeProgram.foldM(handleGenericError(H4sAuthorizationDsl, _), _ => Ok())
 
-    case GET -> Root / EndPoint / Callback :? CodeQP(code) +& StateQP(state) =>
-      authorizeCallbackProgram(code, state).foldM(handleError, Ok(_))
+    case GET -> Root / Callback :? CodeQP(code) +& StateQP(state) =>
+      authorizeCallbackProgram(code, state).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
 
-    case GET -> Root / EndPoint / Callback :? ErrorQP(error) +& StateQP(state) =>
-      authorizeCallbackErrorProgram(error, state).foldM(handleError, Ok(_))
+    case GET -> Root / Callback :? ErrorQP(error) +& StateQP(state) =>
+      authorizeCallbackErrorProgram(error, state).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
   }
-
-  private def handleError(e: Throwable): AuthorizationResponse = InternalServerError(e.getMessage)
 }

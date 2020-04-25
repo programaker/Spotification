@@ -24,10 +24,10 @@ object AuthorizationController {
     case GET -> Root =>
       authorizeProgram.foldM(handleGenericError(H4sAuthorizationDsl, _), _ => Ok())
 
-    case GET -> Root / Callback :? CodeQP(code) +& StateQP(state) =>
-      authorizeCallbackProgram(code, state).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
+    case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>
+      authorizeCallbackProgram(code).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
 
-    case GET -> Root / Callback :? ErrorQP(error) +& StateQP(state) =>
-      authorizeCallbackErrorProgram(error, state).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
+    case GET -> Root / Callback :? ErrorQP(error) +& StateQP(_) =>
+      authorizeCallbackErrorProgram(error).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
   }
 }

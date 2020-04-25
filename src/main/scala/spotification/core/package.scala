@@ -4,11 +4,13 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
-import eu.timepit.refined.api.Refined
+import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
+import zio.{IO, RIO, ZIO}
 
 package object core extends NewTypeM {
 
@@ -44,5 +46,11 @@ package object core extends NewTypeM {
   val encode: String => String = URLEncoder.encode(_, UTF_8)
 
   def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
+
+  def refineZIO[P, R, A](a: A)(implicit v: Validate[A, P]): ZIO[R, String, Refined[A, P]] =
+    ZIO.fromFunctionM(_ => IO.fromEither(refineV[P](a)))
+
+  def refineRIO[P, R, A](a: A)(implicit v: Validate[A, P]): RIO[R, Refined[A, P]] =
+    refineZIO[P, R, A](a).absorbWith(new Exception(_))
 
 }

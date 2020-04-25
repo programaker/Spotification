@@ -1,14 +1,13 @@
 package spotification.core.spotify
 
 import cats.implicits._
-import eu.timepit.refined._
-import eu.timepit.refined.api.{Refined, Validate}
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
 import spotification.core._
 import spotification.core.config.{SpotifyConfig, SpotifyConfigModule}
-import zio.{IO, RIO, ZIO}
+import zio.RIO
 
 // ==========
 // Despite IntelliJ telling that
@@ -59,12 +58,6 @@ package object authorization extends ScopeM with AuthorizationM {
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")
 
-  def refineZIO[P, R, A](a: A)(implicit v: Validate[A, P]): ZIO[R, String, Refined[A, P]] =
-    ZIO.fromFunctionM(_ => IO.fromEither(refineV[P](a)))
-
-  def refineRIO[P, R, A](a: A)(implicit v: Validate[A, P]): RIO[R, Refined[A, P]] =
-    refineZIO[P, R, A](a).absorbWith(new Exception(_))
-
   def buildAuthorizeRequest(cfg: SpotifyConfig): AuthorizeRequest = AuthorizeRequest(
     client_id = cfg.clientId,
     redirect_uri = cfg.redirectUri,
@@ -86,14 +79,14 @@ package object authorization extends ScopeM with AuthorizationM {
     SpotifyConfigModule.spotifyConfig.map(buildAuthorizeRequest).flatMap(AuthorizationModule.authorize)
 
   // TODO => do state validation
-  def authorizeCallbackProgram(rawCode: String, rawState: Option[String]): AuthorizationIO[AccessTokenResponse] = {
+  def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
     val config = SpotifyConfigModule.spotifyConfig
     val code = refineRIO[NonBlankStringR, SpotifyConfigModule, String](rawCode)
     (config, code).mapN(buildAccessTokenRequest).flatMap(AuthorizationModule.requestToken)
   }
 
   // TODO => do state validation
-  def authorizeCallbackErrorProgram(error: String, rawState: Option[String]): AuthorizationIO[AuthorizeErrorResponse] =
+  def authorizeCallbackErrorProgram(error: String): AuthorizationIO[AuthorizeErrorResponse] =
     refineRIO[NonBlankStringR, AuthorizationEnv, String](error).map(AuthorizeErrorResponse)
 
 }

@@ -1,6 +1,6 @@
 package spotification.presentation
 
-import org.http4s.{HttpRoutes, Response}
+import org.http4s.HttpRoutes
 import spotification.core.spotify.authorization.{AuthorizationIO, _}
 
 // ==========

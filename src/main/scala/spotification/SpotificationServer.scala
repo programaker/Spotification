@@ -1,12 +1,15 @@
 package spotification
 
+import cats.data.{Kleisli, OptionT}
 import cats.effect.{ConcurrentEffect, Timer}
 import cats.implicits._
 import fs2.Stream
+import org.http4s.{HttpRoutes, Request, Response}
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
+
 import scala.concurrent.ExecutionContext.global
 
 object SpotificationServer {
@@ -21,10 +24,10 @@ object SpotificationServer {
       // Can also be done via a Router if you
       // want to extract a segments not checked
       // in the underlying routes.
-      httpApp = (
-        SpotificationRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-          SpotificationRoutes.jokeRoutes[F](jokeAlg)
-      ).orNotFound
+      helloWorldRoutes: HttpRoutes[F] = SpotificationRoutes.helloWorldRoutes[F](helloWorldAlg)
+      jokeRoutes: HttpRoutes[F] = SpotificationRoutes.jokeRoutes[F](jokeAlg)
+      allRoutes: Kleisli[OptionT[F, *], Request[F], Response[F]] = helloWorldRoutes <+> jokeRoutes
+      httpApp: Kleisli[F, Request[F], Response[F]] = allRoutes.orNotFound
 
       // With Middlewares in place
       finalHttpApp = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)

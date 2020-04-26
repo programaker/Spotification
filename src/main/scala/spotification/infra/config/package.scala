@@ -1,8 +1,9 @@
 package spotification.infra
 
-import spotification.core.config.{AppConfig, ServerConfigModule, SpotifyConfigModule}
+import spotification.core.config.AppConfig
 import zio._
 import pureconfig.ConfigSource
+import spotification.core.config.ConfigModule.{ServerConfigService, SpotifyConfigService}
 
 package object config extends NewTypeM {
 
@@ -24,7 +25,7 @@ package object config extends NewTypeM {
       .absorbWith(new Exception(_))
   )
 
-  val spotifyConfigLayer: ZLayer[AppConfigModule, Nothing, SpotifyConfigModule] = ZLayer.fromService(_.spotify)
-  val serverConfigLayer: ZLayer[AppConfigModule, Nothing, ServerConfigModule] = ZLayer.fromService(_.server)
+  val spotifyConfigLayer: ZLayer[AppConfigModule, Nothing, SpotifyConfigService] = ZLayer.fromService(_.spotify)
+  val serverConfigLayer: ZLayer[AppConfigModule, Nothing, ServerConfigService] = ZLayer.fromService(_.server)
 
 }

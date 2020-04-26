@@ -14,6 +14,6 @@ object HttpClientModule {
 
   type HttpClientService = Has[H4sClient]
 
-  val layer: ZLayer[ExecutionContextService, Throwable, HttpClientService] =
+  val layer: RLayer[ExecutionContextService, HttpClientService] =
     ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.provide)
 }

@@ -20,7 +20,7 @@ object AuthorizationController {
   import H4sAuthorizationDsl._
   private val Callback: String = "callback"
 
-  val authorizationRoutes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
+  val routes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
     case GET -> Root =>
       authorizeProgram.foldM(handleGenericError(H4sAuthorizationDsl, _), _ => Ok())
 

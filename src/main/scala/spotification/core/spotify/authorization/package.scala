@@ -7,7 +7,6 @@ import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
 import spotification.core._
 import spotification.core.config.{SpotifyConfig, SpotifyConfigModule}
-import zio.RIO
 
 // ==========
 // Despite IntelliJ telling that
@@ -21,6 +20,20 @@ import zio.interop.catz._
 import spotification.core.newtype._
 
 package object authorization extends ScopeM with AuthorizationM {
+
+  val authorizeProgram: AuthorizationIO[Unit] =
+    SpotifyConfigModule.spotifyConfig.map(buildAuthorizeRequest).flatMap(AuthorizationModule.authorize)
+
+  // TODO => do state validation
+  def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
+    val config = SpotifyConfigModule.spotifyConfig
+    val code = refineRIO[NonBlankStringR, SpotifyConfigModule, String](rawCode)
+    (config, code).mapN(buildAccessTokenRequest).flatMap(AuthorizationModule.requestToken)
+  }
+
+  // TODO => do state validation
+  def authorizeCallbackErrorProgram(error: String): AuthorizationIO[AuthorizeErrorResponse] =
+    refineRIO[NonBlankStringR, AuthorizationEnv, String](error).map(AuthorizeErrorResponse)
 
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
@@ -45,9 +58,6 @@ package object authorization extends ScopeM with AuthorizationM {
   object TokenType {
     val Bearer: TokenType = "Bearer"
   }
-
-  type AuthorizationEnv = SpotifyConfigModule with AuthorizationModule
-  type AuthorizationIO[A] = RIO[AuthorizationEnv, A]
 
   @newtype case class AccessToken(value: NonBlankString)
   @newtype case class RefreshToken(value: NonBlankString)
@@ -74,19 +84,5 @@ package object authorization extends ScopeM with AuthorizationM {
     code = code,
     redirect_uri = cfg.redirectUri
   )
-
-  val authorizeProgram: AuthorizationIO[Unit] =
-    SpotifyConfigModule.spotifyConfig.map(buildAuthorizeRequest).flatMap(AuthorizationModule.authorize)
-
-  // TODO => do state validation
-  def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
-    val config = SpotifyConfigModule.spotifyConfig
-    val code = refineRIO[NonBlankStringR, SpotifyConfigModule, String](rawCode)
-    (config, code).mapN(buildAccessTokenRequest).flatMap(AuthorizationModule.requestToken)
-  }
-
-  // TODO => do state validation
-  def authorizeCallbackErrorProgram(error: String): AuthorizationIO[AuthorizeErrorResponse] =
-    refineRIO[NonBlankStringR, AuthorizationEnv, String](error).map(AuthorizeErrorResponse)
 
 }

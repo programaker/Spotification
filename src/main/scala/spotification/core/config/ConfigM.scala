@@ -11,7 +11,7 @@ private[config] trait ConfigM {
 
   type ServerConfigModule = Has[ServerConfig]
   object ServerConfigModule {
-    val spotifyConfig: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)
+    val serverConfig: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)
   }
 
 }

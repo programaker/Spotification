@@ -5,7 +5,7 @@ import zio._
 import pureconfig.ConfigSource
 import spotification.core.config.ConfigModule.{ServerConfigService, SpotifyConfigService}
 
-package object config extends NewTypeM {
+package object config {
 
   //==========
   // IntelliJ is complaining about:
@@ -15,7 +15,7 @@ package object config extends NewTypeM {
   //==========
   import pureconfig.generic.auto._
   import eu.timepit.refined.pureconfig._
-  import newtype._
+  import Implicits._
 
   type AppConfigModule = Has[AppConfig]
 

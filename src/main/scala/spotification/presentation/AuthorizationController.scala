@@ -20,8 +20,14 @@ import zio.interop.catz._
 import spotification.infra.Json._
 
 object AuthorizationController {
+  private val Callback: String = "callback"
+
   private val H4sAuthorizationDsl: Http4sDsl[AuthorizationIO] = Http4sDsl[AuthorizationIO]
   import H4sAuthorizationDsl._
+
+  private object CodeQP extends QueryParamDecoderMatcher[String]("code")
+  private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
+  private object StateQP extends OptionalQueryParamDecoderMatcher[String]("state")
 
   val routes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
     case GET -> Root =>
@@ -33,9 +39,4 @@ object AuthorizationController {
     case GET -> Root / Callback :? ErrorQP(error) +& StateQP(_) =>
       authorizeCallbackErrorProgram(error).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
   }
-
-  private val Callback: String = "callback"
-  private object CodeQP extends QueryParamDecoderMatcher[String]("code")
-  private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
-  private object StateQP extends OptionalQueryParamDecoderMatcher[String]("state")
 }

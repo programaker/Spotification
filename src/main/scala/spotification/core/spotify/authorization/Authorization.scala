@@ -8,6 +8,7 @@ import spotification.core.config._
 import spotification.core.spotify.authorization.AuthorizationModule.{AuthorizationEnv, AuthorizationIO}
 import spotification.core.{NonBlankStringR, refineRIO}
 import zio.interop.catz._
+import eu.timepit.refined.cats._
 import spotification.core.Implicits._
 
 object Authorization {

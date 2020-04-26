@@ -8,8 +8,8 @@ import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import spotification.core.spotify.authorization.Authorization.base64Credentials
-import spotification.core.spotify.authorization.{AccessToken, ClientId, ClientSecret, Scope}
 import spotification.core.spotify.authorization.Scope.joinScopes
+import spotification.core.spotify.authorization.{AccessToken, ClientId, ClientSecret, Scope}
 
 object HttpClient {
   // HTTP4s Uri should be able to encode query params, but in my tests

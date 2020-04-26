@@ -1,9 +1,5 @@
 package spotification
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.Base64
-
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
@@ -12,7 +8,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 import zio.{IO, RIO, ZIO}
 
-package object core extends NewTypeM {
+package object core {
 
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR

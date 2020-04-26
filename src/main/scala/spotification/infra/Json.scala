@@ -7,7 +7,7 @@ import io.estatico.newtype.ops._
 import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 
-object json {
+object Json {
 
   implicit def coercibleEncoder[A: Coercible[B, *], B: Encoder]: Encoder[A] =
     Encoder[B].contramap(_.repr.asInstanceOf[B])

@@ -17,7 +17,7 @@ import zio.interop.catz._
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
-import spotification.infra.json._
+import spotification.infra.Json._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
   private val accountsUri: Uri = uri"https://accounts.spotify.com"

@@ -1,11 +1,13 @@
 package spotification.presentation
 
-import org.http4s.HttpRoutes
-import spotification.core.spotify.authorization.{AuthorizationEnv, AuthorizationIO}
-import zio.{Has, RIO, ZIO}
+//import org.http4s.HttpRoutes
+//import spotification.core.spotify.authorization.{AuthorizationEnv, AuthorizationIO}
+//import zio.{Has, RIO, ZIO}
+//import zio.interop.catz._
 
 private[presentation] trait PresentationM {
 
+  /*
   // For now we only have Authorization
   // More Controllers will be added later
   type PresentationEnv = AuthorizationEnv
@@ -20,5 +22,7 @@ private[presentation] trait PresentationM {
   object PresentationModule {
     def allRoutes[F[_]]: RIO[PresentationModule[F], Routes[F]] = ZIO.access(_.get)
   }
+
+ */
 
 }

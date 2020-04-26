@@ -20,7 +20,7 @@ import spotification.core.config.{SpotifyConfig, SpotifyConfigModule}
 // ==========
 import eu.timepit.refined.cats._
 import zio.interop.catz._
-import spotification.core.newtype._
+import spotification.core.Implicits._
 
 package object authorization extends ScopeM with AuthorizationM {
 

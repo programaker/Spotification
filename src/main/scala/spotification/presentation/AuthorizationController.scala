@@ -14,7 +14,7 @@ import spotification.core.spotify.authorization.{AuthorizationIO, _}
 import io.circe.refined._
 import io.circe.generic.auto._
 import zio.interop.catz._
-import spotification.infra.json._
+import spotification.infra.Json._
 
 object AuthorizationController {
   import H4sAuthorizationDsl._

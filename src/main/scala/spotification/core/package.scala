@@ -1,15 +1,12 @@
 package spotification
 
-import eu.timepit.refined.api.{Refined, Validate}
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
-import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
-import zio.{IO, RIO, ZIO}
 
 package object core {
-
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR
 
@@ -30,11 +27,4 @@ package object core {
 
   type HostR = IPv4
   type Host = String Refined HostR
-
-  def refineZIO[P, R, A](a: A)(implicit v: Validate[A, P]): ZIO[R, String, Refined[A, P]] =
-    ZIO.fromFunctionM(_ => IO.fromEither(refineV[P](a)))
-
-  def refineRIO[P, R, A](a: A)(implicit v: Validate[A, P]): RIO[R, Refined[A, P]] =
-    refineZIO[P, R, A](a).absorbWith(new Exception(_))
-
 }

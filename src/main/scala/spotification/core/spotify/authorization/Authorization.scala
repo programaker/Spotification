@@ -4,12 +4,13 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 import cats.implicits._
+import eu.timepit.refined.cats._
+import spotification.core.Core._
+import spotification.core.Implicits._
+import spotification.core.NonBlankStringR
 import spotification.core.config._
 import spotification.core.spotify.authorization.AuthorizationModule.{AuthorizationEnv, AuthorizationIO}
-import spotification.core.{NonBlankStringR, refineRIO}
 import zio.interop.catz._
-import eu.timepit.refined.cats._
-import spotification.core.Implicits._
 
 object Authorization {
   val authorizeProgram: AuthorizationIO[Unit] =

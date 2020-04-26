@@ -1,7 +1,8 @@
 package spotification.presentation
 
 import org.http4s.HttpRoutes
-import spotification.core.spotify.authorization.{AuthorizationIO, _}
+import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO
+import spotification.core.spotify.authorization.Authorization._
 
 // ==========
 // Despite IntelliJ telling that

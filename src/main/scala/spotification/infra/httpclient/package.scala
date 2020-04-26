@@ -10,6 +10,7 @@ import org.http4s.client.dsl.Http4sClientDsl
 import shapeless.ops.product.ToMap
 import spotification.core.spotify.authorization._
 import zio.Task
+import Scope._
 
 package object httpclient extends AuthorizationM {
 

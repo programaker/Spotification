@@ -9,11 +9,11 @@ import zio.interop.catz._
 import scala.concurrent.ExecutionContext
 
 object HttpClientModule {
+  private val makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
+    ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
+
   type HttpClientService = Has[H4sClient]
 
   val layer: ZLayer[ExecutionContextService, Throwable, HttpClientService] =
     ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.provide)
-
-  private def makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
-    ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 }

@@ -2,7 +2,6 @@ package spotification.presentation
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO
 import spotification.core.spotify.authorization.Authorization._
 import Presentation._
 
@@ -22,14 +21,14 @@ import spotification.infra.Json._
 object AuthorizationController {
   private val Callback: String = "callback"
 
-  private val H4sAuthorizationDsl: Http4sDsl[AuthorizationIO] = Http4sDsl[AuthorizationIO]
+  private val H4sAuthorizationDsl: Http4sDsl[PresentationIO] = Http4sDsl[PresentationIO]
   import H4sAuthorizationDsl._
 
   private object CodeQP extends QueryParamDecoderMatcher[String]("code")
   private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
   private object StateQP extends OptionalQueryParamDecoderMatcher[String]("state")
 
-  val routes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
+  val routes: HttpRoutes[PresentationIO] = HttpRoutes.of[PresentationIO] {
     case GET -> Root =>
       authorizeProgram.foldM(handleGenericError(H4sAuthorizationDsl, _), _ => Ok())
 

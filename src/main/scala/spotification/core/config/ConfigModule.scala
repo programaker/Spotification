@@ -1,15 +1,15 @@
 package spotification.core.config
 
-import zio.{Has, RIO, ZIO}
+import spotification.infra.config.PureConfigService
+import zio.{Has, Layer, RIO, Task, ZIO, ZLayer}
 
 object ConfigModule {
-  type SpotifyConfigService = Has[SpotifyConfig]
-  object SpotifyConfigService {
-    val spotifyConfig: RIO[SpotifyConfigService, SpotifyConfig] = ZIO.access(_.get)
+  type ConfigService = Has[ConfigModule.Service]
+
+  trait Service {
+    def readConfig: Task[AppConfig]
   }
 
-  type ServerConfigService = Has[ServerConfig]
-  object ServerConfigService {
-    val serverConfig: RIO[ServerConfigService, ServerConfig] = ZIO.access(_.get)
-  }
+  val readConfig: RIO[ConfigService, AppConfig] = ZIO.accessM(_.get.readConfig)
+  val layer: Layer[Throwable, ConfigService] = ZLayer.succeed(PureConfigService)
 }

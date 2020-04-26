@@ -1,10 +1,10 @@
 package spotification.core.spotify.authorization
 
-import spotification.core.config.ConfigModule.SpotifyConfigService
+import spotification.core.config.ConfigModule.ConfigService
 import zio.{Has, RIO, Task, ZIO}
 
 object AuthorizationModule {
-  type AuthorizationEnv = SpotifyConfigService with AuthorizationService
+  type AuthorizationEnv = ConfigService with AuthorizationService
   type AuthorizationIO[A] = RIO[AuthorizationEnv, A]
   type AuthorizationService = Has[AuthorizationModule.Service]
 

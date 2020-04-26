@@ -8,17 +8,21 @@ import eu.timepit.refined.cats._
 import spotification.core.Core._
 import spotification.core.Implicits._
 import spotification.core.NonBlankStringR
-import spotification.core.config.ConfigModule.SpotifyConfigService
+import spotification.core.config.ConfigModule
+import spotification.core.config.ConfigModule._
 import spotification.core.spotify.authorization.AuthorizationModule.{AuthorizationEnv, AuthorizationIO}
 import zio.interop.catz._
 
 object Authorization {
   val authorizeProgram: AuthorizationIO[Unit] =
-    SpotifyConfigService.spotifyConfig.map(AuthorizeRequest.make).flatMap(AuthorizationModule.authorize)
+    for {
+      config <- ConfigModule.readConfig.map(_.spotify)
+      _      <- AuthorizationModule.authorize(AuthorizeRequest.make(config))
+    } yield ()
 
   def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
-    val config = SpotifyConfigService.spotifyConfig
-    val code = refineRIO[NonBlankStringR, SpotifyConfigService, String](rawCode)
+    val config = ConfigModule.readConfig.map(_.spotify)
+    val code = refineRIO[NonBlankStringR, ConfigService, String](rawCode)
     (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
   }
 

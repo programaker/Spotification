@@ -6,7 +6,6 @@ import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
 import spotification.core._
-import spotification.core.Implicits._
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now

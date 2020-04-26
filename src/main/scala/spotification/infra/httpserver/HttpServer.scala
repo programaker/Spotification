@@ -8,7 +8,8 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import spotification.core.config.{ConfigModule, ServerConfig}
-import spotification.presentation.{Presentation, Routes}
+import spotification.presentation.Presentation.allRoutes
+import spotification.presentation.Routes
 import zio.{RIO, ZIO}
 import zio.interop.catz._
 
@@ -27,10 +28,10 @@ object HttpServer {
       .compile
       .drain
 
-//  val runHttpApp: RIO[HttpServerEnv, Unit] = ZIO.runtime[HttpServerEnv].flatMap { implicit rt =>
-//    for {
-//      config <- ConfigModule.readConfig
-//      _      <- runHttpServer[HttpServerIO](config.server, addLogger(httpApp(Presentation.allRoutes)))
-//    } yield ()
-//  }
+  val runHttpApp: RIO[HttpServerEnv, Unit] = ZIO.runtime[HttpServerEnv].flatMap { implicit rt =>
+    for {
+      config <- ConfigModule.readConfig.map(_.server)
+      _      <- runHttpServer[HttpServerIO](config, addLogger(httpApp(allRoutes[HttpServerEnv])))
+    } yield ()
+  }
 }

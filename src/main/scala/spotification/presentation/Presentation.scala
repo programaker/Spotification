@@ -3,10 +3,11 @@ package spotification.presentation
 import cats.Applicative
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
+import zio.RIO
 
 object Presentation {
-  val allRoutes: Routes[PresentationIO] = Seq(
-    "/authorization" -> AuthorizationController.routes
+  def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] = Seq(
+    "/authorization" -> new AuthorizationController[R].routes
   )
 
   private[presentation] def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {

@@ -4,6 +4,8 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import spotification.core.spotify.authorization.Authorization._
 import Presentation._
+import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationEnv
+import zio.RIO
 
 // ==========
 // Despite IntelliJ telling that
@@ -18,17 +20,17 @@ import io.circe.generic.auto._
 import zio.interop.catz._
 import spotification.infra.Json._
 
-object AuthorizationController {
+final class AuthorizationController[R <: AuthorizationEnv] {
   private val Callback: String = "callback"
 
-  private val H4sAuthorizationDsl: Http4sDsl[PresentationIO] = Http4sDsl[PresentationIO]
+  private val H4sAuthorizationDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
   import H4sAuthorizationDsl._
 
   private object CodeQP extends QueryParamDecoderMatcher[String]("code")
   private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
   private object StateQP extends OptionalQueryParamDecoderMatcher[String]("state")
 
-  val routes: HttpRoutes[PresentationIO] = HttpRoutes.of[PresentationIO] {
+  val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root =>
       authorizeProgram.foldM(handleGenericError(H4sAuthorizationDsl, _), _ => Ok())
 

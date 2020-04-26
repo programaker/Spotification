@@ -9,6 +9,7 @@ import org.http4s.{Uri, UrlForm}
 import spotification.core.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
+import HttpClient._
 
 // ==========
 // Despite IntelliJ telling that

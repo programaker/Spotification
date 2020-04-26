@@ -1,7 +1,8 @@
 package spotification.core.spotify.authorization
 
 import spotification.core.config.ConfigModule.ConfigService
-import zio.{Has, RIO, Task, ZIO}
+import spotification.infra.httpclient.{H4sAuthorizationService, H4sClient}
+import zio.{Has, RIO, Task, URLayer, ZIO, ZLayer}
 
 object AuthorizationModule {
   type AuthorizationEnv = ConfigService with AuthorizationService
@@ -22,4 +23,7 @@ object AuthorizationModule {
 
   def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationService, RefreshTokenResponse] =
     ZIO.accessM(_.get.refreshToken(req))
+
+  val layer: URLayer[H4sClient, AuthorizationService] =
+    ZLayer.fromFunction(new H4sAuthorizationService(_))
 }

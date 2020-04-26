@@ -35,18 +35,6 @@ package object core extends NewTypeM {
   type HostR = IPv4
   type Host = String Refined HostR
 
-  // HTTP4s Uri should be able to encode query params, but in my tests
-  // URIs are not properly encoded:
-  //
-  // uri"https://foo.com".withQueryParam("redirect_uri", "https://bar.com")
-  // > org.http4s.Uri = https://foo.com?redirect_uri=https%3A//bar.com <- did not encode `//`
-  //
-  // URLEncoder.encode("https://bar.com", UTF_8.toString)
-  // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  val encode: String => String = URLEncoder.encode(_, UTF_8)
-
-  def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
-
   def refineZIO[P, R, A](a: A)(implicit v: Validate[A, P]): ZIO[R, String, Refined[A, P]] =
     ZIO.fromFunctionM(_ => IO.fromEither(refineV[P](a)))
 

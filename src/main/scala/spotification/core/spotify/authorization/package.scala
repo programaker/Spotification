@@ -1,5 +1,8 @@
 package spotification.core.spotify
 
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Base64
+
 import cats.implicits._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
@@ -67,6 +70,8 @@ package object authorization extends ScopeM with AuthorizationM {
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")
+
+  def base64(s: String): String = Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 
   def buildAuthorizeRequest(cfg: SpotifyConfig): AuthorizeRequest = AuthorizeRequest(
     client_id = cfg.clientId,

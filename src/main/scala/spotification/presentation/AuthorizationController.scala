@@ -1,8 +1,10 @@
 package spotification.presentation
 
 import org.http4s.HttpRoutes
+import org.http4s.dsl.Http4sDsl
 import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO
 import spotification.core.spotify.authorization.Authorization._
+import Presentation._
 
 // ==========
 // Despite IntelliJ telling that
@@ -18,8 +20,8 @@ import zio.interop.catz._
 import spotification.infra.Json._
 
 object AuthorizationController {
+  private val H4sAuthorizationDsl: Http4sDsl[AuthorizationIO] = Http4sDsl[AuthorizationIO]
   import H4sAuthorizationDsl._
-  private val Callback: String = "callback"
 
   val routes: HttpRoutes[AuthorizationIO] = HttpRoutes.of[AuthorizationIO] {
     case GET -> Root =>
@@ -31,4 +33,9 @@ object AuthorizationController {
     case GET -> Root / Callback :? ErrorQP(error) +& StateQP(_) =>
       authorizeCallbackErrorProgram(error).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
   }
+
+  private val Callback: String = "callback"
+  private object CodeQP extends QueryParamDecoderMatcher[String]("code")
+  private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
+  private object StateQP extends OptionalQueryParamDecoderMatcher[String]("state")
 }

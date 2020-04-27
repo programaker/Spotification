@@ -16,13 +16,13 @@ import zio.interop.catz._
 object Authorization {
   val authorizeProgram: AuthorizationIO[Unit] =
     for {
-      config <- ConfigModule.readConfig.map(_.spotify)
+      config <- ConfigModule.spotifyConfig
       _      <- AuthorizationModule.authorize(AuthorizeRequest.make(config))
     } yield ()
 
   def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
-    val config = ConfigModule.readConfig.map(_.spotify)
-    val code = refineRIO[NonBlankStringR, ConfigService, String](rawCode)
+    val config = ConfigModule.spotifyConfig
+    val code = refineRIO[NonBlankStringR, SpotifyConfigService, String](rawCode)
     (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
   }
 

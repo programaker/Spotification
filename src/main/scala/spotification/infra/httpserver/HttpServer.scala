@@ -30,7 +30,7 @@ object HttpServer {
 
   val runHttpApp: RIO[HttpServerEnv, Unit] = ZIO.runtime[HttpServerEnv].flatMap { implicit rt =>
     for {
-      config <- ConfigModule.readConfig.map(_.server)
+      config <- ConfigModule.serverConfig
       _      <- runHttpServer[HttpServerIO](config, addLogger(httpApp(allRoutes[HttpServerEnv])))
     } yield ()
   }

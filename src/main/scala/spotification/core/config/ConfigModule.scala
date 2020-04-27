@@ -1,15 +1,23 @@
 package spotification.core.config
 
 import spotification.infra.config.PureConfigService
-import zio.{Has, Layer, RIO, Task, ZIO, ZLayer}
+import zio._
 
 object ConfigModule {
-  type ConfigService = Has[ConfigModule.Service]
+  type ConfigEnv = SpotifyConfigService with ServerConfigService with LogConfigService
+  type SpotifyConfigService = Has[SpotifyConfig]
+  type ServerConfigService = Has[ServerConfig]
+  type LogConfigService = Has[LogConfig]
 
-  trait Service {
-    def readConfig: Task[AppConfig]
+  val spotifyConfig: RIO[SpotifyConfigService, SpotifyConfig] = ZIO.access(_.get)
+  val serverConfig: RIO[ServerConfigService, ServerConfig] = ZIO.access(_.get)
+  val logConfig: RIO[LogConfigService, LogConfig] = ZIO.access(_.get)
+
+  val layer: Layer[Throwable, ConfigEnv] = {
+    val appConfigLayer = ZLayer.fromEffect(PureConfigService.readConfig)
+
+    appConfigLayer.map(_.get.spotify).map(Has(_)) ++
+      appConfigLayer.map(_.get.server).map(Has(_)) ++
+      appConfigLayer.map(_.get.log).map(Has(_))
   }
-
-  val readConfig: RIO[ConfigService, AppConfig] = ZIO.accessM(_.get.readConfig)
-  val layer: Layer[Throwable, ConfigService] = ZLayer.succeed(PureConfigService)
 }

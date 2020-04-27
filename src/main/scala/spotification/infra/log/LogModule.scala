@@ -1,6 +1,5 @@
 package spotification.infra.log
 
-import cats.effect.Resource
 import cats.kernel.Semigroup
 import io.odin.config._
 import io.odin.syntax._
@@ -30,7 +29,8 @@ object LogModule {
       // `consoleLog |+| fileLog` does not compile. It causes a
       // `value |+| is not a member of cats.effect.Resource` error.
       // Invoking the Semigroup directly works =S
-      val combinedLog = Semigroup[Resource[Task, Logger[Task]]].combine(consoleLog, fileLog)
+      val combinedLog = Semigroup.combine(consoleLog, fileLog)
+
       combinedLog.toManaged
     }
 }

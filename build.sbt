@@ -10,6 +10,7 @@ val zioInteropCatsV = "2.0.0.0-RC12"
 val pureConfigV = "0.12.3"
 val simulacrumV = "1.0.0"
 val newtypeV = "0.4.3"
+val odinV = "0.7.0"
 
 lazy val root = (project in file("."))
   .settings(
@@ -28,6 +29,9 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-refined" % circeV,
 
       "ch.qos.logback" % "logback-classic" % logbackV,
+
+      "com.github.valskalla" %% "odin-core" % odinV,
+      "com.github.valskalla" %% "odin-zio" % odinV,
 
       "eu.timepit" %% "refined" % refinedV,
       "eu.timepit" %% "refined-cats" % refinedV,

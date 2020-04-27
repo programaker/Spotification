@@ -17,6 +17,8 @@ object LogModule {
     ZLayer.fromServiceManaged(ZManaged.fromFunctionM(makeLogger).provide)
 
   private def makeLogger(logConfig: LogConfig): ZManaged[Any, Throwable, Logger[Task]] =
+    // Why not just combine the logs and call `toManaged`?
+    // This way to construct the ZManaged provides all the needed implicits through the `ceff` argument
     ZManaged.fromEffect(Task.concurrentEffect).flatMap { implicit ceff =>
       val consoleLog = consoleLogger[Task]().withAsync()
 

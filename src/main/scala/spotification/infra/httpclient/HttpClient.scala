@@ -38,7 +38,7 @@ object HttpClient {
     }
 
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
-    joinScopes(scopes).map(s => params + ("scope" -> s))
+    joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))

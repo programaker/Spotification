@@ -5,7 +5,6 @@ import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.Uri
-import org.http4s.implicits._
 import spotification.core.config.ConfigModule
 import spotification.core.spotify.authorization.Authorization.base64Credentials
 import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO

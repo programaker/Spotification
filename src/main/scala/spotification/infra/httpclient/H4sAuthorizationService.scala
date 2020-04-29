@@ -3,7 +3,7 @@ package spotification.infra.httpclient
 import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
-import org.http4s.UrlForm
+import org.http4s.{Uri, UrlForm}
 import spotification.core.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
@@ -43,7 +43,11 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
     clientId: ClientId,
     clientSecret: ClientSecret
   ): Task[B] = {
-    val post = POST(UrlForm(params.toSeq: _*), apiTokenUri, authorizationBasicHeader(clientId, clientSecret))
+    val post = POST(
+      UrlForm(params.toSeq: _*),
+      Uri.unsafeFromString(apiTokenUri),
+      authorizationBasicHeader(clientId, clientSecret)
+    )
 
     httpClient
       .expect[String](post)

@@ -11,13 +11,9 @@ object AuthorizationModule {
   type AuthorizationService = Has[AuthorizationModule.Service]
 
   trait Service {
-    def authorize(req: AuthorizeRequest): Task[String]
     def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse]
     def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse]
   }
-
-  def authorize(req: AuthorizeRequest): RIO[AuthorizationService, String] =
-    ZIO.accessM(_.get.authorize(req))
 
   def requestToken(req: AccessTokenRequest): RIO[AuthorizationService, AccessTokenResponse] =
     ZIO.accessM(_.get.requestToken(req))

@@ -1,16 +1,14 @@
 package spotification.infra.httpclient
 
-import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
-import org.http4s.implicits._
-import org.http4s.{MediaType, Uri, UrlForm}
+import org.http4s.UrlForm
 import spotification.core.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
 import HttpClient._
-import org.http4s.headers.Accept
+import AuthorizationHttpClient._
 
 // ==========
 // Despite IntelliJ telling that
@@ -22,33 +20,12 @@ import io.circe.refined._
 import spotification.infra.Json._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
-  private val accountsUri: Uri = uri"https://accounts.spotify.com"
-  private val authorizeUri: Uri = accountsUri.withPath("/authorize")
-  private val apiTokenUri: Uri = accountsUri.withPath("/api/token")
-
   import H4sTaskClientDsl._
 
   // ==========
   // IntelliJ says that No implicits where found for ToMapAux in `toParams(_)` function,
   // but it works fine on sbt, so don't panic!
   // ==========
-
-  // (the "callback" of the authorization process). So here we just return Unit
-  override def authorize(req: AuthorizeRequest): Task[String] = {
-    val params = toParams(req)
-
-    // `scope` can't be generically built due to the required
-    // List[Scope] => SpaceSeparatedString transformation
-    val params2 = req.scope
-      .map(addScopeParam(params, _))
-      .map(_.leftMap(new Exception(_)))
-      .map(Task.fromEither(_))
-      .getOrElse(Task(params))
-
-    params2.flatMap(p2 =>
-      httpClient.expect[String](GET(authorizeUri.withQueryParams(p2), Accept(MediaType.text.plain)))
-    )
-  }
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params = toParams(req)

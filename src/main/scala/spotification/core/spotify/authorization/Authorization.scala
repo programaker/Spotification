@@ -14,13 +14,6 @@ import spotification.core.spotify.authorization.AuthorizationModule.{Authorizati
 import zio.interop.catz._
 
 object Authorization {
-  val authorizeProgram: AuthorizationIO[String] = {
-    for {
-      config <- ConfigModule.spotifyConfig
-      resp   <- AuthorizationModule.authorize(AuthorizeRequest.make(config))
-    } yield resp
-  }
-
   def authorizeCallbackProgram(rawCode: String): AuthorizationIO[AccessTokenResponse] = {
     val config = ConfigModule.spotifyConfig
     val code = refineRIO[NonBlankStringR, SpotifyConfigService, String](rawCode)

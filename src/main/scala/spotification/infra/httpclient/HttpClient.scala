@@ -5,11 +5,8 @@ import java.nio.charset.StandardCharsets.UTF_8
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import org.http4s.AuthScheme.{Basic, Bearer}
-import org.http4s.Credentials.Token
-import spotification.core.spotify.authorization.Authorization.base64Credentials
+import spotification.core.spotify.authorization.Scope
 import spotification.core.spotify.authorization.Scope.joinScopes
-import spotification.core.spotify.authorization.{AccessToken, ClientId, ClientSecret, Scope}
 
 object HttpClient {
   // HTTP4s Uri should be able to encode query params, but in my tests
@@ -39,10 +36,4 @@ object HttpClient {
 
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
     joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
-
-  def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
-    H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))
-
-  def authorizationBearerHeader(accessToken: AccessToken): H4sAuthorization =
-    H4sAuthorization(Token(Bearer, accessToken.value))
 }

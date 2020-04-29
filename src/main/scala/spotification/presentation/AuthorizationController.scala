@@ -1,11 +1,12 @@
 package spotification.presentation
 
-import org.http4s.{Charset, HttpRoutes, MediaType}
+import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import spotification.core.spotify.authorization.Authorization._
 import Presentation._
-import org.http4s.headers.`Content-Type`
+import org.http4s.headers.Location
 import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationEnv
+import spotification.infra.httpclient.AuthorizationHttpClient.authorizeUriProgram
 import zio.RIO
 
 // ==========
@@ -33,9 +34,9 @@ final class AuthorizationController[R <: AuthorizationEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root =>
-      authorizeProgram.foldM(
+      authorizeUriProgram.foldM(
         handleGenericError(H4sAuthorizationDsl, _),
-        Ok(_, `Content-Type`(MediaType.text.html))
+        loc => Found(Location(loc))
       )
 
     case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>

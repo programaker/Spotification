@@ -8,7 +8,6 @@ import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 
 object Json {
-
   implicit def coercibleEncoder[A: Coercible[B, *], B: Encoder]: Encoder[A] =
     Encoder[B].contramap(_.repr.asInstanceOf[B])
 
@@ -17,5 +16,4 @@ object Json {
 
   implicit def apJsonEntityEncoder[F[_]: Applicative, A](implicit encoder: Encoder[A]): EntityEncoder[F, A] =
     jsonEncoderOf[F, A]
-
 }

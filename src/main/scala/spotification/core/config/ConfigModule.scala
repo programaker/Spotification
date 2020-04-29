@@ -4,7 +4,6 @@ import spotification.infra.config.PureConfigService
 import zio._
 
 object ConfigModule {
-  type ConfigServices = SpotifyConfigService with ServerConfigService with LogConfigService
   type SpotifyConfigService = Has[SpotifyConfig]
   type ServerConfigService = Has[ServerConfig]
   type LogConfigService = Has[LogConfig]

@@ -6,8 +6,13 @@ import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
 import spotification.core._
+import spotification.core.config.ConfigModule.SpotifyConfigService
+import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationService
 
 package object authorization {
+  type AuthorizationEnv = AuthorizationService with SpotifyConfigService with BaseEnv
+  type AuthorizationServiceEnv = BaseEnv //abstracting BaseEnv in case Auth. needs to diverge
+
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
   object AuthorizationResponseType {

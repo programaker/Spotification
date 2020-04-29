@@ -1,13 +1,11 @@
 package spotification.core.spotify.authorization
 
-import spotification.core.CoreModule.BaseEnv
 import spotification.infra.httpclient.H4sAuthorizationService
 import spotification.infra.httpclient.HttpClientModule.HttpClientService
 import zio.{RIO, _}
 
 object AuthorizationModule {
   type AuthorizationService = Has[AuthorizationModule.Service]
-  type AuthorizationServiceEnv = BaseEnv
 
   // Service functions require an Env but the accessors require the Service itself
   //

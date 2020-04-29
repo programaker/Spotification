@@ -5,19 +5,15 @@ import java.util.Base64
 
 import cats.implicits._
 import spotification.core.Core._
-import spotification.core.CoreModule.BaseEnv
 import spotification.core.NonBlankStringR
 import spotification.core.config.ConfigModule
 import spotification.core.config.ConfigModule._
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationService
 import zio.RIO
 import eu.timepit.refined.cats._
 import spotification.core.Implicits._
 import zio.interop.catz._
 
 object Authorization {
-  type AuthorizationEnv = AuthorizationService with SpotifyConfigService with BaseEnv
-
   def authorizeCallbackProgram(rawCode: String): RIO[AuthorizationEnv, AccessTokenResponse] = {
     val config = ConfigModule.spotifyConfig
     val code = refineRIO[NonBlankStringR, SpotifyConfigService, String](rawCode)

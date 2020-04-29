@@ -9,8 +9,7 @@ import zio.{RIO, Task}
 import zio.interop.catz._
 import HttpClient._
 import AuthorizationHttpClient._
-import spotification.core.CoreModule.BaseEnv
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationServiceEnv
+import spotification.core.spotify.authorization.AuthorizationServiceEnv
 
 // ==========
 // Despite IntelliJ telling that
@@ -23,11 +22,6 @@ import spotification.infra.Json._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
   import H4sTaskClientDsl._
-
-  // ==========
-  // IntelliJ says that No implicits where found for ToMapAux in `toParams(_)` function,
-  // but it works fine on sbt, so don't panic!
-  // ==========
 
   override def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] = {
     val params = toParams(req)
@@ -44,7 +38,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
     params: ParamMap,
     clientId: ClientId,
     clientSecret: ClientSecret
-  ): RIO[BaseEnv, B] = {
+  ): RIO[AuthorizationServiceEnv, B] = {
     val post = POST(
       UrlForm(params.toSeq: _*),
       Uri.unsafeFromString(apiTokenUri),

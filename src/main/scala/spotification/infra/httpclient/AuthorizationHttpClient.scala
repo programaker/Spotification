@@ -6,8 +6,8 @@ import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.Uri
 import spotification.core.config.ConfigModule
-import spotification.core.spotify.authorization.Authorization.{AuthorizationEnv, base64Credentials}
-import spotification.core.spotify.authorization.{AccessToken, AuthorizeRequest, ClientId, ClientSecret}
+import spotification.core.spotify.authorization.Authorization.base64Credentials
+import spotification.core.spotify.authorization._
 import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
 import zio.{RIO, Task}
 

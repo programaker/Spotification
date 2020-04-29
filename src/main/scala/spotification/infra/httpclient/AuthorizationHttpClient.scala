@@ -10,15 +10,15 @@ import spotification.core.config.ConfigModule
 import spotification.core.spotify.authorization.Authorization.base64Credentials
 import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO
 import spotification.core.spotify.authorization.{AccessToken, AuthorizeRequest, ClientId, ClientSecret}
-import spotification.infra.httpclient.HttpClient.{addScopeParam, toParams}
+import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
 import zio.Task
 
 object AuthorizationHttpClient {
-  val accountsUri: Uri = uri"https://accounts.spotify.com"
-  val authorizeUri: Uri = accountsUri.withPath("/authorize")
-  val apiTokenUri: Uri = accountsUri.withPath("/api/token")
+  val accountsUri: String = "https://accounts.spotify.com"
+  val authorizeUri: String = s"$accountsUri/authorize"
+  val apiTokenUri: String = s"$accountsUri/api/token"
 
-  val authorizeUriProgram: AuthorizationIO[Uri] = {
+  val makeAuthorizeUriProgram: AuthorizationIO[Uri] = {
     for {
       config <- ConfigModule.spotifyConfig
       resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
@@ -42,6 +42,11 @@ object AuthorizationHttpClient {
       .map(Task.fromEither(_))
       .getOrElse(Task(params))
 
-    params2.map(authorizeUri.withQueryParams(_))
+    // https://github.com/http4s/http4s/issues/2445
+    // I did this for the same reason I've created `HttpClient.encode` function
+    // which the encoding choice of http4s
+    params2
+      .map(makeQueryString)
+      .map(q => Uri(path = s"$authorizeUri?$q"))
   }
 }

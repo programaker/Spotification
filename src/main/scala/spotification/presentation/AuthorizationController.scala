@@ -6,7 +6,7 @@ import spotification.core.spotify.authorization.Authorization._
 import Presentation._
 import org.http4s.headers.Location
 import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationEnv
-import spotification.infra.httpclient.AuthorizationHttpClient.authorizeUriProgram
+import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUriProgram
 import zio.RIO
 
 // ==========
@@ -34,9 +34,9 @@ final class AuthorizationController[R <: AuthorizationEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root =>
-      authorizeUriProgram.foldM(
+      makeAuthorizeUriProgram.foldM(
         handleGenericError(H4sAuthorizationDsl, _),
-        loc => Found(Location(loc))
+        uri => Found(Location(uri))
       )
 
     case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>

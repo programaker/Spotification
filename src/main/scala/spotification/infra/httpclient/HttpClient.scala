@@ -34,6 +34,9 @@ object HttpClient {
       case _                     => None
     }
 
+  def makeQueryString: ParamMap => String =
+    _.map { case (k, v) => s"$k=$v" } mkString "&"
+
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
     joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
 }

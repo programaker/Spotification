@@ -1,7 +1,7 @@
 package spotification
 
 import org.http4s.HttpRoutes
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationEnv
+import spotification.core.spotify.authorization.Authorization.AuthorizationEnv
 import zio.RIO
 
 package object presentation {

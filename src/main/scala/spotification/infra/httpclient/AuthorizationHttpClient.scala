@@ -6,18 +6,17 @@ import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.Uri
 import spotification.core.config.ConfigModule
-import spotification.core.spotify.authorization.Authorization.base64Credentials
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationIO
+import spotification.core.spotify.authorization.Authorization.{AuthorizationEnv, base64Credentials}
 import spotification.core.spotify.authorization.{AccessToken, AuthorizeRequest, ClientId, ClientSecret}
 import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
-import zio.Task
+import zio.{RIO, Task}
 
 object AuthorizationHttpClient {
   val accountsUri: String = "https://accounts.spotify.com"
   val authorizeUri: String = s"$accountsUri/authorize"
   val apiTokenUri: String = s"$accountsUri/api/token"
 
-  val makeAuthorizeUriProgram: AuthorizationIO[Uri] = {
+  val makeAuthorizeUriProgram: RIO[AuthorizationEnv, Uri] = {
     for {
       config <- ConfigModule.spotifyConfig
       resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))

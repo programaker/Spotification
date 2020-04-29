@@ -4,7 +4,7 @@ import spotification.infra.config.PureConfigService
 import zio._
 
 object ConfigModule {
-  type ConfigEnv = SpotifyConfigService with ServerConfigService with LogConfigService
+  type ConfigServices = SpotifyConfigService with ServerConfigService with LogConfigService
   type SpotifyConfigService = Has[SpotifyConfig]
   type ServerConfigService = Has[ServerConfig]
   type LogConfigService = Has[LogConfig]
@@ -13,7 +13,7 @@ object ConfigModule {
   val serverConfig: RIO[ServerConfigService, ServerConfig] = ZIO.access(_.get)
   val logConfig: RIO[LogConfigService, LogConfig] = ZIO.access(_.get)
 
-  val layer: Layer[Throwable, ConfigEnv] = {
+  val layer: Layer[Throwable, ConfigServices] = {
     val appConfigLayer = ZLayer.fromEffect(PureConfigService.readConfig)
 
     appConfigLayer.map(_.get.spotify).map(Has(_)) ++

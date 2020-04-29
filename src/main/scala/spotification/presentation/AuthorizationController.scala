@@ -5,7 +5,6 @@ import org.http4s.dsl.Http4sDsl
 import spotification.core.spotify.authorization.Authorization._
 import Presentation._
 import org.http4s.headers.Location
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationEnv
 import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUriProgram
 import zio.RIO
 

@@ -35,7 +35,7 @@ final class AuthorizationController[R <: AuthorizationEnv] {
     case GET -> Root =>
       authorizeProgram.foldM(
         handleGenericError(H4sAuthorizationDsl, _),
-        Ok(_, `Content-Type`(MediaType.text.html, Charset.`UTF-8`))
+        Ok(_, `Content-Type`(MediaType.text.html))
       )
 
     case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>

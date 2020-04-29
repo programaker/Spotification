@@ -5,11 +5,12 @@ import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
 import org.http4s.implicits._
-import org.http4s.{Uri, UrlForm}
+import org.http4s.{MediaType, Uri, UrlForm}
 import spotification.core.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
 import HttpClient._
+import org.http4s.headers.Accept
 
 // ==========
 // Despite IntelliJ telling that
@@ -33,7 +34,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   // ==========
 
   // (the "callback" of the authorization process). So here we just return Unit
-  override def authorize(req: AuthorizeRequest): Task[Unit] = {
+  override def authorize(req: AuthorizeRequest): Task[String] = {
     val params = toParams(req)
 
     // `scope` can't be generically built due to the required
@@ -44,7 +45,9 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
       .map(Task.fromEither(_))
       .getOrElse(Task(params))
 
-    params2.flatMap(p2 => httpClient.expect[Unit](authorizeUri.withQueryParams(p2)))
+    params2.flatMap(p2 =>
+      httpClient.expect[String](GET(authorizeUri.withQueryParams(p2), Accept(MediaType.text.plain)))
+    )
   }
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {

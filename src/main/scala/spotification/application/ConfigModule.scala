@@ -1,6 +1,6 @@
 package spotification.application
 
-import spotification.core.config.{LogConfig, ServerConfig, SpotifyConfig}
+import spotification.domain.config.{LogConfig, ServerConfig, SpotifyConfig}
 import spotification.infra.config.PureConfigService
 import zio._
 

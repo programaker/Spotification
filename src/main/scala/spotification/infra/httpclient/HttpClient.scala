@@ -5,8 +5,8 @@ import java.nio.charset.StandardCharsets.UTF_8
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import spotification.core.spotify.authorization.Scope
-import spotification.core.spotify.authorization.Scope.joinScopes
+import spotification.domain.spotify.authorization.Scope
+import spotification.domain.spotify.authorization.Scope.joinScopes
 
 object HttpClient {
   // HTTP4s Uri should be able to encode query params, but in my tests

@@ -1,4 +1,4 @@
-package spotification.core
+package spotification.domain
 
 import cats.{Eq, Show}
 import io.estatico.newtype.Coercible

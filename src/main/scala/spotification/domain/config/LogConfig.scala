@@ -1,4 +1,4 @@
-package spotification.core.config
+package spotification.domain.config
 
 import scala.concurrent.duration.FiniteDuration
 

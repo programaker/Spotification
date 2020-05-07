@@ -1,6 +1,6 @@
-package spotification.core.spotify.authorization
+package spotification.domain.spotify.authorization
 
-import spotification.core._
+import spotification.domain._
 
 final case class AccessTokenResponse(
   access_token: AccessToken,

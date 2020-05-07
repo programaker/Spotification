@@ -1,7 +1,7 @@
-package spotification.core.spotify.authorization
+package spotification.domain.spotify.authorization
 
-import spotification.core._
-import spotification.core.config.SpotifyConfig
+import spotification.domain._
+import spotification.domain.config.SpotifyConfig
 
 final case class AuthorizeRequest(
   client_id: ClientId,

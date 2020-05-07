@@ -1,9 +1,9 @@
-package spotification.core.spotify.authorization
+package spotification.domain.spotify.authorization
 
 import eu.timepit.refined.refineV
 import eu.timepit.refined.auto._
 import cats.implicits._
-import spotification.core.{SpaceSeparatedString, SpaceSeparatedStringR}
+import spotification.domain.{SpaceSeparatedString, SpaceSeparatedStringR}
 
 object Scope {
   def parseScope(rawScope: SpaceSeparatedString): Either[String, List[Scope]] =

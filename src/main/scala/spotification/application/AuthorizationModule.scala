@@ -2,9 +2,9 @@ package spotification.application
 
 import cats.implicits._
 import spotification.application.ApplicationModule.refineRIO
-import spotification.core.NonBlankStringR
+import spotification.domain.NonBlankStringR
 import ConfigModule.SpotifyConfigService
-import spotification.core.spotify.authorization._
+import spotification.domain.spotify.authorization._
 import spotification.infra.httpclient.H4sAuthorizationService
 import spotification.infra.httpclient.HttpClientModule.HttpClientService
 import zio._

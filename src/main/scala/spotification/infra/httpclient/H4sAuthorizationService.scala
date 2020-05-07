@@ -4,7 +4,7 @@ import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
 import org.http4s.{Uri, UrlForm}
-import spotification.core.spotify.authorization._
+import spotification.domain.spotify.authorization._
 import zio.{RIO, Task}
 import zio.interop.catz._
 import HttpClient._

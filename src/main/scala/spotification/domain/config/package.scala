@@ -1,4 +1,4 @@
-package spotification.core
+package spotification.domain
 
 import io.estatico.newtype.macros.newtype
 

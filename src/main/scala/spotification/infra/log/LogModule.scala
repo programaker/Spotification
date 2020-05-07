@@ -5,7 +5,7 @@ import io.odin.config._
 import io.odin.syntax._
 import io.odin.{Logger, consoleLogger, rollingFileLogger}
 import spotification.application.ConfigModule.LogConfigService
-import spotification.core.config.LogConfig
+import spotification.domain.config.LogConfig
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 import zio.{Has, Task, ZLayer, ZManaged}

@@ -6,7 +6,7 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 
-package object core {
+package object domain {
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
   type NonBlankString = String Refined NonBlankStringR
 

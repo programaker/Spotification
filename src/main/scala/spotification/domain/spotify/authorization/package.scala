@@ -1,11 +1,11 @@
-package spotification.core.spotify
+package spotification.domain.spotify
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
 import io.estatico.newtype.macros.newtype
-import spotification.core._
+import spotification.domain._
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now

@@ -1,4 +1,4 @@
-package spotification.core.spotify.authorization
+package spotification.domain.spotify.authorization
 
 final case class RefreshTokenRequest(
   client_id: ClientId,

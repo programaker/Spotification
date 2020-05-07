@@ -36,7 +36,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
 
     // I hope this is the only request that will need to use
     // Java as a secret weapon, due to the redirect_uri
-    jPost(apiTokenUri, makeQueryString(params), headers)
+    jPost[AuthorizationServiceEnv](apiTokenUri, makeQueryString(params), headers)
       .flatMap(s => Task.fromEither(jawn.decode[AccessTokenResponse](s)))
   }
 

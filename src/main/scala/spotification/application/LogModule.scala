@@ -1,4 +1,4 @@
-package spotification.infra.log
+package spotification.application
 
 import cats.kernel.Semigroup
 import io.odin.config._

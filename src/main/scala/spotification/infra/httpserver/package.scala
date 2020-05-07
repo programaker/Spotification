@@ -3,7 +3,7 @@ package spotification.infra
 import cats.data.Kleisli
 import org.http4s.{Request, Response}
 import spotification.application.BaseEnv
-import spotification.core.config.ConfigModule.ServerConfigService
+import spotification.application.ConfigModule.ServerConfigService
 import spotification.presentation.PresentationEnv
 import zio.RIO
 

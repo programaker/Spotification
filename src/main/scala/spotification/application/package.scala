@@ -1,7 +1,7 @@
 package spotification
 
 import spotification.application.AuthorizationModule.AuthorizationService
-import spotification.core.config.ConfigServices
+import spotification.application.ConfigModule.ConfigServices
 
 package object application {
   type ApplicationServices = ConfigServices with AuthorizationService

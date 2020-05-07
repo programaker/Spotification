@@ -7,7 +7,8 @@ import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.{CORS, Logger}
-import spotification.core.config.{ConfigModule, ServerConfig}
+import spotification.application.ConfigModule
+import spotification.core.config.ServerConfig
 import spotification.presentation.Presentation.allRoutes
 import spotification.presentation.Routes
 import zio.{RIO, ZIO}

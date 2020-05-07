@@ -1,7 +1,6 @@
 package spotification
 
-import spotification.application.{ApplicationModule, ApplicationServices}
-import spotification.infra.InfraModule
+import spotification.application.{ApplicationModule, ApplicationServices, InfraModule}
 import spotification.infra.httpserver.HttpServer
 import zio.{ZEnv, ZIO, ZLayer}
 

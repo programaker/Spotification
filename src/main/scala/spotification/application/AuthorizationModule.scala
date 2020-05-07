@@ -6,7 +6,7 @@ import spotification.domain.NonBlankStringR
 import ConfigModule.SpotifyConfigService
 import spotification.domain.spotify.authorization._
 import spotification.infra.httpclient.H4sAuthorizationService
-import spotification.infra.httpclient.HttpClientModule.HttpClientService
+import HttpClientModule.HttpClientService
 import zio._
 import zio.interop.catz._
 

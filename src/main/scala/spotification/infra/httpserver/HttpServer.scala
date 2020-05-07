@@ -15,7 +15,7 @@ import zio.{RIO, ZIO}
 import zio.interop.catz._
 
 object HttpServer {
-  val runHttpApp: RIO[HttpServerEnv, Unit] = ZIO.runtime[HttpServerEnv].flatMap { implicit rt =>
+  def runHttpApp: RIO[HttpServerEnv, Unit] = ZIO.runtime[HttpServerEnv].flatMap { implicit rt =>
     for {
       config <- ConfigModule.serverConfig
       _      <- runHttpServer[HttpServerIO](config, addCors(addLogger(httpApp(allRoutes[HttpServerEnv]))))

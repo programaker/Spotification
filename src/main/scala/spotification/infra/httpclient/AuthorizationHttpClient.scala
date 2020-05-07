@@ -17,12 +17,11 @@ object AuthorizationHttpClient {
   val authorizeUri: String = s"$accountsUri/authorize"
   val apiTokenUri: String = s"$accountsUri/api/token"
 
-  val makeAuthorizeUriProgram: RIO[AuthorizationEnv, Uri] = {
+  def makeAuthorizeUriProgram: RIO[AuthorizationEnv, Uri] =
     for {
       config <- ConfigModule.spotifyConfig
       resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
     } yield resp
-  }
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))

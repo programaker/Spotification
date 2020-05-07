@@ -13,7 +13,7 @@ import zio.{Has, Task, ZLayer, ZManaged}
 object LogModule {
   type LogService = Has[Logger[Task]]
 
-  val layer: ZLayer[LogConfigService, Throwable, LogService] =
+  def layer: ZLayer[LogConfigService, Throwable, LogService] =
     ZLayer.fromServiceManaged(ZManaged.fromFunctionM(makeLogger).provide)
 
   private def makeLogger(logConfig: LogConfig): ZManaged[Any, Throwable, Logger[Task]] =

@@ -1,4 +1,4 @@
-package spotification.infra.concurrent
+package spotification.application
 
 import zio.{Has, ULayer, ZLayer}
 
@@ -9,5 +9,5 @@ object ExecutionContextModule {
 
   // Let's start with the good old global ExecutionContext
   // Later we can plug something more interesting
-  val layer: ULayer[ExecutionContextService] = ZLayer.succeed(ExecutionContext.global)
+  def layer: ULayer[ExecutionContextService] = ZLayer.succeed(ExecutionContext.global)
 }

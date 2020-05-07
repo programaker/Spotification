@@ -2,7 +2,7 @@ package spotification.application
 
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
-import spotification.infra.httpclient.HttpClientModule.HttpClientService
+import HttpClientModule.HttpClientService
 import zio.{IO, RIO, ZIO, ZLayer}
 
 object ApplicationModule {

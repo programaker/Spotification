@@ -2,7 +2,7 @@ package spotification.application
 
 import cats.implicits._
 import spotification.application.ApplicationModule.refineRIO
-import spotification.core.{BaseEnv, NonBlankStringR}
+import spotification.core.NonBlankStringR
 import spotification.core.config.ConfigModule
 import spotification.core.config.ConfigModule.SpotifyConfigService
 import spotification.core.spotify.authorization._

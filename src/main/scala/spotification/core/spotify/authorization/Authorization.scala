@@ -4,11 +4,11 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 import cats.implicits._
-import spotification.core.Core._
 import spotification.core.NonBlankStringR
 import spotification.core.config.ConfigModule
 import spotification.core.config.ConfigModule._
 import zio.RIO
+import spotification.application.ApplicationModule.refineRIO
 import eu.timepit.refined.cats._
 import spotification.core.Implicits._
 import zio.interop.catz._

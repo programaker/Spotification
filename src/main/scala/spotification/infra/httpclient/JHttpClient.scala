@@ -7,9 +7,7 @@ import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
 
 import zio.RIO
-import cats.implicits._
 import spotification.application.BaseEnv
-import zio.interop.catz._
 
 /** So, why did we need to appeal to Java HttpClient!?
  * The problem is this issue in Http4s https://github.com/http4s/http4s/issues/2445
@@ -21,29 +19,25 @@ import zio.interop.catz._
  * PS - I'm impressed about how simple the new Java HttpClient is!
  * It looks like a library */
 object JHttpClient {
-  def jPost[R <: BaseEnv](uri: String, body: String, headers: Map[String, String]): RIO[R, String] = {
-    val client = RIO {
-      HttpClient
-        .newBuilder()
-        .version(HttpClient.Version.HTTP_2)
-        .build()
-    }
+  def jPost[R <: BaseEnv](uri: String, body: String, headers: Map[String, String]): RIO[R, String] = RIO {
+    val client = HttpClient
+      .newBuilder()
+      .version(HttpClient.Version.HTTP_2)
+      .build()
 
-    val request = RIO {
-      val rb = HttpRequest
+    val request = {
+      val builder = HttpRequest
         .newBuilder(URI.create(uri))
         .POST(BodyPublishers.ofString(body, UTF_8))
 
-      val rb2 = headers.foldLeft(rb) {
+      val builder2 = headers.foldLeft(builder) {
         case (builder, (key, value)) =>
           builder.header(key, value)
       }
 
-      rb2.build()
+      builder2.build()
     }
 
-    (client, request)
-      .mapN((cli, req) => cli.send(req, BodyHandlers.ofString()))
-      .map(_.body())
+    client.send(request, BodyHandlers.ofString()).body()
   }
 }

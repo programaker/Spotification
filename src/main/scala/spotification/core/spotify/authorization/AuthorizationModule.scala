@@ -1,8 +1,17 @@
 package spotification.core.spotify.authorization
 
+import spotification.application.ApplicationModule.refineRIO
+import spotification.core.NonBlankStringR
+import spotification.core.config.ConfigModule
+import spotification.core.config.ConfigModule.SpotifyConfigService
 import spotification.infra.httpclient.H4sAuthorizationService
 import spotification.infra.httpclient.HttpClientModule.HttpClientService
-import zio.{RIO, _}
+import spotification.core.NonBlankStringR
+import spotification.core.config.ConfigModule._
+import zio.{Has, RIO, URLayer, ZIO, ZLayer}
+import spotification.application.ApplicationModule.refineRIO
+import cats.implicits._
+import zio.interop.catz._
 
 object AuthorizationModule {
   type AuthorizationService = Has[AuthorizationModule.Service]
@@ -25,6 +34,15 @@ object AuthorizationModule {
 
   def refreshToken(req: RefreshTokenRequest): RIO[AccessorsEnv, RefreshTokenResponse] =
     ZIO.accessM(_.get.refreshToken(req))
+
+  def authorizeCallbackProgram(rawCode: String): RIO[AuthorizationEnv, AccessTokenResponse] = {
+    val config = ConfigModule.spotifyConfig
+    val code = refineRIO[NonBlankStringR, SpotifyConfigService, String](rawCode)
+    (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
+  }
+
+  def authorizeCallbackErrorProgram(error: String): RIO[AuthorizationEnv, AuthorizeErrorResponse] =
+    refineRIO[NonBlankStringR, AuthorizationEnv, String](error).map(AuthorizeErrorResponse)
 
   val layer: URLayer[HttpClientService, AuthorizationService] =
     ZLayer.fromService(new H4sAuthorizationService(_))

@@ -6,7 +6,7 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.Positive
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 import spotification.core.config.ConfigServices
-import spotification.core.spotify.authorization.AuthorizationModule.AuthorizationService
+import spotification.application.AuthorizationModule.AuthorizationService
 
 package object core {
   type CoreServices = ConfigServices with AuthorizationService

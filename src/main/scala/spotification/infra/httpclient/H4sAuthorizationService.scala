@@ -9,7 +9,8 @@ import zio.{RIO, Task}
 import zio.interop.catz._
 import HttpClient._
 import AuthorizationHttpClient._
-import spotification.core.spotify.authorization.AuthorizationServiceEnv
+import spotification.application.AuthorizationModule
+import spotification.application.AuthorizationModule.AuthorizationServiceEnv
 
 // ==========
 // Despite IntelliJ telling that

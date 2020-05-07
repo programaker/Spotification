@@ -4,7 +4,6 @@ import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
 import spotification.core.CoreServices
 import spotification.core.config.ConfigModule
-import spotification.core.spotify.authorization.AuthorizationModule
 import spotification.infra.httpclient.HttpClientModule.HttpClientService
 import zio.{IO, RIO, ZIO, ZLayer}
 

@@ -1,19 +1,20 @@
-package spotification.core.spotify.authorization
+package spotification.application
 
+import cats.implicits._
 import spotification.application.ApplicationModule.refineRIO
-import spotification.core.NonBlankStringR
+import spotification.core.{BaseEnv, NonBlankStringR}
 import spotification.core.config.ConfigModule
 import spotification.core.config.ConfigModule.SpotifyConfigService
+import spotification.core.spotify.authorization._
 import spotification.infra.httpclient.H4sAuthorizationService
 import spotification.infra.httpclient.HttpClientModule.HttpClientService
-import spotification.core.NonBlankStringR
-import spotification.core.config.ConfigModule._
-import zio.{Has, RIO, URLayer, ZIO, ZLayer}
-import spotification.application.ApplicationModule.refineRIO
-import cats.implicits._
+import zio._
 import zio.interop.catz._
 
 object AuthorizationModule {
+  type AuthorizationEnv = AuthorizationService with SpotifyConfigService with BaseEnv
+  type AuthorizationServiceEnv = BaseEnv //abstracting BaseEnv in case Auth. needs to diverge
+
   type AuthorizationService = Has[AuthorizationModule.Service]
 
   // Service functions require an Env but the accessors require the Service itself

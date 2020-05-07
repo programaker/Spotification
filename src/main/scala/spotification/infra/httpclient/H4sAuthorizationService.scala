@@ -11,6 +11,8 @@ import HttpClient._
 import AuthorizationHttpClient._
 import spotification.application.AuthorizationModule
 import spotification.application.AuthorizationModule.AuthorizationServiceEnv
+import spotification.domain.spotify.authorization.Authorization.base64Credentials
+import spotification.infra.httpclient.JHttpClient.jPost
 
 // ==========
 // Despite IntelliJ telling that
@@ -26,7 +28,16 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
 
   override def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] = {
     val params = toParams(req)
-    apiTokenRequest[AccessTokenResponse](params, req.client_id, req.client_secret)
+
+    val headers = Map(
+      "Authorization" -> s"Basic ${base64Credentials(req.client_id, req.client_secret)}",
+      "Content-Type"  -> "application/x-www-form-urlencoded; charset=UTF-8"
+    )
+
+    // I hope this is the only request that will need to use
+    // Java as a secret weapon, due to the redirect_uri
+    jPost(apiTokenUri, makeQueryString(params), headers)
+      .flatMap(s => Task.fromEither(jawn.decode[AccessTokenResponse](s)))
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Product"))

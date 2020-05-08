@@ -20,7 +20,7 @@ import spotification.infra.spotify.authorization.AuthorizationEnv
 import io.circe.refined._
 import io.circe.generic.auto._
 import zio.interop.catz._
-import spotification.infra.Json._
+import spotification.infra.Json.Implicits._
 
 final class AuthorizationController[R <: AuthorizationEnv] {
   private val Callback: String = "callback"

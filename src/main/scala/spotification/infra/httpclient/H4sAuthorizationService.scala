@@ -20,7 +20,7 @@ import spotification.infra.spotify.authorization.{AuthorizationModule, Authoriza
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
-import spotification.infra.Json._
+import spotification.infra.Json.Implicits._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
   import H4sTaskClientDsl._

@@ -1,11 +1,14 @@
 package spotification.domain.spotify
 
+import cats.Show
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.refineV
+import eu.timepit.refined.cats._
 import io.estatico.newtype.macros.newtype
+import io.estatico.newtype.ops._
 import spotification.domain._
 import cats.implicits._
 
@@ -54,5 +57,12 @@ package object authorization {
   @newtype case class RefreshToken(value: NonBlankString)
 
   @newtype case class ClientId(value: HexString32)
+  object ClientId {
+    implicit val clientIdShow: Show[ClientId] = implicitly[Show[HexString32]].coerce
+  }
+
   @newtype case class ClientSecret(value: HexString32)
+  object ClientSecret {
+    implicit val clientSecretShow: Show[ClientSecret] = implicitly[Show[HexString32]].coerce
+  }
 }

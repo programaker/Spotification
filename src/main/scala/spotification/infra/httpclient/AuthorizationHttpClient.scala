@@ -7,21 +7,13 @@ import org.http4s.Credentials.Token
 import org.http4s.Uri
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
 import spotification.domain.spotify.authorization._
-import spotification.infra.config.SpotifyConfigModule
 import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
-import spotification.infra.spotify.authorization.AuthorizationEnv
-import zio.{RIO, Task}
+import zio.Task
 
 object AuthorizationHttpClient {
   val accountsUri: String = "https://accounts.spotify.com"
   val authorizeUri: String = s"$accountsUri/authorize"
   val apiTokenUri: String = s"$accountsUri/api/token"
-
-  def makeAuthorizeUriProgram: RIO[AuthorizationEnv, Uri] =
-    for {
-      config <- SpotifyConfigModule.config
-      resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
-    } yield resp
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))

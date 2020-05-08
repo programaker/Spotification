@@ -2,13 +2,11 @@ package spotification.infra.spotify
 
 import spotification.domain.spotify.authorization._
 import spotification.infra.BaseModule
-import spotification.infra.config.SpotifyConfigModule
 import spotification.infra.httpclient.{H4sAuthorizationService, HttpClientModule}
 import zio.{Has, RIO, URLayer, ZIO, ZLayer}
 
 package object authorization {
-  type AuthorizationEnv = AuthorizationModule with SpotifyConfigModule with BaseModule
-  type AuthorizationServiceEnv = BaseModule //abstracting BaseEnv in case Auth. needs to diverge
+  type AuthorizationServiceEnv = BaseModule //abstracting Module in case Auth. needs to diverge
 
   type AuthorizationModule = Has[AuthorizationModule.Service]
   object AuthorizationModule {

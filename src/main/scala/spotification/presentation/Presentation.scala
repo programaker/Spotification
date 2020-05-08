@@ -6,7 +6,7 @@ import org.http4s.dsl.Http4sDsl
 import zio.RIO
 
 object Presentation {
-  def allRoutes[R <: PresentationModule]: Routes[RIO[R, *]] = Seq(
+  def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] = Seq(
     "/health"        -> new HealthCheckController[R].routes,
     "/authorization" -> new AuthorizationController[R].routes
   )

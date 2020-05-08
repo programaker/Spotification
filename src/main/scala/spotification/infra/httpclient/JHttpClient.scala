@@ -6,7 +6,7 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
 
-import spotification.infra.BaseZIO.BaseEnv
+import spotification.infra.BaseModule
 import zio.RIO
 
 /** So, why did we need to appeal to Java HttpClient!?
@@ -19,7 +19,7 @@ import zio.RIO
  * PS - I'm impressed about how simple the new Java HttpClient is!
  * It looks like a library */
 object JHttpClient {
-  def jPost[R <: BaseEnv](uri: String, body: String, headers: Map[String, String]): RIO[R, String] = RIO {
+  def jPost[R <: BaseModule](uri: String, body: String, headers: Map[String, String]): RIO[R, String] = RIO {
     val client = HttpClient
       .newBuilder()
       .version(HttpClient.Version.HTTP_2)

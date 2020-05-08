@@ -7,7 +7,7 @@ import org.http4s.headers.Location
 import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUriProgram
 import zio.RIO
 import spotification.application.SpotifyAuthorizationApp._
-import spotification.infra.spotify.authorization.AuthorizationZIO.AuthorizationEnv
+import spotification.infra.spotify.authorization.AuthorizationEnv
 
 // ==========
 // Despite IntelliJ telling that

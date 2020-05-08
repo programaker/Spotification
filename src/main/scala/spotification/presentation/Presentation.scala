@@ -3,11 +3,10 @@ package spotification.presentation
 import cats.Applicative
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
-import spotification.presentation.PresentationZIO.PresentationEnv
 import zio.RIO
 
 object Presentation {
-  def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] = Seq(
+  def allRoutes[R <: PresentationModule]: Routes[RIO[R, *]] = Seq(
     "/health"        -> new HealthCheckController[R].routes,
     "/authorization" -> new AuthorizationController[R].routes
   )

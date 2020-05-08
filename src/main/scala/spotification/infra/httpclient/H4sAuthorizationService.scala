@@ -9,10 +9,10 @@ import zio.{RIO, Task}
 import zio.interop.catz._
 import HttpClient._
 import AuthorizationHttpClient._
-import spotification.application.AuthorizationModule
-import spotification.application.AuthorizationModule.AuthorizationServiceEnv
+import spotification.infra.spotify.authorization.AuthorizationZIO.AuthorizationServiceEnv
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
 import spotification.infra.httpclient.JHttpClient.jPost
+import spotification.infra.spotify.authorization.AuthorizationZIO
 
 // ==========
 // Despite IntelliJ telling that
@@ -23,7 +23,7 @@ import spotification.infra.httpclient.JHttpClient.jPost
 import io.circe.refined._
 import spotification.infra.Json._
 
-final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
+final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationZIO.Service {
   import H4sTaskClientDsl._
 
   override def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] = {

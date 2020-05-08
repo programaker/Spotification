@@ -3,6 +3,7 @@ package spotification.presentation
 import cats.Applicative
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
+import spotification.presentation.PresentationZIO.PresentationEnv
 import zio.RIO
 
 object Presentation {
@@ -11,7 +12,7 @@ object Presentation {
     "/authorization" -> new AuthorizationController[R].routes
   )
 
-  private[presentation] def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {
+  def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {
     import dsl._
     InternalServerError(e.getMessage)
   }

@@ -6,8 +6,8 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
 
+import spotification.infra.BaseZIO.BaseEnv
 import zio.RIO
-import spotification.application.BaseEnv
 
 /** So, why did we need to appeal to Java HttpClient!?
  * The problem is this issue in Http4s https://github.com/http4s/http4s/issues/2445

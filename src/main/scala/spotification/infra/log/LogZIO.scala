@@ -1,16 +1,16 @@
-package spotification.application
+package spotification.infra.log
 
 import cats.kernel.Semigroup
 import io.odin.config._
 import io.odin.syntax._
 import io.odin.{Logger, consoleLogger, rollingFileLogger}
-import spotification.application.ConfigModule.LogConfigService
 import spotification.domain.config.LogConfig
+import spotification.infra.config.ConfigZIO.LogConfigService
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 import zio.{Has, Task, ZLayer, ZManaged}
 
-object LogModule {
+object LogZIO {
   type LogService = Has[Logger[Task]]
 
   def layer: ZLayer[LogConfigService, Throwable, LogService] =

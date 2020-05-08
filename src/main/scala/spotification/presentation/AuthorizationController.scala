@@ -2,11 +2,12 @@ package spotification.presentation
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.application.AuthorizationModule._
 import Presentation._
 import org.http4s.headers.Location
 import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUriProgram
 import zio.RIO
+import spotification.application.SpotifyAuthorizationApp._
+import spotification.infra.spotify.authorization.AuthorizationZIO.AuthorizationEnv
 
 // ==========
 // Despite IntelliJ telling that

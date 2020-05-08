@@ -5,10 +5,10 @@ import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.Uri
-import spotification.application.AuthorizationModule.AuthorizationEnv
-import spotification.application.ConfigModule
+import spotification.infra.spotify.authorization.AuthorizationZIO.AuthorizationEnv
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
 import spotification.domain.spotify.authorization._
+import spotification.infra.config.ConfigZIO
 import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
 import zio.{RIO, Task}
 
@@ -19,7 +19,7 @@ object AuthorizationHttpClient {
 
   def makeAuthorizeUriProgram: RIO[AuthorizationEnv, Uri] =
     for {
-      config <- ConfigModule.spotifyConfig
+      config <- ConfigZIO.spotifyConfig
       resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
     } yield resp
 

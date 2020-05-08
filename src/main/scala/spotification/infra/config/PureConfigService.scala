@@ -12,7 +12,7 @@ import zio.{IO, RIO}
 //==========
 import pureconfig.generic.auto._
 import eu.timepit.refined.pureconfig._
-import Implicits._
+import Config.Implicits._
 
 object PureConfigService {
   val readConfig: RIO[ConfigServiceEnv, AppConfig] =

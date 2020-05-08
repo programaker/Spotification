@@ -1,12 +1,13 @@
 package spotification.infra.spotify
 
 import spotification.domain.spotify.authorization._
-import spotification.infra.BaseModule
+import spotification.infra.BaseEnv
 import spotification.infra.httpclient.{H4sAuthorizationService, HttpClientModule}
 import zio.{Has, RIO, URLayer, ZIO, ZLayer}
 
 package object authorization {
-  type AuthorizationServiceEnv = BaseModule //abstracting Module in case Auth. needs to diverge
+  // Abstracts Authorization services dependencies, in case they change
+  type AuthorizationServiceEnv = BaseEnv
 
   type AuthorizationModule = Has[AuthorizationModule.Service]
   object AuthorizationModule {

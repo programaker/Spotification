@@ -9,6 +9,7 @@ import spotification.domain.spotify.authorization.Authorization.base64Credential
 import spotification.domain.spotify.authorization._
 import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString, toParams}
 import zio.Task
+import HttpClient._
 
 object AuthorizationHttpClient {
   val accountsUri: String = "https://accounts.spotify.com"

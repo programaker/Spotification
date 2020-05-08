@@ -4,8 +4,10 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal
+import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import spotification.domain._
+import cats.implicits._
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
@@ -40,6 +42,13 @@ package object authorization {
 
   type ScopeR = PlaylistScopeR //we can add more scopes later
   type Scope = String Refined ScopeR
+  object Scope {
+    def parseScope(rawScope: SpaceSeparatedString): Either[String, List[Scope]] =
+      rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
+
+    def joinScopes(scopes: List[Scope]): Either[String, SpaceSeparatedString] =
+      refineV[SpaceSeparatedStringR](scopes.mkString(" "))
+  }
 
   @newtype case class AccessToken(value: NonBlankString)
   @newtype case class RefreshToken(value: NonBlankString)

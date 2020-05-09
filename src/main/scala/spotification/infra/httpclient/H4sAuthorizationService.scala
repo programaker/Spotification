@@ -2,7 +2,7 @@ package spotification.infra.httpclient
 
 import cats.implicits._
 import io.circe.generic.auto._
-import io.circe.{Decoder, jawn}
+import io.circe.jawn
 import org.http4s.Method._
 import org.http4s.{Uri, UrlForm}
 import spotification.domain.spotify.authorization._
@@ -42,7 +42,8 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
     // I hope this is the only request that will need to use
     // Java as a secret weapon, due to the redirect_uri
     jPost[AuthorizationServiceEnv](ApiTokenUri, makeQueryString(params), headers)
-      .flatMap(s => Task.fromEither(jawn.decode[AccessTokenResponse](s)))
+      .map(jawn.decode[AccessTokenResponse])
+      .flatMap(Task.fromEither(_))
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Product"))
@@ -60,6 +61,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
 
     httpClient
       .expect[String](post)
-      .flatMap(s => Task.fromEither(jawn.decode[RefreshTokenResponse](s)))
+      .map(jawn.decode[RefreshTokenResponse])
+      .flatMap(Task.fromEither(_))
   }
 }

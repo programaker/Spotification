@@ -38,6 +38,7 @@ final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Ser
       .fromEither(uri)
       .map(GET(_, authorizationBearerHeader(req.accessToken)))
       .flatMap(httpClient.expect[String])
-      .flatMap(s => Task.fromEither(jawn.decode[PlaylistItemsResponse](s)))
+      .map(jawn.decode[PlaylistItemsResponse])
+      .flatMap(Task.fromEither(_))
   }
 }

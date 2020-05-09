@@ -12,9 +12,9 @@ import zio.Task
 import HttpClient._
 
 object AuthorizationHttpClient {
-  val accountsUri: String = "https://accounts.spotify.com"
-  val authorizeUri: String = s"$accountsUri/authorize"
-  val apiTokenUri: String = s"$accountsUri/api/token"
+  val AccountsUri: String = "https://accounts.spotify.com"
+  val AuthorizeUri: String = s"$AccountsUri/authorize"
+  val ApiTokenUri: String = s"$AccountsUri/api/token"
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))
@@ -38,6 +38,6 @@ object AuthorizationHttpClient {
     // which the encoding choice of http4s
     params2
       .map(makeQueryString)
-      .map(q => Uri(path = s"$authorizeUri?$q"))
+      .map(q => Uri(path = s"$AuthorizeUri?$q"))
   }
 }

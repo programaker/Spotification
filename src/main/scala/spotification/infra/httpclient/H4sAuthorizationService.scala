@@ -16,7 +16,7 @@ import spotification.infra.spotify.authorization.{AuthorizationModule, Authoriza
 // ==========
 // Despite IntelliJ telling that
 // `import io.circe.refined._`
-// `import spotification.infra.json._`
+// `import spotification.infra.Json.Implicits._`
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
@@ -35,7 +35,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
 
     // I hope this is the only request that will need to use
     // Java as a secret weapon, due to the redirect_uri
-    jPost[AuthorizationServiceEnv](apiTokenUri, makeQueryString(params), headers)
+    jPost[AuthorizationServiceEnv](ApiTokenUri, makeQueryString(params), headers)
       .flatMap(s => Task.fromEither(jawn.decode[AccessTokenResponse](s)))
   }
 
@@ -52,7 +52,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   ): RIO[AuthorizationServiceEnv, B] = {
     val post = POST(
       UrlForm(params.toSeq: _*),
-      Uri.unsafeFromString(apiTokenUri),
+      Uri.unsafeFromString(ApiTokenUri),
       authorizationBasicHeader(clientId, clientSecret)
     )
 

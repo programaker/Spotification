@@ -32,7 +32,7 @@ final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Ser
       .map(_.withQueryParam("fields", req.fields.value))
       .map(_.withQueryParam("limit", req.limit.value))
       .map(_.withQueryParam("offset", req.offset.value))
-      .leftMap(pf => new Exception(pf.message))
+      .leftMap(parseFailure => new Exception(parseFailure.message))
 
     RIO
       .fromEither(uri)

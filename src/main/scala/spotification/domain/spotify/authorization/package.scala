@@ -60,7 +60,14 @@ package object authorization {
   }
 
   @newtype case class AccessToken(value: NonBlankString)
+  object AccessToken {
+    implicit val accessTokenShow: Show[AccessToken] = implicitly[Show[NonBlankString]].coerce
+  }
+
   @newtype case class RefreshToken(value: NonBlankString)
+  object RefreshToken {
+    implicit val refreshTokenShow: Show[RefreshToken] = implicitly[Show[NonBlankString]].coerce
+  }
 
   @newtype case class ClientId(value: HexString32)
   object ClientId {

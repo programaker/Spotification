@@ -1,5 +1,6 @@
 package spotification.infra.httpclient
 
+import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.Method._
@@ -7,6 +8,7 @@ import org.http4s.{Uri, UrlForm}
 import spotification.domain.spotify.authorization._
 import zio.{RIO, Task}
 import zio.interop.catz._
+import eu.timepit.refined.auto._
 import HttpClient._
 import AuthorizationHttpClient._
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
@@ -26,7 +28,11 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
   import H4sTaskClientDsl._
 
   override def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] = {
-    val params = toParams(req)
+    val params: ParamMap = Map(
+      "grant_type"   -> req.grant_type,
+      "code"         -> req.code,
+      "redirect_uri" -> encode(req.redirect_uri)
+    )
 
     val headers = Map(
       "Authorization" -> s"Basic ${base64Credentials(req.client_id, req.client_secret)}",
@@ -41,23 +47,19 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
 
   @SuppressWarnings(Array("org.wartremover.warts.Product"))
   override def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationServiceEnv, RefreshTokenResponse] = {
-    val params = toParams(req)
-    apiTokenRequest[RefreshTokenResponse](params, req.client_id, req.client_secret)
-  }
+    val urlForm = UrlForm(
+      "grant_type"    -> req.grant_type,
+      "refresh_token" -> req.refresh_token.show
+    )
 
-  private def apiTokenRequest[B: Decoder](
-    params: ParamMap,
-    clientId: ClientId,
-    clientSecret: ClientSecret
-  ): RIO[AuthorizationServiceEnv, B] = {
     val post = POST(
-      UrlForm(params.toSeq: _*),
+      urlForm,
       Uri.unsafeFromString(ApiTokenUri),
-      authorizationBasicHeader(clientId, clientSecret)
+      authorizationBasicHeader(req.client_id, req.client_secret)
     )
 
     httpClient
       .expect[String](post)
-      .flatMap(s => Task.fromEither(jawn.decode[B](s)))
+      .flatMap(s => Task.fromEither(jawn.decode[RefreshTokenResponse](s)))
   }
 }

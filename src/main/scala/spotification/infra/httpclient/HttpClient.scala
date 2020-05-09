@@ -13,7 +13,7 @@ import zio.Task
 object HttpClient {
   val ApiUri: String = "https://api.spotify.com/v1"
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
-  val H4sTaskClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
+  val H4sClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
 
   // HTTP4s Uri should be able to encode query params, but in my tests
   // URIs are not properly encoded:

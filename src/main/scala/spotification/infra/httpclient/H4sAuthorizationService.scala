@@ -25,7 +25,7 @@ import io.circe.refined._
 import spotification.infra.Json.Implicits._
 
 final class H4sAuthorizationService(httpClient: H4sClient) extends AuthorizationModule.Service {
-  import H4sTaskClientDsl._
+  import H4sClientDsl._
 
   override def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] = {
     val params: ParamMap = Map(

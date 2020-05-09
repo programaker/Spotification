@@ -8,7 +8,7 @@ import org.http4s.Uri
 import spotification.domain.spotify.playlist.{PlaylistItemsRequest, PlaylistItemsResponse}
 import spotification.infra.BaseEnv
 import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
-import spotification.infra.httpclient.HttpClient.{H4sTaskClientDsl, _}
+import spotification.infra.httpclient.HttpClient.{H4sClientDsl, _}
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, Task}
 import zio.interop.catz._
@@ -24,7 +24,7 @@ import io.circe.refined._
 import spotification.infra.Json.Implicits._
 
 final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Service {
-  import H4sTaskClientDsl._
+  import H4sClientDsl._
   private val PlaylistsApiUri: String = show"$ApiUri/playlists"
 
   override def getPlaylistItems(req: PlaylistItemsRequest): RIO[BaseEnv, PlaylistItemsResponse] = {

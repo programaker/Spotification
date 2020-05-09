@@ -35,7 +35,7 @@ final class H4sAuthorizationService(httpClient: H4sClient) extends Authorization
     )
 
     val headers = Map(
-      "Authorization" -> s"Basic ${base64Credentials(req.client_id, req.client_secret)}",
+      "Authorization" -> show"Basic ${base64Credentials(req.client_id, req.client_secret)}",
       "Content-Type"  -> "application/x-www-form-urlencoded; charset=UTF-8"
     )
 

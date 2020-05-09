@@ -14,8 +14,8 @@ import eu.timepit.refined.cats._
 
 object AuthorizationHttpClient {
   val AccountsUri: String = "https://accounts.spotify.com"
-  val AuthorizeUri: String = s"$AccountsUri/authorize"
-  val ApiTokenUri: String = s"$AccountsUri/api/token"
+  val AuthorizeUri: String = show"$AccountsUri/authorize"
+  val ApiTokenUri: String = show"$AccountsUri/api/token"
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))

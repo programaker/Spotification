@@ -12,6 +12,7 @@ import spotification.infra.httpclient.HttpClient.{H4sTaskClientDsl, _}
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, Task}
 import zio.interop.catz._
+import eu.timepit.refined.cats._
 
 // ==========
 // Despite IntelliJ telling that
@@ -29,9 +30,9 @@ final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Ser
   override def getPlaylistItems(req: PlaylistItemsRequest): RIO[BaseEnv, PlaylistItemsResponse] = {
     val uri = Uri
       .fromString(show"$PlaylistsApiUri/${req.playlistId}/tracks")
-      .map(_.withQueryParam("fields", req.fields.value))
-      .map(_.withQueryParam("limit", req.limit.value))
-      .map(_.withQueryParam("offset", req.offset.value))
+      .map(_.withQueryParam("fields", req.fields.show))
+      .map(_.withQueryParam("limit", req.limit.show))
+      .map(_.withQueryParam("offset", req.offset.show))
       .leftMap(parseFailure => new Exception(parseFailure.message))
 
     RIO

@@ -3,6 +3,7 @@ package spotification.infra.httpclient
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 
+import cats.implicits._
 import eu.timepit.refined.auto._
 import org.http4s.client.dsl.Http4sClientDsl
 import spotification.domain.spotify.authorization.Scope
@@ -26,7 +27,7 @@ object HttpClient {
     URLEncoder.encode(_, UTF_8)
 
   val makeQueryString: ParamMap => String =
-    _.map { case (k, v) => s"$k=$v" } mkString "&"
+    _.map { case (k, v) => show"$k=$v" } mkString "&"
 
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
     joinScopes(scopes).map(s => params + ("scope" -> encode(s)))

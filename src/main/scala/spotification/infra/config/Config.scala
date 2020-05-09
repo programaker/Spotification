@@ -5,6 +5,8 @@ import spotification.domain.HexString32
 import spotification.domain.config.{Bytes, Directory}
 import spotification.domain.spotify.authorization.{ClientId, ClientSecret}
 import eu.timepit.refined.pureconfig._
+import spotification.domain.spotify.playlist.PlaylistId
+import spotification.domain.NonBlankString
 
 object Config {
   object Implicits {
@@ -19,5 +21,8 @@ object Config {
 
     implicit val clientSecretConfigReader: ConfigReader[ClientSecret] =
       implicitly[ConfigReader[HexString32]].map(ClientSecret.apply)
+
+    implicit val playlistIdConfigReader: ConfigReader[PlaylistId] =
+      implicitly[ConfigReader[NonBlankString]].map(PlaylistId.apply)
   }
 }

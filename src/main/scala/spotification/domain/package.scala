@@ -3,7 +3,7 @@ package spotification
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
-import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.numeric.{NonNegative, Positive}
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 
 package object domain {
@@ -20,10 +20,10 @@ package object domain {
   type UriString = String Refined Uri
 
   type PositiveIntR = Positive
-  type PositiveInt = Int Refined Positive
+  type PositiveInt = Int Refined PositiveIntR
 
-  type SpaceSeparatedStringR = MatchesRegex["""^(\w|[-])+(\s(\w|[-])+)*$"""]
-  type SpaceSeparatedString = String Refined SpaceSeparatedStringR
+  type NonNegativeIntR = NonNegative
+  type NonNegativeInt = Int Refined NonNegativeIntR
 
   type HostR = IPv4
   type Host = String Refined HostR

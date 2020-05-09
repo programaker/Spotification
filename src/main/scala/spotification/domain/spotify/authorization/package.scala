@@ -11,6 +11,7 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.domain._
 import cats.implicits._
+import eu.timepit.refined.string.MatchesRegex
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
@@ -37,6 +38,9 @@ package object authorization {
     val Bearer: TokenType = "Bearer"
   }
 
+  type ScopeStringR = MatchesRegex["""^(\w|[-])+(\s(\w|[-])+)*$"""]
+  type ScopeString = String Refined ScopeStringR
+
   type PlaylistScopeR =
     Equal["playlist-read-collaborative"] Or
       Equal["playlist-modify-public"] Or
@@ -46,11 +50,11 @@ package object authorization {
   type ScopeR = PlaylistScopeR //we can add more scopes later
   type Scope = String Refined ScopeR
   object Scope {
-    def parseScope(rawScope: SpaceSeparatedString): Either[String, List[Scope]] =
+    def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =
       rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
 
-    def joinScopes(scopes: List[Scope]): Either[String, SpaceSeparatedString] =
-      refineV[SpaceSeparatedStringR](scopes.mkString(" "))
+    def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
+      refineV[ScopeStringR](scopes.mkString(" "))
   }
 
   @newtype case class AccessToken(value: NonBlankString)

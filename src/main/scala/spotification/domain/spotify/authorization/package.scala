@@ -38,7 +38,9 @@ package object authorization {
     val Bearer: TokenType = "Bearer"
   }
 
-  type ScopeStringR = MatchesRegex["""^(\w|[-])+(\s(\w|[-])+)*$"""]
+  // ScopeString = space-separated kebab-case strings
+  // ex: "playlist-read-private playlist-modify-private playlist-modify-public"
+  type ScopeStringR = MatchesRegex["""^[a-z]([a-z-])+(\s([a-z-])+)*[a-z]$"""]
   type ScopeString = String Refined ScopeStringR
 
   type PlaylistScopeR =

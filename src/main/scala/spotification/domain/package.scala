@@ -27,4 +27,14 @@ package object domain {
 
   type HostR = IPv4
   type Host = String Refined HostR
+
+  // Some Spotify API's allow to select which fields we want to get
+  // through a String like this one for playlist's tracks: "next,total,items.track.album(id,album_type)"
+  type FieldsToReturnR = MatchesRegex["""^[a-z]([a-z_.()])+(\,([a-z_.()])+)*[a-z)]$"""]
+  type FieldsToReturn = String Refined FieldsToReturnR
+
+  // The base-62 identifier that you can find at the end of
+  // the Spotify URI for an artist, track, album, playlist, etc
+  type SpotifyIdR = MatchesRegex["^[0-9a-zA-Z]+$"]
+  type SpotifyId = String Refined SpotifyIdR
 }

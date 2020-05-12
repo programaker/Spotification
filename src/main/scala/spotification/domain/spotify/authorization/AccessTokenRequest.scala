@@ -8,7 +8,7 @@ final case class AccessTokenRequest(
   client_secret: ClientSecret,
   grant_type: AccessTokenGrantType,
   code: NonBlankString,
-  redirect_uri: UriString
+  redirect_uri: RedirectUri
 )
 object AccessTokenRequest {
   def make(cfg: AuthorizationConfig, code: NonBlankString): AccessTokenRequest = AccessTokenRequest(

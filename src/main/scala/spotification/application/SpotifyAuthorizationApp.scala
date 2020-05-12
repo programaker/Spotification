@@ -17,18 +17,18 @@ import zio.RIO
 import zio.interop.catz._
 
 object SpotifyAuthorizationApp {
-  val makeAuthorizeUriProgram: RIO[SpotifyAuthorizationEnv, Uri] =
+  val makeAuthorizeUriProgram: RIO[SpotifyAuthorizationAppEnv, Uri] =
     for {
       config <- AuthorizationConfigModule.config
-      resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
+      resp   <- makeAuthorizeUri(config.authorizeUri, AuthorizeRequest.make(config))
     } yield resp
 
-  def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] = {
+  def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationAppEnv, AccessTokenResponse] = {
     val config = AuthorizationConfigModule.config
     val code = refineRIO[NonBlankStringR, AuthorizationConfigModule, String](rawCode)
     (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
   }
 
-  def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationEnv, AuthorizeErrorResponse] =
-    refineRIO[NonBlankStringR, SpotifyAuthorizationEnv, String](error).map(AuthorizeErrorResponse)
+  def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationAppEnv, AuthorizeErrorResponse] =
+    refineRIO[NonBlankStringR, SpotifyAuthorizationAppEnv, String](error).map(AuthorizeErrorResponse)
 }

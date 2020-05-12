@@ -78,4 +78,19 @@ package object authorization {
   object ClientSecret {
     implicit val clientSecretShow: Show[ClientSecret] = implicitly[Show[HexString32]].coerce
   }
+
+  @newtype case class AuthorizeUri(value: UriString)
+  object AuthorizeUri {
+    implicit val authorizeUriShow: Show[AuthorizeUri] = implicitly[Show[UriString]].coerce
+  }
+
+  @newtype case class ApiTokenUri(value: UriString)
+  object ApiTokenUri {
+    implicit val apiTokenUriShow: Show[ApiTokenUri] = implicitly[Show[UriString]].coerce
+  }
+
+  @newtype case class RedirectUri(value: UriString)
+  object RedirectUri {
+    implicit val redirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
+  }
 }

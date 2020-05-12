@@ -18,14 +18,15 @@ package object httpclient {
 
   type HttpClientModule = Has[H4sClient]
   object HttpClientModule {
-    val layer: RLayer[ExecutionContextModule, HttpClientModule] = {
+    val layer: TaskLayer[HttpClientModule] = {
       val makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
         ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 
       val addLogger: Client[Task] => Client[Task] =
         Logger(logHeaders = true, logBody = true)(_)
 
-      ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.map(addLogger).provide)
+      ExecutionContextModule.layer >>>
+        ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.map(addLogger).provide)
     }
   }
 }

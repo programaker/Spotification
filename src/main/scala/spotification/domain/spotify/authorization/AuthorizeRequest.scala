@@ -5,7 +5,7 @@ import spotification.domain.config.AuthorizationConfig
 
 final case class AuthorizeRequest(
   client_id: ClientId,
-  redirect_uri: UriString,
+  redirect_uri: RedirectUri,
   response_type: AuthorizationResponseType,
   state: Option[NonBlankString],
   scope: Option[List[Scope]],

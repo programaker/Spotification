@@ -4,7 +4,7 @@ import cats.kernel.Semigroup
 import io.odin.{Logger, consoleLogger, rollingFileLogger}
 import spotification.domain.config.LogConfig
 import spotification.infra.config.LogConfigModule
-import zio.{Has, Task, ZLayer, ZManaged}
+import zio.{Has, Task, TaskLayer, TaskManaged, ZLayer, ZManaged}
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 import io.odin.config._
@@ -13,10 +13,11 @@ import io.odin.syntax._
 package object log {
   type LogModule = Has[Logger[Task]]
   object LogModule {
-    val layer: ZLayer[LogConfigModule, Throwable, LogModule] =
-      ZLayer.fromServiceManaged(ZManaged.fromFunctionM(makeLogger).provide)
+    val layer: TaskLayer[LogModule] =
+      LogConfigModule.layer >>>
+        ZLayer.fromServiceManaged(ZManaged.fromFunctionM(makeLogger).provide)
 
-    private def makeLogger(logConfig: LogConfig): ZManaged[Any, Throwable, Logger[Task]] =
+    private def makeLogger(logConfig: LogConfig): TaskManaged[Logger[Task]] =
       // Why not just combine the logs and call `toManaged`?
       // This way to construct the ZManaged provides all the needed implicits through the `ceff` argument
       ZManaged.fromEffect(Task.concurrentEffect).flatMap { implicit ceff =>

@@ -2,9 +2,9 @@ package spotification.presentation
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import Presentation._
+import Controller._
 import org.http4s.headers.Location
-import spotification.application.SpotifyAuthorizationEnv
+import spotification.application.SpotifyAuthorizationAppEnv
 import zio.RIO
 import spotification.application.SpotifyAuthorizationApp._
 
@@ -21,7 +21,7 @@ import io.circe.generic.auto._
 import zio.interop.catz._
 import spotification.infra.Json.Implicits._
 
-final class AuthorizationController[R <: SpotifyAuthorizationEnv] {
+final class AuthorizationController[R <: SpotifyAuthorizationAppEnv] {
   private val Callback: String = "callback"
 
   private val H4sAuthorizationDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

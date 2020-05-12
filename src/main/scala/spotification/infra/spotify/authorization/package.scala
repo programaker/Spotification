@@ -1,36 +1,35 @@
 package spotification.infra.spotify
 
+import spotification.domain.config.AuthorizationConfig
 import spotification.domain.spotify.authorization._
 import spotification.infra.BaseEnv
-import spotification.infra.httpclient.{H4sAuthorizationService, HttpClientModule}
-import zio.{Has, RIO, URLayer, ZIO, ZLayer}
+import spotification.infra.concurrent.ExecutionContextModule
+import spotification.infra.config.AuthorizationConfigModule
+import spotification.infra.httpclient.{H4sAuthorizationService, H4sClient, HttpClientModule}
+import zio._
 
 package object authorization {
-  // Abstracts Authorization services dependencies, in case they change
-  type AuthorizationServiceEnv = BaseEnv
-
   type AuthorizationModule = Has[AuthorizationModule.Service]
   object AuthorizationModule {
-    // Service functions require an Env but the accessors require the Service itself
-    //
-    // We want `_.get` to get the Service but it will only happen if the Service
-    // is the first one in the composition. Order matters if you want type inference!
-    //
-    // An alternative is parameterize get like this `_.get[Service]`, but its more verbose
-    type AccessorsEnv = AuthorizationModule with AuthorizationServiceEnv
-
-    val layer: URLayer[HttpClientModule, AuthorizationModule] =
-      ZLayer.fromService(new H4sAuthorizationService(_))
-
-    def requestToken(req: AccessTokenRequest): RIO[AccessorsEnv, AccessTokenResponse] =
+    def requestToken(req: AccessTokenRequest): RIO[AuthorizationModule with BaseEnv, AccessTokenResponse] =
       ZIO.accessM(_.get.requestToken(req))
 
-    def refreshToken(req: RefreshTokenRequest): RIO[AccessorsEnv, RefreshTokenResponse] =
+    def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationModule with BaseEnv, RefreshTokenResponse] =
       ZIO.accessM(_.get.refreshToken(req))
 
+    val layer: TaskLayer[AuthorizationModule] = {
+      val l1 = ZLayer.fromServices[AuthorizationConfig, H4sClient, AuthorizationModule.Service] {
+        (config, httpClient) => new H4sAuthorizationService(config.apiTokenUri, httpClient)
+      }
+
+      val l2 = BaseEnv.layer >>> AuthorizationConfigModule.layer
+      val l3 = ExecutionContextModule.layer >>> HttpClientModule.layer
+      (l2 ++ l3) >>> l1
+    }
+
     trait Service {
-      def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse]
-      def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationServiceEnv, RefreshTokenResponse]
+      def requestToken(req: AccessTokenRequest): RIO[BaseEnv, AccessTokenResponse]
+      def refreshToken(req: RefreshTokenRequest): RIO[BaseEnv, RefreshTokenResponse]
     }
   }
 }

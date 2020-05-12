@@ -3,9 +3,9 @@ package spotification.infra.config
 import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
-import spotification.domain.spotify.authorization.{ClientId, ClientSecret}
+import spotification.domain.spotify.authorization.{ApiTokenUri, AuthorizeUri, ClientId, ClientSecret, RedirectUri}
 import spotification.domain.spotify.playlist.PlaylistId
-import spotification.domain.{HexString32, SpotifyId}
+import spotification.domain.{HexString32, SpotifyId, UriString}
 
 object Config {
   object Implicits {
@@ -23,5 +23,14 @@ object Config {
 
     implicit val playlistIdConfigReader: ConfigReader[PlaylistId] =
       implicitly[ConfigReader[SpotifyId]].map(PlaylistId.apply)
+
+    implicit val redirectUriConfigReader: ConfigReader[RedirectUri] =
+      implicitly[ConfigReader[UriString]].map(RedirectUri.apply)
+
+    implicit val authorizeUriConfigReader: ConfigReader[AuthorizeUri] =
+      implicitly[ConfigReader[UriString]].map(AuthorizeUri.apply)
+
+    implicit val apiTokenUriConfigReader: ConfigReader[ApiTokenUri] =
+      implicitly[ConfigReader[UriString]].map(ApiTokenUri.apply)
   }
 }

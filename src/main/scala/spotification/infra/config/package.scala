@@ -1,6 +1,6 @@
 package spotification.infra
 
-import spotification.domain.config.{AppConfig, LogConfig, ServerConfig, SpotifyConfig}
+import spotification.domain.config.{AppConfig, AuthorizationConfig, LogConfig, PlaylistConfig, ServerConfig}
 import zio._
 
 package object config {
@@ -10,10 +10,16 @@ package object config {
     val layer: ULayer[BaseEnv] = BaseEnv.layer
   }
 
-  type SpotifyConfigModule = Has[SpotifyConfig]
-  object SpotifyConfigModule {
-    val config: RIO[SpotifyConfigModule, SpotifyConfig] = ZIO.access(_.get)
-    val layer: RLayer[ConfigServiceEnv, SpotifyConfigModule] = makeLayer(_.get.spotify)
+  type AuthorizationConfigModule = Has[AuthorizationConfig]
+  object AuthorizationConfigModule {
+    val config: RIO[AuthorizationConfigModule, AuthorizationConfig] = ZIO.access(_.get)
+    val layer: RLayer[ConfigServiceEnv, AuthorizationConfigModule] = makeLayer(_.get.authorization)
+  }
+
+  type PlaylistConfigModule = Has[PlaylistConfig]
+  object PlaylistConfigModule {
+    val config: RIO[PlaylistConfigModule, PlaylistConfig] = ZIO.access(_.get)
+    val layer: RLayer[ConfigServiceEnv, PlaylistConfigModule] = makeLayer(_.get.playlist)
   }
 
   type ServerConfigModule = Has[ServerConfig]

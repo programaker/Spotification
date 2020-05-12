@@ -10,7 +10,7 @@ import spotification.domain.spotify.authorization.{
   AuthorizeRequest
 }
 import spotification.infra.Infra.refineRIO
-import spotification.infra.config.SpotifyConfigModule
+import spotification.infra.config.AuthorizationConfigModule
 import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUri
 import spotification.infra.spotify.authorization.AuthorizationModule
 import zio.RIO
@@ -19,13 +19,13 @@ import zio.interop.catz._
 object SpotifyAuthorizationApp {
   val makeAuthorizeUriProgram: RIO[SpotifyAuthorizationEnv, Uri] =
     for {
-      config <- SpotifyConfigModule.config
+      config <- AuthorizationConfigModule.config
       resp   <- makeAuthorizeUri(AuthorizeRequest.make(config))
     } yield resp
 
   def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] = {
-    val config = SpotifyConfigModule.config
-    val code = refineRIO[NonBlankStringR, SpotifyConfigModule, String](rawCode)
+    val config = AuthorizationConfigModule.config
+    val code = refineRIO[NonBlankStringR, AuthorizationConfigModule, String](rawCode)
     (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
   }
 

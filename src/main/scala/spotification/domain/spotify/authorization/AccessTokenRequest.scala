@@ -1,7 +1,7 @@
 package spotification.domain.spotify.authorization
 
 import spotification.domain._
-import spotification.domain.config.SpotifyConfig
+import spotification.domain.config.AuthorizationConfig
 
 final case class AccessTokenRequest(
   client_id: ClientId,
@@ -11,7 +11,7 @@ final case class AccessTokenRequest(
   redirect_uri: UriString
 )
 object AccessTokenRequest {
-  def make(cfg: SpotifyConfig, code: NonBlankString): AccessTokenRequest = AccessTokenRequest(
+  def make(cfg: AuthorizationConfig, code: NonBlankString): AccessTokenRequest = AccessTokenRequest(
     client_id = cfg.clientId,
     client_secret = cfg.clientSecret,
     grant_type = AccessTokenGrantType.AuthorizationCode,

@@ -1,7 +1,7 @@
 package spotification.domain.spotify.authorization
 
 import spotification.domain._
-import spotification.domain.config.SpotifyConfig
+import spotification.domain.config.AuthorizationConfig
 
 final case class AuthorizeRequest(
   client_id: ClientId,
@@ -12,7 +12,7 @@ final case class AuthorizeRequest(
   show_dialog: Option[Boolean]
 )
 object AuthorizeRequest {
-  def make(cfg: SpotifyConfig): AuthorizeRequest = AuthorizeRequest(
+  def make(cfg: AuthorizationConfig): AuthorizeRequest = AuthorizeRequest(
     client_id = cfg.clientId,
     redirect_uri = cfg.redirectUri,
     response_type = AuthorizationResponseType.Code,

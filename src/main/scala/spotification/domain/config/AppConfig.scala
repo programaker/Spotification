@@ -1,7 +1,8 @@
 package spotification.domain.config
 
 final case class AppConfig(
-  spotify: SpotifyConfig,
+  authorization: AuthorizationConfig,
+  playlist: PlaylistConfig,
   server: ServerConfig,
   log: LogConfig
 )

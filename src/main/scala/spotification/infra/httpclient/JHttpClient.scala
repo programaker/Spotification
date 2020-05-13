@@ -6,8 +6,7 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
 
-import spotification.infra.BaseEnv
-import zio.RIO
+import zio.Task
 
 /** So, why did we need to appeal to Java HttpClient!?
  * The problem is this issue in Http4s https://github.com/http4s/http4s/issues/2445
@@ -19,7 +18,7 @@ import zio.RIO
  * PS - I'm impressed about how simple the new Java HttpClient is!
  * It looks like a library */
 object JHttpClient {
-  def jPost[R <: BaseEnv](uri: String, body: String, headers: Map[String, String]): RIO[R, String] = RIO {
+  def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] = Task {
     val client = HttpClient
       .newBuilder()
       .version(HttpClient.Version.HTTP_2)

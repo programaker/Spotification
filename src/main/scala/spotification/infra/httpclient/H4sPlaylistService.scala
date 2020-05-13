@@ -6,11 +6,10 @@ import io.circe.generic.auto._
 import org.http4s.Method._
 import org.http4s.{ParseFailure, Uri}
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistItemsRequest, PlaylistItemsResponse}
-import spotification.infra.BaseEnv
 import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
 import spotification.infra.httpclient.HttpClient.H4sClientDsl
 import spotification.infra.spotify.playlist.PlaylistModule
-import zio.{RIO, Task}
+import zio.{IO, Task}
 import zio.interop.catz._
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
@@ -28,14 +27,14 @@ import spotification.infra.Json.Implicits._
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistModule.Service {
   import H4sClientDsl._
 
-  override def getPlaylistItems(req: PlaylistItemsRequest): RIO[BaseEnv, PlaylistItemsResponse] = {
+  override def getPlaylistItems(req: PlaylistItemsRequest): Task[PlaylistItemsResponse] = {
     val (accessToken, uri) = req match {
       case first: FirstRequest               => (first.accessToken, makeUri(first))
       case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
     }
 
-    RIO
-      .fromEither(uri.leftMap(pf => new Exception(pf.message)))
+    IO.fromEither(uri)
+      .absorbWith(parseFailure => new Exception(parseFailure.message))
       .map(GET(_, authorizationBearerHeader(accessToken)))
       .flatMap(httpClient.expect[String])
       .map(jawn.decode[PlaylistItemsResponse])

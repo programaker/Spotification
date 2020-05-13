@@ -37,7 +37,7 @@ object AuthorizationHttpClient {
       .map(addScopeParam(params3, _))
       .map(_.leftMap(new Exception(_)))
       .map(Task.fromEither(_))
-      .getOrElse(Task(params))
+      .getOrElse(Task(params3))
 
     // https://github.com/http4s/http4s/issues/2445
     // I did this for the same reason I've created `HttpClient.encode` function

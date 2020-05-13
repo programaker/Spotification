@@ -5,6 +5,7 @@ import spotification.application.SpotifyAuthorizationAppEnv
 import spotification.infra.concurrent.ExecutionContextModule
 import spotification.infra.config.ServerConfigModule
 import zio.TaskLayer
+import zio.clock.Clock
 
 package object presentation {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
@@ -15,9 +16,9 @@ package object presentation {
     val layer: TaskLayer[PresentationEnv] = SpotifyAuthorizationAppEnv.layer
   }
 
-  type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv
+  type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv with Clock
   object HttpAppEnv {
     val layer: TaskLayer[HttpAppEnv] =
-      ServerConfigModule.layer ++ ExecutionContextModule.layer ++ PresentationEnv.layer
+      ServerConfigModule.layer ++ ExecutionContextModule.layer ++ PresentationEnv.layer ++ Clock.live
   }
 }

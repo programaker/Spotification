@@ -6,13 +6,12 @@ import io.circe.jawn
 import org.http4s.Method._
 import org.http4s.{Uri, UrlForm}
 import spotification.domain.spotify.authorization._
-import zio.{RIO, Task}
+import zio.Task
 import zio.interop.catz._
 import eu.timepit.refined.auto._
 import HttpClient._
 import AuthorizationHttpClient._
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
-import spotification.infra.BaseEnv
 import spotification.infra.httpclient.JHttpClient.jPost
 import spotification.infra.spotify.authorization.AuthorizationModule
 
@@ -30,7 +29,7 @@ final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sCli
 
   import H4sClientDsl._
 
-  override def requestToken(req: AccessTokenRequest): RIO[BaseEnv, AccessTokenResponse] = {
+  override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params: ParamMap = Map(
       "grant_type"   -> req.grant_type,
       "code"         -> req.code,
@@ -44,13 +43,12 @@ final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sCli
 
     // I hope this is the only request that will need to use
     // Java as a secret weapon, due to the redirect_uri
-    jPost[BaseEnv](apiTokenUri.show, makeQueryString(params), headers)
+    jPost(apiTokenUri.show, makeQueryString(params), headers)
       .map(jawn.decode[AccessTokenResponse])
       .flatMap(Task.fromEither(_))
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Product"))
-  override def refreshToken(req: RefreshTokenRequest): RIO[BaseEnv, RefreshTokenResponse] = {
+  override def refreshToken(req: RefreshTokenRequest): Task[RefreshTokenResponse] = {
     val urlForm = UrlForm(
       "grant_type"    -> req.grant_type,
       "refresh_token" -> req.refresh_token.show

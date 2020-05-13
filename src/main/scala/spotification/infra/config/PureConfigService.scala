@@ -2,8 +2,7 @@ package spotification.infra.config
 
 import pureconfig.ConfigSource
 import spotification.domain.config.AppConfig
-import spotification.infra.BaseEnv
-import zio.{IO, RIO}
+import zio.{IO, Task}
 
 //==========
 // IntelliJ is complaining about:
@@ -16,7 +15,7 @@ import eu.timepit.refined.pureconfig._
 import Config.Implicits._
 
 object PureConfigService {
-  val readConfig: RIO[BaseEnv, AppConfig] =
+  val readConfig: Task[AppConfig] =
     IO.fromEither(ConfigSource.default.load[AppConfig])
       .mapError(_.prettyPrint())
       .absorbWith(new Exception(_))

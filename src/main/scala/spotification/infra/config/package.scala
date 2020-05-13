@@ -32,5 +32,5 @@ package object config {
     appConfigLayer.map(f).map(Has(_))
 
   private val appConfigLayer: TaskLayer[Has[AppConfig]] =
-    BaseEnv.layer >>> ZLayer.fromEffect(PureConfigService.readConfig)
+    ZLayer.fromEffect(PureConfigService.readConfig)
 }

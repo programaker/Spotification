@@ -11,7 +11,6 @@ import spotification.domain.spotify.authorization.Scope.joinScopes
 import zio.Task
 
 object HttpClient {
-  val ApiUri: String = "https://api.spotify.com/v1"
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
   val H4sClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
 

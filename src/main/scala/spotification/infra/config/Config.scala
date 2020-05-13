@@ -5,6 +5,7 @@ import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
 import spotification.domain.spotify.authorization.{ApiTokenUri, AuthorizeUri, ClientId, ClientSecret, RedirectUri}
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
+import spotification.domain.spotify.user.{UserApiUri, UserId}
 import spotification.domain.{HexString32, SpotifyId, UriString}
 
 object Config {
@@ -35,5 +36,11 @@ object Config {
 
     implicit val playlistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
       implicitly[ConfigReader[UriString]].map(PlaylistApiUri.apply)
+
+    implicit val userIdConfigReader: ConfigReader[UserId] =
+      implicitly[ConfigReader[SpotifyId]].map(UserId.apply)
+
+    implicit val userApiUriConfigReader: ConfigReader[UserApiUri] =
+      implicitly[ConfigReader[UriString]].map(UserApiUri.apply)
   }
 }

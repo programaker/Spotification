@@ -3,7 +3,6 @@ package spotification.infra.spotify
 import spotification.domain.config.AuthorizationConfig
 import spotification.domain.spotify.authorization._
 import spotification.infra.BaseEnv
-import spotification.infra.concurrent.ExecutionContextModule
 import spotification.infra.config.AuthorizationConfigModule
 import spotification.infra.httpclient.{H4sAuthorizationService, H4sClient, HttpClientModule}
 import zio._
@@ -22,9 +21,7 @@ package object authorization {
         (config, httpClient) => new H4sAuthorizationService(config.apiTokenUri, httpClient)
       }
 
-      val l2 = BaseEnv.layer >>> AuthorizationConfigModule.layer
-      val l3 = ExecutionContextModule.layer >>> HttpClientModule.layer
-      (l2 ++ l3) >>> l1
+      (AuthorizationConfigModule.layer ++ HttpClientModule.layer) >>> l1
     }
 
     trait Service {

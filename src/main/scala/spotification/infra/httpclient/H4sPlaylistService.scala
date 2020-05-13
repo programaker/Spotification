@@ -5,10 +5,10 @@ import io.circe.jawn
 import io.circe.generic.auto._
 import org.http4s.Method._
 import org.http4s.{ParseFailure, Uri}
-import spotification.domain.spotify.playlist.{PlaylistItemsRequest, PlaylistItemsResponse}
+import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistItemsRequest, PlaylistItemsResponse}
 import spotification.infra.BaseEnv
 import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
-import spotification.infra.httpclient.HttpClient.{H4sClientDsl, _}
+import spotification.infra.httpclient.HttpClient.H4sClientDsl
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, Task}
 import zio.interop.catz._
@@ -25,9 +25,8 @@ import spotification.domain.spotify.playlist.PlaylistItemsRequest.{FirstRequest,
 import io.circe.refined._
 import spotification.infra.Json.Implicits._
 
-final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Service {
+final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistModule.Service {
   import H4sClientDsl._
-  private val PlaylistsApiUri: String = show"$ApiUri/playlists"
 
   override def getPlaylistItems(req: PlaylistItemsRequest): RIO[BaseEnv, PlaylistItemsResponse] = {
     val (accessToken, uri) = req match {
@@ -45,7 +44,7 @@ final class H4sPlaylistService(httpClient: H4sClient) extends PlaylistModule.Ser
 
   private def makeUri(req: FirstRequest): Either[ParseFailure, Uri] =
     Uri
-      .fromString(show"$PlaylistsApiUri/${req.playlistId}/tracks")
+      .fromString(show"$playlistApiUri/${req.playlistId}/tracks")
       .map {
         _.withQueryParam("fields", req.fields.show)
           .withQueryParam("limit", req.limit.show)

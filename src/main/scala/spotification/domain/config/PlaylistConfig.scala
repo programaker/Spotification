@@ -1,5 +1,8 @@
 package spotification.domain.config
 
-import spotification.domain.spotify.playlist.PlaylistId
+import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
 
-final case class PlaylistConfig(releaseRadarId: PlaylistId)
+final case class PlaylistConfig(
+  releaseRadarId: PlaylistId,
+  playlistApiUri: PlaylistApiUri
+)

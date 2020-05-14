@@ -1,26 +1,27 @@
 package spotification.infra.httpclient
 
 import cats.implicits._
-import io.circe.jawn
 import io.circe.generic.auto._
+import io.circe.syntax._
 import org.http4s.Method._
 import org.http4s.{ParseFailure, Uri}
-import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistItemsRequest, PlaylistItemsResponse}
+import spotification.domain.spotify.playlist._
 import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
-import spotification.infra.httpclient.HttpClient.H4sClientDsl
+import spotification.infra.httpclient.HttpClient.{H4sClientDsl, doRequest}
 import spotification.infra.spotify.playlist.PlaylistModule
-import zio.{IO, Task}
-import zio.interop.catz._
+import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.playlist.PlaylistItemsRequest.{FirstRequest, NextRequest}
 
 // ==========
 // Despite IntelliJ telling that
+// `import zio.interop.catz._`
 // `import io.circe.refined._`
 // `import spotification.infra.Json.Implicits._`
 // are not being used, they are required to compile
 // ==========
+import zio.interop.catz._
 import io.circe.refined._
 import spotification.infra.Json.Implicits._
 
@@ -29,24 +30,26 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
 
   override def getPlaylistItems(req: PlaylistItemsRequest): Task[PlaylistItemsResponse] = {
     val (accessToken, uri) = req match {
-      case first: FirstRequest               => (first.accessToken, makeUri(first))
+      case first: FirstRequest               => (first.accessToken, getItemsUri(first))
       case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
     }
 
-    IO.fromEither(uri)
-      .absorbWith(parseFailure => new Exception(parseFailure.message))
-      .map(GET(_, authorizationBearerHeader(accessToken)))
-      .flatMap(httpClient.expect[String])
-      .map(jawn.decode[PlaylistItemsResponse])
-      .flatMap(Task.fromEither(_))
+    val get = GET(_: Uri, authorizationBearerHeader(accessToken))
+    doRequest[PlaylistItemsResponse](httpClient, uri)(get)
   }
 
-  private def makeUri(req: FirstRequest): Either[ParseFailure, Uri] =
-    Uri
-      .fromString(show"$playlistApiUri/${req.playlistId}/tracks")
-      .map {
-        _.withQueryParam("fields", req.fields.show)
-          .withQueryParam("limit", req.limit.show)
-          .withQueryParam("offset", req.offset.show)
-      }
+  override def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse] = {
+    val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
+    doRequest[AddItemsToPlaylistResponse](httpClient, tracksUri(req.playlistId))(post)
+  }
+
+  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =
+    tracksUri(req.playlistId).map {
+      _.withQueryParam("fields", req.fields.show)
+        .withQueryParam("limit", req.limit.show)
+        .withQueryParam("offset", req.offset.show)
+    }
+
+  private def tracksUri(playlistId: PlaylistId): Either[ParseFailure, Uri] =
+    Uri.fromString(show"$playlistApiUri/$playlistId/tracks")
 }

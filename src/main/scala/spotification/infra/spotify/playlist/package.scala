@@ -1,7 +1,12 @@
 package spotification.infra.spotify
 
 import spotification.domain.config.PlaylistConfig
-import spotification.domain.spotify.playlist.{PlaylistItemsRequest, PlaylistItemsResponse}
+import spotification.domain.spotify.playlist.{
+  AddItemsToPlaylistRequest,
+  AddItemsToPlaylistResponse,
+  PlaylistItemsRequest,
+  PlaylistItemsResponse
+}
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.httpclient.{H4sClient, H4sPlaylistService, HttpClientModule}
 import zio._
@@ -22,6 +27,7 @@ package object playlist {
 
     trait Service {
       def getPlaylistItems(req: PlaylistItemsRequest): Task[PlaylistItemsResponse]
+      def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse]
     }
   }
 }

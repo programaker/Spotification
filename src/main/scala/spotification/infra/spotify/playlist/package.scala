@@ -17,6 +17,9 @@ package object playlist {
     def getPlaylistItems(req: PlaylistItemsRequest): RIO[PlaylistModule, PlaylistItemsResponse] =
       ZIO.accessM(_.get.getPlaylistItems(req))
 
+    def addItemsToPlaylist(req: AddItemsToPlaylistRequest): RIO[PlaylistModule, AddItemsToPlaylistResponse] =
+      ZIO.accessM(_.get.addItemsToPlaylist(req))
+
     val layer: TaskLayer[PlaylistModule] = {
       val l1 = ZLayer.fromServices[PlaylistConfig, H4sClient, PlaylistModule.Service] { (config, httpClient) =>
         new H4sPlaylistService(config.playlistApiUri, httpClient)

@@ -12,7 +12,7 @@ import spotification.infra.spotify.playlist.PlaylistModule
 import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
-import spotification.domain.spotify.playlist.PlaylistItemsRequest.{FirstRequest, NextRequest}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 
 // ==========
 // Despite IntelliJ telling that
@@ -28,14 +28,14 @@ import spotification.infra.Json.Implicits._
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistModule.Service {
   import H4sClientDsl._
 
-  override def getPlaylistItems(req: PlaylistItemsRequest): Task[PlaylistItemsResponse] = {
+  override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
     val (accessToken, uri) = req match {
       case first: FirstRequest               => (first.accessToken, getItemsUri(first))
       case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
     }
 
     val get = GET(_: Uri, authorizationBearerHeader(accessToken))
-    doRequest[PlaylistItemsResponse](httpClient, uri)(get)
+    doRequest[GetPlaylistsItemsResponse](httpClient, uri)(get)
   }
 
   override def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse] = {

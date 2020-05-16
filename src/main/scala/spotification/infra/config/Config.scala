@@ -5,7 +5,6 @@ import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
 import spotification.domain.spotify.authorization._
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
-import spotification.domain.spotify.user.{UserApiUri, UserId}
 
 object Config {
   object Implicits {
@@ -35,12 +34,6 @@ object Config {
 
     implicit val playlistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
       makeConfigReader(PlaylistApiUri.apply)
-
-    implicit val userIdConfigReader: ConfigReader[UserId] =
-      makeConfigReader(UserId.apply)
-
-    implicit val userApiUriConfigReader: ConfigReader[UserApiUri] =
-      makeConfigReader(UserApiUri.apply)
 
     private def makeConfigReader[A: ConfigReader, B](f: A => B): ConfigReader[B] =
       implicitly[ConfigReader[A]].map(f)

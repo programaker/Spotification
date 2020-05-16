@@ -19,7 +19,7 @@ object ReleaseRadarApp {
       accessToken = accessToken,
       playlistId = playlistConfig.releaseRadarId,
       fields = "next,total,items.track.album(id,album_type)",
-      limit = 100,
+      limit = 100, //TODO => move this to PlaylistConfig
       offset = 0
     )
 

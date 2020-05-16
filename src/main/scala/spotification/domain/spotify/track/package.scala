@@ -12,7 +12,7 @@ import spotification.domain.SpotifyId
 package object track {
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
-    implicit val trackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
+    implicit val TrackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
   }
 
   type TrackUriR = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]

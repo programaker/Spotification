@@ -16,19 +16,19 @@ object Json {
     implicit def apJsonEntityEncoder[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =
       jsonEncoderOf[F, A]
 
-    implicit val accessTokenEncoder: Encoder[AccessToken] =
+    implicit val AccessTokenEncoder: Encoder[AccessToken] =
       implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-    implicit val accessTokenDecoder: Decoder[AccessToken] =
+    implicit val AccessTokenDecoder: Decoder[AccessToken] =
       implicitly[Decoder[NonBlankString]].map(_.coerce[AccessToken])
 
-    implicit val refreshTokenEncoder: Encoder[RefreshToken] =
+    implicit val RefreshTokenEncoder: Encoder[RefreshToken] =
       implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-    implicit val refreshTokenDecoder: Decoder[RefreshToken] =
+    implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
       implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
 
-    implicit val albumIdDecoder: Decoder[AlbumId] =
+    implicit val AlbumIdDecoder: Decoder[AlbumId] =
       implicitly[Decoder[SpotifyId]].map(_.coerce[AlbumId])
   }
 }

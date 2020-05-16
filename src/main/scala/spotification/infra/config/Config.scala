@@ -3,37 +3,41 @@ package spotification.infra.config
 import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
+import spotification.domain.spotify.album.AlbumApiUri
 import spotification.domain.spotify.authorization._
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
 
 object Config {
   object Implicits {
-    implicit val directoryConfigReader: ConfigReader[Directory] =
+    implicit val DirectoryConfigReader: ConfigReader[Directory] =
       makeConfigReader(Directory.apply)
 
-    implicit val bytesConfigReader: ConfigReader[Bytes] =
+    implicit val BytesConfigReader: ConfigReader[Bytes] =
       makeConfigReader(Bytes.apply)
 
-    implicit val clientIdConfigReader: ConfigReader[ClientId] =
+    implicit val ClientIdConfigReader: ConfigReader[ClientId] =
       makeConfigReader(ClientId.apply)
 
-    implicit val clientSecretConfigReader: ConfigReader[ClientSecret] =
+    implicit val ClientSecretConfigReader: ConfigReader[ClientSecret] =
       makeConfigReader(ClientSecret.apply)
 
-    implicit val playlistIdConfigReader: ConfigReader[PlaylistId] =
+    implicit val PlaylistIdConfigReader: ConfigReader[PlaylistId] =
       makeConfigReader(PlaylistId.apply)
 
-    implicit val redirectUriConfigReader: ConfigReader[RedirectUri] =
+    implicit val RedirectUriConfigReader: ConfigReader[RedirectUri] =
       makeConfigReader(RedirectUri.apply)
 
-    implicit val authorizeUriConfigReader: ConfigReader[AuthorizeUri] =
+    implicit val AuthorizeUriConfigReader: ConfigReader[AuthorizeUri] =
       makeConfigReader(AuthorizeUri.apply)
 
-    implicit val apiTokenUriConfigReader: ConfigReader[ApiTokenUri] =
+    implicit val ApiTokenUriConfigReader: ConfigReader[ApiTokenUri] =
       makeConfigReader(ApiTokenUri.apply)
 
-    implicit val playlistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
+    implicit val PlaylistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
       makeConfigReader(PlaylistApiUri.apply)
+
+    implicit val AlbumApiUriConfigReader: ConfigReader[AlbumApiUri] =
+      makeConfigReader(AlbumApiUri.apply)
 
     private def makeConfigReader[A: ConfigReader, B](f: A => B): ConfigReader[B] =
       implicitly[ConfigReader[A]].map(f)

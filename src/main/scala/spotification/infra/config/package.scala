@@ -1,14 +1,7 @@
 package spotification.infra
 
 import pureconfig.ConfigSource
-import spotification.domain.config.{
-  AlbumConfig,
-  AppConfig,
-  AuthorizationConfig,
-  LogConfig,
-  PlaylistConfig,
-  ServerConfig
-}
+import spotification.domain.config._
 import spotification.infra.config.Config
 import zio._
 

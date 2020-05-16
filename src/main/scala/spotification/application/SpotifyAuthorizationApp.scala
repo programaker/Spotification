@@ -4,10 +4,13 @@ import cats.implicits._
 import org.http4s.Uri
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization.{
+  AccessToken,
   AccessTokenRequest,
   AccessTokenResponse,
   AuthorizeErrorResponse,
-  AuthorizeRequest
+  AuthorizeRequest,
+  RefreshTokenGrantType,
+  RefreshTokenRequest
 }
 import spotification.infra.Infra.refineRIO
 import spotification.infra.config.AuthorizationConfigModule
@@ -31,4 +34,23 @@ object SpotifyAuthorizationApp {
 
   def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationAppEnv, AuthorizeErrorResponse] =
     refineRIO[NonBlankStringR, SpotifyAuthorizationAppEnv, String](error).map(AuthorizeErrorResponse)
+
+  val requestAccessTokenProgram: RIO[SpotifyAuthorizationAppEnv, AccessToken] =
+    for {
+      config <- AuthorizationConfigModule.config
+
+      refreshToken <- config.refreshToken match {
+        case None        => RIO.fail(new Exception("Refresh token absent from AuthorizationConfig"))
+        case Some(token) => RIO.succeed(token)
+      }
+
+      req = RefreshTokenRequest(
+        client_id = config.clientId,
+        client_secret = config.clientSecret,
+        grant_type = RefreshTokenGrantType.RefreshToken,
+        refresh_token = refreshToken
+      )
+
+      resp <- AuthorizationModule.refreshToken(req)
+    } yield resp.access_token
 }

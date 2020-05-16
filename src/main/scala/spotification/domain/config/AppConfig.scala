@@ -1,9 +1,9 @@
 package spotification.domain.config
 
-import spotification.domain.{Host, NonBlankString, PositiveInt}
 import spotification.domain.spotify.album.AlbumApiUri
 import spotification.domain.spotify.authorization._
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
+import spotification.domain.{Host, PositiveInt}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -22,7 +22,7 @@ final case class AuthorizationConfig(
   authorizeUri: AuthorizeUri,
   apiTokenUri: ApiTokenUri,
   scopes: Option[List[Scope]],
-  refreshToken: Option[NonBlankString]
+  refreshToken: Option[RefreshToken]
 )
 
 final case class PlaylistConfig(

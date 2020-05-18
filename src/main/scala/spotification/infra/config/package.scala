@@ -46,7 +46,7 @@ package object config {
     val layer: TaskLayer[LogConfigModule] = makeLayer(_.get.log)
   }
 
-  private def makeLayer[A: Tagged](f: Has[AppConfig] => A): TaskLayer[Has[A]] =
+  private def makeLayer[A: Tag](f: Has[AppConfig] => A): TaskLayer[Has[A]] =
     appConfigLayer.map(f).map(Has(_))
 
   private val appConfigLayer: TaskLayer[Has[AppConfig]] =

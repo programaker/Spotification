@@ -24,6 +24,10 @@ package object playlist {
 
   // A maximum of 100 Tracks can be added to a Playlist in a single request
   // An IndexedSeq is being used due to efficient `length` operation (needed for the refinement)
-  type TrackUrisToAddR = MinSize[1] And MaxSize[100]
+  type TrackUrisToAddMax = 100
+  type TrackUrisToAddR = MinSize[1] And MaxSize[TrackUrisToAddMax]
   type TrackUrisToAdd = Vector[TrackUri] Refined TrackUrisToAddR
+  object TrackUrisToAdd {
+    val MaxSize: TrackUrisToAddMax = 100
+  }
 }

@@ -6,9 +6,11 @@ import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, GetPlayl
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.spotify.playlist.PlaylistModule
-import zio.RIO
+import zio.{IO, RIO, ZIO}
 import cats.implicits._
-import spotification.domain.spotify.album.AlbumType
+import eu.timepit.refined.refineV
+import spotification.domain.spotify.album.{AlbumId, AlbumIdsToGet, AlbumIdsToGetR, AlbumType}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
 
 object ReleaseRadarApp {
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] = for {
@@ -31,17 +33,34 @@ object ReleaseRadarApp {
     req: GetPlaylistsItemsRequest
   ): RIO[ReleaseRadarAppEnv, Unit] =
     PlaylistModule.getPlaylistItems(req).flatMap {
-      case GetPlaylistsItemsResponse.Success(items, _, next) =>
-        for {
-          albums <- RIO.succeed(items.filter(track => AlbumType.isAlbum(track.album.album_type)))
-          //TODO => do something with the albums
-          _ <- next match {
-            case Some(nextUri) => fillReleaseRadarNoSingles(accessToken, NextRequest(accessToken, nextUri))
-            case None          => RIO.succeed(())
-          }
-        } yield ()
+      case GetPlaylistsItemsResponse.Success(items, _, nextPageUri) =>
+        val albums = importAlbums(accessToken, items)
+
+        val nextPage = nextPageUri match {
+          case Some(uri) => fillReleaseRadarNoSingles(accessToken, NextRequest(accessToken, uri))
+          case None      => RIO.succeed(())
+        }
+
+        albums zipParRight nextPage
 
       case GetPlaylistsItemsResponse.Error(status, message) =>
         RIO.fail(new Exception(show"Error in GetPlaylistItems: status=$status, message='$message'"))
     }
+
+  private def importAlbums(accessToken: AccessToken, items: List[TrackResponse]): RIO[ReleaseRadarAppEnv, Unit] = {
+    val x = items
+      .to(LazyList)
+      .mapFilter(extractAlbumId)
+      .grouped(AlbumIdsToGet.MaxSize)
+      .map(_.toVector)
+      .map(refineV[AlbumIdsToGetR](_))
+      .map(IO.fromEither(_))
+      .map(_.absorbWith(s => new Exception(s)))
+
+    RIO.succeed(())
+  }
+
+  private def extractAlbumId(track: TrackResponse): Option[AlbumId] =
+    if (AlbumType.isAlbum(track.album.album_type)) Some(track.album.id)
+    else None
 }

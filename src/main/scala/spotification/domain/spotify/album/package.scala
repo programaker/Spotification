@@ -25,8 +25,12 @@ package object album {
 
   // A maximum of 20 albums can be gotten at a time
   // An IndexedSeq is being used due to efficient `length` operation (needed for the refinement)
-  type AlbumIdsToGetR = MinSize[1] And MaxSize[20]
+  type AlbumIdsToGetMax = 20
+  type AlbumIdsToGetR = MinSize[1] And MaxSize[AlbumIdsToGetMax]
   type AlbumIdsToGet = Vector[AlbumId] Refined AlbumIdsToGetR
+  object AlbumIdsToGet {
+    val MaxSize: AlbumIdsToGetMax = 20
+  }
 
   @newtype case class AlbumApiUri(value: UriString)
   object AlbumApiUri {

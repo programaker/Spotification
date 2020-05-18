@@ -28,12 +28,12 @@ object SpotifyAuthorizationApp {
 
   def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationAppEnv, AccessTokenResponse] = {
     val config = AuthorizationConfigModule.config
-    val code = refineRIO[NonBlankStringR, AuthorizationConfigModule, String](rawCode)
+    val code = refineRIO[AuthorizationConfigModule, NonBlankStringR](rawCode)
     (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
   }
 
   def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationAppEnv, AuthorizeErrorResponse] =
-    refineRIO[NonBlankStringR, SpotifyAuthorizationAppEnv, String](error).map(AuthorizeErrorResponse)
+    refineRIO[SpotifyAuthorizationAppEnv, NonBlankStringR](error).map(AuthorizeErrorResponse)
 
   val requestAccessTokenProgram: RIO[SpotifyAuthorizationAppEnv, AccessToken] =
     for {

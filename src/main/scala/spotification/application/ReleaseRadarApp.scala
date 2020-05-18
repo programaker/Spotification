@@ -6,11 +6,11 @@ import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, GetPlayl
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.spotify.playlist.PlaylistModule
-import zio.{IO, RIO, ZIO}
+import zio.RIO
 import cats.implicits._
-import eu.timepit.refined.refineV
 import spotification.domain.spotify.album.{AlbumId, AlbumIdsToGet, AlbumIdsToGetR, AlbumType}
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
+import spotification.infra.Infra.refineRIO
 
 object ReleaseRadarApp {
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] = for {
@@ -53,9 +53,7 @@ object ReleaseRadarApp {
       .mapFilter(extractAlbumId)
       .grouped(AlbumIdsToGet.MaxSize)
       .map(_.toVector)
-      .map(refineV[AlbumIdsToGetR](_))
-      .map(IO.fromEither(_))
-      .map(_.absorbWith(s => new Exception(s)))
+      .map(refineRIO[ReleaseRadarAppEnv, AlbumIdsToGetR](_))
 
     RIO.succeed(())
   }

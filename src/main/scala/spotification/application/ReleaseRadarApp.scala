@@ -50,18 +50,17 @@ object ReleaseRadarApp {
         RIO.fail(new Exception(show"Error in GetPlaylistItems: status=$status, message='$message'"))
     }
 
-  private def importAlbums(accessToken: AccessToken, items: List[TrackResponse]): RIO[ReleaseRadarAppEnv, Unit] = {
-    val allAlbumChunks = items
-      .to(LazyList)
-      .mapFilter(extractAlbumId)
-      .grouped(AlbumIdsToGet.MaxSize)
-      .map(_.toVector)
-      .map(refineRIO[ReleaseRadarAppEnv, AlbumIdsToGetR](_))
-      .map(_.flatMap(importAlbumChunk(accessToken, _)))
-      .to(Iterable)
-
-    ZIO.foreachPar_(allAlbumChunks)(identity)
-  }
+  private def importAlbums(accessToken: AccessToken, items: List[TrackResponse]): RIO[ReleaseRadarAppEnv, Unit] =
+    ZIO.foreachPar_ {
+      items
+        .to(LazyList)
+        .mapFilter(extractAlbumId)
+        .grouped(AlbumIdsToGet.MaxSize)
+        .map(_.toVector)
+        .map(refineRIO[ReleaseRadarAppEnv, AlbumIdsToGetR](_))
+        .map(_.flatMap(importAlbumChunk(accessToken, _)))
+        .to(Iterable)
+    }(identity)
 
   private def importAlbumChunk(accessToken: AccessToken, albumIds: AlbumIdsToGet): RIO[ReleaseRadarAppEnv, Unit] =
     AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap {

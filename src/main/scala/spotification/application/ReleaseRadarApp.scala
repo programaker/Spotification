@@ -6,11 +6,12 @@ import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, GetPlayl
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.spotify.playlist.PlaylistModule
-import zio.RIO
+import zio.{RIO, ZIO}
 import cats.implicits._
-import spotification.domain.spotify.album.{AlbumId, AlbumIdsToGet, AlbumIdsToGetR, AlbumType}
+import spotification.domain.spotify.album._
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
 import spotification.infra.Infra.refineRIO
+import spotification.infra.spotify.album.AlbumModule
 
 object ReleaseRadarApp {
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] = for {
@@ -48,15 +49,26 @@ object ReleaseRadarApp {
     }
 
   private def importAlbums(accessToken: AccessToken, items: List[TrackResponse]): RIO[ReleaseRadarAppEnv, Unit] = {
-    val x = items
+    val allAlbumChunks = items
       .to(LazyList)
       .mapFilter(extractAlbumId)
       .grouped(AlbumIdsToGet.MaxSize)
       .map(_.toVector)
       .map(refineRIO[ReleaseRadarAppEnv, AlbumIdsToGetR](_))
+      .map(_.flatMap(importAlbumChunk(accessToken, _)))
+      .to(Iterable)
 
-    RIO.succeed(())
+    ZIO.foreachPar_(allAlbumChunks)(identity)
   }
+
+  private def importAlbumChunk(accessToken: AccessToken, albumIds: AlbumIdsToGet): RIO[ReleaseRadarAppEnv, Unit] =
+    AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap {
+      case GetSeveralAlbumsResponse.Success(albums) =>
+        RIO.succeed(())
+
+      case GetSeveralAlbumsResponse.Error(status, message) =>
+        RIO.fail(new Exception(show"Error in GetSeveralAlbums: status=$status, message='$message'"))
+    }
 
   private def extractAlbumId(track: TrackResponse): Option[AlbumId] =
     if (AlbumType.isAlbum(track.album.album_type)) Some(track.album.id)

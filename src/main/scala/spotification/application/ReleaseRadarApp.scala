@@ -1,17 +1,19 @@
 package spotification.application
 
+import cats.implicits._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import spotification.domain.spotify.album._
 import spotification.domain.spotify.authorization.AccessToken
-import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, GetPlaylistsItemsResponse}
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
+import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, GetPlaylistsItemsResponse, TrackUrisToAddR}
+import spotification.domain.spotify.track.TrackUri
+import spotification.infra.Infra.refineRIO
 import spotification.infra.config.PlaylistConfigModule
+import spotification.infra.spotify.album.AlbumModule
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, ZIO}
-import cats.implicits._
-import spotification.domain.spotify.album._
-import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
-import spotification.infra.Infra.refineRIO
-import spotification.infra.spotify.album.AlbumModule
 
 object ReleaseRadarApp {
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] = for {
@@ -64,6 +66,12 @@ object ReleaseRadarApp {
   private def importAlbumChunk(accessToken: AccessToken, albumIds: AlbumIdsToGet): RIO[ReleaseRadarAppEnv, Unit] =
     AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap {
       case GetSeveralAlbumsResponse.Success(albums) =>
+        /*albums
+          .map(extractTrackUris)
+          .map(tracks =>
+            PlaylistModule
+              .addItemsToPlaylist(AddItemsToPlaylistRequest(accessToken, ???, AddItemsToPlaylistRequest.Body(tracks)))
+          )*/
         RIO.succeed(())
 
       case GetSeveralAlbumsResponse.Error(status, message) =>
@@ -73,4 +81,9 @@ object ReleaseRadarApp {
   private def extractAlbumId(track: TrackResponse): Option[AlbumId] =
     if (AlbumType.isAlbum(track.album.album_type)) Some(track.album.id)
     else None
+
+  private def extractTrackUris(
+    album: GetSeveralAlbumsResponse.Success.AlbumResponse
+  ): RIO[ReleaseRadarAppEnv, Refined[Vector[TrackUri], TrackUrisToAddR]] =
+    refineRIO[ReleaseRadarAppEnv, TrackUrisToAddR](album.tracks.items.map(_.uri).toVector)
 }

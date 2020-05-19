@@ -8,7 +8,7 @@ object GetSeveralAlbumsResponse {
   final case class Success(albums: List[AlbumResponse]) extends GetSeveralAlbumsResponse
   object Success {
     final case class AlbumResponse(tracks: TracksResponse)
-    final case class TracksResponse(items: ItemResponse)
+    final case class TracksResponse(items: List[ItemResponse])
     final case class ItemResponse(uri: TrackUri)
   }
 

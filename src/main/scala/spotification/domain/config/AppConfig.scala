@@ -28,7 +28,8 @@ final case class AuthorizationConfig(
 final case class PlaylistConfig(
   releaseRadarId: PlaylistId,
   releaseRadarNoSinglesId: PlaylistId,
-  playlistApiUri: PlaylistApiUri
+  playlistApiUri: PlaylistApiUri,
+  getPlaylistItemsLimit: PositiveInt
 )
 
 final case class AlbumConfig(

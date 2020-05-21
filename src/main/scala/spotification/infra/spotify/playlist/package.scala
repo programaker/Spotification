@@ -14,10 +14,10 @@ import zio._
 package object playlist {
   type PlaylistModule = Has[PlaylistModule.Service]
   object PlaylistModule {
-    def getPlaylistItems(req: GetPlaylistsItemsRequest): RIO[PlaylistModule, GetPlaylistsItemsResponse] =
+    def getPlaylistItems(req: GetPlaylistsItemsRequest): RIO[PlaylistModule, GetPlaylistsItemsResponse.Success] =
       ZIO.accessM(_.get.getPlaylistsItems(req))
 
-    def addItemsToPlaylist(req: AddItemsToPlaylistRequest): RIO[PlaylistModule, AddItemsToPlaylistResponse] =
+    def addItemsToPlaylist(req: AddItemsToPlaylistRequest): RIO[PlaylistModule, AddItemsToPlaylistResponse.Success] =
       ZIO.accessM(_.get.addItemsToPlaylist(req))
 
     val layer: TaskLayer[PlaylistModule] = {
@@ -29,8 +29,8 @@ package object playlist {
     }
 
     trait Service {
-      def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse]
-      def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse]
+      def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse.Success]
+      def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse.Success]
     }
   }
 }

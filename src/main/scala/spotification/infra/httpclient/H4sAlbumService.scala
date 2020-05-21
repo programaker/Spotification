@@ -23,10 +23,16 @@ import io.circe.refined._
 final class H4sAlbumService(albumApiUri: AlbumApiUri, httpClient: H4sClient) extends AlbumModule.Service {
   import H4sClientDsl._
 
-  override def getSeveralAlbums(req: GetSeveralAlbumsRequest): Task[GetSeveralAlbumsResponse] = {
+  override def getSeveralAlbums(req: GetSeveralAlbumsRequest): Task[GetSeveralAlbumsResponse.Success] = {
     val ids = req.ids.value.mkString_(",")
     val uri = Uri.fromString(albumApiUri.show).map(_.withQueryParam("ids", ids))
     val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-    doRequest[GetSeveralAlbumsResponse](httpClient, uri)(get)
+
+    doRequest[GetSeveralAlbumsResponse](httpClient, uri)(get).flatMap {
+      case s: GetSeveralAlbumsResponse.Success =>
+        Task.succeed(s)
+      case GetSeveralAlbumsResponse.Error(status, message) =>
+        Task.fail(new Exception(show"Error in GetSeveralAlbums: status=$status, message='$message'"))
+    }
   }
 }

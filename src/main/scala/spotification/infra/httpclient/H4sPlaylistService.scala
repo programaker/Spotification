@@ -28,19 +28,31 @@ import spotification.infra.Json.Implicits._
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistModule.Service {
   import H4sClientDsl._
 
-  override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
+  override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse.Success] = {
     val (accessToken, uri) = req match {
       case first: FirstRequest               => (first.accessToken, getItemsUri(first))
       case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
     }
 
     val get = GET(_: Uri, authorizationBearerHeader(accessToken))
-    doRequest[GetPlaylistsItemsResponse](httpClient, uri)(get)
+
+    doRequest[GetPlaylistsItemsResponse](httpClient, uri)(get).flatMap {
+      case s: GetPlaylistsItemsResponse.Success =>
+        Task.succeed(s)
+      case GetPlaylistsItemsResponse.Error(status, message) =>
+        Task.fail(new Exception(show"Error in GetPlaylistsItems: status=$status, message='$message'"))
+    }
   }
 
-  override def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse] = {
+  override def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse.Success] = {
     val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-    doRequest[AddItemsToPlaylistResponse](httpClient, tracksUri(req.playlistId))(post)
+
+    doRequest[AddItemsToPlaylistResponse](httpClient, tracksUri(req.playlistId))(post).flatMap {
+      case s: AddItemsToPlaylistResponse.Success =>
+        Task.succeed(s)
+      case AddItemsToPlaylistResponse.Error(status, message) =>
+        Task.fail(new Exception(show"Error in AddItemsToPlaylist: status=$status, message='$message'"))
+    }
   }
 
   private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =

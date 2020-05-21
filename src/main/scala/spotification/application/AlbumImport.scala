@@ -1,6 +1,5 @@
 package spotification.application
 
-import cats.implicits._
 import spotification.domain.spotify.album._
 import spotification.domain.spotify.authorization.AccessToken
 import spotification.domain.spotify.playlist.PlaylistId
@@ -31,14 +30,10 @@ object AlbumImport {
     albumIds: AlbumIdsToGet,
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
-    AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap {
-      case GetSeveralAlbumsResponse.Success(albums) =>
-        val trackUris = albums.map(extractTrackUris).to(Iterable)
-        val importTracks = TrackImport.importTracks(accessToken, _, destPlaylist)
-        ZIO.foreachPar_(trackUris)(importTracks)
-
-      case GetSeveralAlbumsResponse.Error(status, message) =>
-        RIO.fail(new Exception(show"Error in GetSeveralAlbums: status=$status, message='$message'"))
+    AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap { resp =>
+      val trackUris = resp.albums.map(extractTrackUris).to(Iterable)
+      val importTracks = TrackImport.importTracks(accessToken, _, destPlaylist)
+      ZIO.foreachPar_(trackUris)(importTracks)
     }
 
   private def extractTrackUris(album: GetSeveralAlbumsResponse.Success.AlbumResponse): List[TrackUri] =

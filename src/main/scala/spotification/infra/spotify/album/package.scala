@@ -9,7 +9,7 @@ import zio.{Has, RIO, Task, TaskLayer, ZIO, ZLayer}
 package object album {
   type AlbumModule = Has[AlbumModule.Service]
   object AlbumModule {
-    def getSeveralAlbums(req: GetSeveralAlbumsRequest): RIO[AlbumModule, GetSeveralAlbumsResponse] =
+    def getSeveralAlbums(req: GetSeveralAlbumsRequest): RIO[AlbumModule, GetSeveralAlbumsResponse.Success] =
       ZIO.accessM(_.get.getSeveralAlbums(req))
 
     val layer: TaskLayer[AlbumModule] = {
@@ -21,7 +21,7 @@ package object album {
     }
 
     trait Service {
-      def getSeveralAlbums(req: GetSeveralAlbumsRequest): Task[GetSeveralAlbumsResponse]
+      def getSeveralAlbums(req: GetSeveralAlbumsRequest): Task[GetSeveralAlbumsResponse.Success]
     }
   }
 }

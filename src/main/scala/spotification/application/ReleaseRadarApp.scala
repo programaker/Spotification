@@ -32,19 +32,15 @@ object ReleaseRadarApp {
     req: GetPlaylistsItemsRequest,
     destPlaylist: PlaylistId
   ): RIO[ReleaseRadarAppEnv, Unit] =
-    PlaylistModule.getPlaylistItems(req).flatMap {
-      case GetPlaylistsItemsResponse.Success(items, _, nextPageUri) =>
-        val importAlbums = AlbumImport.importAlbums(accessToken, items.mapFilter(extractAlbumId), destPlaylist)
+    PlaylistModule.getPlaylistItems(req).flatMap { resp =>
+      val importAlbums = AlbumImport.importAlbums(accessToken, resp.items.mapFilter(extractAlbumId), destPlaylist)
 
-        val nextPage = nextPageUri match {
-          case Some(uri) => fillReleaseRadarNoSingles(accessToken, NextRequest(accessToken, uri), destPlaylist)
-          case None      => RIO.succeed(())
-        }
+      val nextPage = resp.next match {
+        case Some(uri) => fillReleaseRadarNoSingles(accessToken, NextRequest(accessToken, uri), destPlaylist)
+        case None      => RIO.unit
+      }
 
-        importAlbums zipParRight nextPage
-
-      case GetPlaylistsItemsResponse.Error(status, message) =>
-        RIO.fail(new Exception(show"Error in GetPlaylistItems: status=$status, message='$message'"))
+      importAlbums zipParRight nextPage
     }
 
   private def extractAlbumId(track: TrackResponse): Option[AlbumId] =

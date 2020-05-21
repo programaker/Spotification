@@ -11,8 +11,8 @@ import zio.{RIO, ZIO}
 
 object AlbumImport {
   def importAlbums(
-    accessToken: AccessToken,
     albumIds: List[AlbumId],
+    accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
     ZIO.foreachPar_ {
@@ -21,18 +21,18 @@ object AlbumImport {
         .grouped(AlbumIdsToGet.MaxSize)
         .map(_.toVector)
         .map(refineRIO[AlbumModule, AlbumIdsToGetR](_))
-        .map(_.flatMap(importAlbumChunk(accessToken, _, destPlaylist)))
+        .map(_.flatMap(importAlbumChunk(_, accessToken, destPlaylist)))
         .to(Iterable)
     }(identity)
 
   private def importAlbumChunk(
-    accessToken: AccessToken,
     albumIds: AlbumIdsToGet,
+    accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
     AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap { resp =>
       val trackUris = resp.albums.map(extractTrackUris).to(Iterable)
-      val importTracks = TrackImport.importTracks(accessToken, _, destPlaylist)
+      val importTracks = TrackImport.importTracks(_, accessToken, destPlaylist)
       ZIO.foreachPar_(trackUris)(importTracks)
     }
 

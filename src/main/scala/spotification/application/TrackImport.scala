@@ -9,8 +9,8 @@ import zio.{RIO, ZIO}
 
 object TrackImport {
   def importTracks(
-    accessToken: AccessToken,
     trackUris: List[TrackUri],
+    accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[PlaylistModule, Unit] =
     ZIO.foreachPar_ {
@@ -19,13 +19,13 @@ object TrackImport {
         .grouped(TrackUrisToAdd.MaxSize)
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, TrackUrisToAddR](_))
-        .map(_.flatMap(importTrackChunk(accessToken, _, destPlaylist)))
+        .map(_.flatMap(importTrackChunk(_, accessToken, destPlaylist)))
         .to(Iterable)
     }(identity)
 
   private def importTrackChunk(
-    accessToken: AccessToken,
     trackUris: TrackUrisToAdd,
+    accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[PlaylistModule, Unit] = {
     val reqBody = AddItemsToPlaylistRequest.Body(trackUris)

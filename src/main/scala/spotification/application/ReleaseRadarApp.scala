@@ -12,20 +12,21 @@ import spotification.infra.spotify.playlist.PlaylistModule
 import zio.RIO
 
 object ReleaseRadarApp {
-  val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] = for {
-    accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
-    playlistConfig <- PlaylistConfigModule.config
+  val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] =
+    for {
+      accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
+      playlistConfig <- PlaylistConfigModule.config
 
-    req = FirstRequest(
-      accessToken = accessToken,
-      playlistId = playlistConfig.releaseRadarId,
-      fields = "next,total,items.track.album(id,album_type)",
-      limit = playlistConfig.getPlaylistItemsLimit,
-      offset = 0
-    )
+      req = FirstRequest(
+        accessToken = accessToken,
+        playlistId = playlistConfig.releaseRadarId,
+        fields = "next,total,items.track.album(id,album_type)",
+        limit = playlistConfig.getPlaylistItemsLimit,
+        offset = 0
+      )
 
-    _ <- fillReleaseRadarNoSingles(accessToken, req, playlistConfig.releaseRadarNoSinglesId)
-  } yield ()
+      _ <- fillReleaseRadarNoSingles(accessToken, req, playlistConfig.releaseRadarNoSinglesId)
+    } yield ()
 
   private def fillReleaseRadarNoSingles(
     accessToken: AccessToken,

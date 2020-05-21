@@ -3,7 +3,6 @@ package spotification.application
 import cats.implicits._
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.album._
-import spotification.domain.spotify.authorization.AccessToken
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
 import spotification.domain.spotify.playlist._
@@ -25,19 +24,18 @@ object ReleaseRadarApp {
         offset = 0
       )
 
-      _ <- fillReleaseRadarNoSingles(accessToken, req, playlistConfig.releaseRadarNoSinglesId)
+      _ <- fillReleaseRadarNoSingles(req, playlistConfig.releaseRadarNoSinglesId)
     } yield ()
 
   private def fillReleaseRadarNoSingles(
-    accessToken: AccessToken,
     req: GetPlaylistsItemsRequest,
     destPlaylist: PlaylistId
   ): RIO[ReleaseRadarAppEnv, Unit] =
     PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-      val importAlbums = AlbumImport.importAlbums(accessToken, resp.items.mapFilter(extractAlbumId), destPlaylist)
+      val importAlbums = AlbumImport.importAlbums(req.accessToken, resp.items.mapFilter(extractAlbumId), destPlaylist)
 
       val nextPage = resp.next match {
-        case Some(uri) => fillReleaseRadarNoSingles(accessToken, NextRequest(accessToken, uri), destPlaylist)
+        case Some(uri) => fillReleaseRadarNoSingles(NextRequest(req.accessToken, uri), destPlaylist)
         case None      => RIO.unit
       }
 

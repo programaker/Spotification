@@ -1,7 +1,7 @@
 package spotification.application
 
 import spotification.domain.spotify.authorization.AccessToken
-import spotification.domain.spotify.playlist.{AddItemsToPlaylistRequest, PlaylistId, TrackUrisToAdd, TrackUrisToAddR}
+import spotification.domain.spotify.playlist._
 import spotification.domain.spotify.track.TrackUri
 import spotification.infra.Infra.refineRIO
 import spotification.infra.spotify.playlist.PlaylistModule
@@ -16,15 +16,15 @@ object TrackImport {
     ZIO.foreachPar_ {
       trackUris
         .to(LazyList)
-        .grouped(TrackUrisToAdd.MaxSize)
+        .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
-        .map(refineRIO[PlaylistModule, TrackUrisToAddR](_))
+        .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
         .map(_.flatMap(importTrackChunk(_, accessToken, destPlaylist)))
         .to(Iterable)
     }(identity)
 
   private def importTrackChunk(
-    trackUris: TrackUrisToAdd,
+    trackUris: PlaylistItemsToProcess[TrackUri],
     accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[PlaylistModule, Unit] = {

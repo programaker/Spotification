@@ -55,6 +55,19 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     }
   }
 
+  override def removeItemsFromPlaylist(
+    req: RemoveItemsFromPlaylistRequest
+  ): Task[RemoveItemsFromPlaylistResponse.Success] = {
+    val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
+
+    doRequest[RemoveItemsFromPlaylistResponse](httpClient, tracksUri(req.playlistId))(delete).flatMap {
+      case s: RemoveItemsFromPlaylistResponse.Success =>
+        Task.succeed(s)
+      case RemoveItemsFromPlaylistResponse.Error(status, message) =>
+        Task.fail(new Exception(show"Error in RemoveItemsFromPlaylist: status=$status, message='$message'"))
+    }
+  }
+
   private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =
     tracksUri(req.playlistId).map {
       _.withQueryParam("fields", req.fields.show)

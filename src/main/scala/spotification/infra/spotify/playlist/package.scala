@@ -5,7 +5,9 @@ import spotification.domain.spotify.playlist.{
   AddItemsToPlaylistRequest,
   AddItemsToPlaylistResponse,
   GetPlaylistsItemsRequest,
-  GetPlaylistsItemsResponse
+  GetPlaylistsItemsResponse,
+  RemoveItemsFromPlaylistRequest,
+  RemoveItemsFromPlaylistResponse
 }
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.httpclient.{H4sClient, H4sPlaylistService, HttpClientModule}
@@ -20,6 +22,11 @@ package object playlist {
     def addItemsToPlaylist(req: AddItemsToPlaylistRequest): RIO[PlaylistModule, AddItemsToPlaylistResponse.Success] =
       ZIO.accessM(_.get.addItemsToPlaylist(req))
 
+    def removeItemsFromPlaylist(
+      req: RemoveItemsFromPlaylistRequest
+    ): RIO[PlaylistModule, RemoveItemsFromPlaylistResponse.Success] =
+      ZIO.accessM(_.get.removeItemsFromPlaylist(req))
+
     val layer: TaskLayer[PlaylistModule] = {
       val l1 = ZLayer.fromServices[PlaylistConfig, H4sClient, PlaylistModule.Service] { (config, httpClient) =>
         new H4sPlaylistService(config.playlistApiUri, httpClient)
@@ -31,6 +38,7 @@ package object playlist {
     trait Service {
       def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse.Success]
       def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[AddItemsToPlaylistResponse.Success]
+      def removeItemsFromPlaylist(req: RemoveItemsFromPlaylistRequest): Task[RemoveItemsFromPlaylistResponse.Success]
     }
   }
 }

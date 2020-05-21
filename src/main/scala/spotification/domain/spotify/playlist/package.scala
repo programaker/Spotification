@@ -8,7 +8,6 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import eu.timepit.refined.cats._
 import eu.timepit.refined.collection.{MaxSize, MinSize}
-import spotification.domain.spotify.track.TrackUri
 import spotification.domain.{SpotifyId, UriString}
 
 package object playlist {
@@ -22,12 +21,12 @@ package object playlist {
     implicit val PlaylistApiUriShow: Show[PlaylistApiUri] = implicitly[Show[UriString]].coerce
   }
 
-  // A maximum of 100 Tracks can be added to a Playlist in a single request
+  // A maximum of 100 Tracks can be processed in a single request
   // An IndexedSeq is being used due to efficient `length` operation (needed for the refinement)
-  type TrackUrisToAddMax = 100
-  type TrackUrisToAddR = MinSize[1] And MaxSize[TrackUrisToAddMax]
-  type TrackUrisToAdd = Vector[TrackUri] Refined TrackUrisToAddR
-  object TrackUrisToAdd {
-    val MaxSize: TrackUrisToAddMax = 100
+  type PlaylistItemsToProcessMax = 100
+  type PlaylistItemsToProcessR = MinSize[1] And MaxSize[PlaylistItemsToProcessMax]
+  type PlaylistItemsToProcess[A] = Vector[A] Refined PlaylistItemsToProcessR
+  object PlaylistItemsToProcess {
+    val MaxSize: PlaylistItemsToProcessMax = 100
   }
 }

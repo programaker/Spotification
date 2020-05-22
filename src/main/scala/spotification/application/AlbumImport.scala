@@ -32,10 +32,13 @@ object AlbumImport {
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
     AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap { resp =>
-      /*val trackUris = resp.albums.map(extractTrackUris).to(Iterable)
       val importTracks = TrackImport.importTracks(_, accessToken, destPlaylist)
-      ZIO.foreachPar_(trackUris)(importTracks)*/
-      RIO.unit
+      val ifEmpty: RIO[AlbumModule with PlaylistModule, Unit] = RIO.unit
+
+      ZIO.foreachPar_(resp.albums) { album =>
+        val albumSampleTrack = extractTrackUris(album).headOption.map(NonEmptyList.one)
+        albumSampleTrack.fold(ifEmpty)(importTracks)
+      }
     }
 
   private def extractTrackUris(album: GetSeveralAlbumsResponse.Success.AlbumResponse): List[TrackUri] =

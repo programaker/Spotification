@@ -29,8 +29,7 @@ object TrackImport {
     accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[PlaylistModule, Unit] = {
-    val reqBody = AddItemsToPlaylistRequest.Body(trackUris)
-    val req = AddItemsToPlaylistRequest(accessToken, destPlaylist, reqBody)
+    val req = AddItemsToPlaylistRequest.make(accessToken, destPlaylist, trackUris)
     PlaylistModule.addItemsToPlaylist(req).map(_ => ())
   }
 }

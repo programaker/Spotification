@@ -11,4 +11,15 @@ final case class AddItemsToPlaylistRequest(
 )
 object AddItemsToPlaylistRequest {
   final case class Body(uris: PlaylistItemsToProcess[TrackUri])
+
+  def make(
+    accessToken: AccessToken,
+    playlistId: PlaylistId,
+    uris: PlaylistItemsToProcess[TrackUri]
+  ): AddItemsToPlaylistRequest =
+    AddItemsToPlaylistRequest(
+      accessToken = accessToken,
+      playlistId = playlistId,
+      body = AddItemsToPlaylistRequest.Body(uris = uris)
+    )
 }

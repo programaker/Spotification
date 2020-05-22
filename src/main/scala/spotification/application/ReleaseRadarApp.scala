@@ -1,5 +1,6 @@
 package spotification.application
 
+import cats.data.NonEmptyList
 import cats.implicits._
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.album._
@@ -31,15 +32,20 @@ object ReleaseRadarApp {
     destPlaylist: PlaylistId
   ): RIO[ReleaseRadarAppEnv, Unit] =
     PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-      val accessToken = GetPlaylistsItemsRequest.accessToken(req)
-      val importAlbums = AlbumImport.importAlbums(resp.items.mapFilter(extractAlbumId), accessToken, destPlaylist)
+      val ifEmpty: RIO[ReleaseRadarAppEnv, Unit] = RIO.unit
+      val extractedAlbumIds = resp.items.mapFilter(extractAlbumId)
 
-      val nextPage = resp.next match {
-        case Some(uri) => fillReleaseRadarNoSingles(NextRequest(accessToken, uri), destPlaylist)
-        case None      => RIO.unit
+      NonEmptyList.fromList(extractedAlbumIds).fold(ifEmpty) { albumIds =>
+        val accessToken = GetPlaylistsItemsRequest.accessToken(req)
+        val importAlbums = AlbumImport.importAlbums(albumIds, accessToken, destPlaylist)
+
+        val nextPage = resp.next match {
+          case Some(uri) => fillReleaseRadarNoSingles(NextRequest(accessToken, uri), destPlaylist)
+          case None      => RIO.unit
+        }
+
+        importAlbums zipParRight nextPage
       }
-
-      importAlbums zipParRight nextPage
     }
 
   private def extractAlbumId(track: TrackResponse): Option[AlbumId] =

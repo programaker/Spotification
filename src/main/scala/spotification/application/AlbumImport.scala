@@ -1,5 +1,6 @@
 package spotification.application
 
+import cats.data.NonEmptyList
 import spotification.domain.spotify.album._
 import spotification.domain.spotify.authorization.AccessToken
 import spotification.domain.spotify.playlist.PlaylistId
@@ -11,12 +12,12 @@ import zio.{RIO, ZIO}
 
 object AlbumImport {
   def importAlbums(
-    albumIds: List[AlbumId],
+    albumIds: NonEmptyList[AlbumId],
     accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
     ZIO.foreachPar_ {
-      albumIds
+      albumIds.toList
         .to(LazyList)
         .grouped(AlbumIdsToGet.MaxSize)
         .map(_.toVector)
@@ -31,9 +32,10 @@ object AlbumImport {
     destPlaylist: PlaylistId
   ): RIO[AlbumModule with PlaylistModule, Unit] =
     AlbumModule.getSeveralAlbums(GetSeveralAlbumsRequest(accessToken, albumIds)).flatMap { resp =>
-      val trackUris = resp.albums.map(extractTrackUris).to(Iterable)
+      /*val trackUris = resp.albums.map(extractTrackUris).to(Iterable)
       val importTracks = TrackImport.importTracks(_, accessToken, destPlaylist)
-      ZIO.foreachPar_(trackUris)(importTracks)
+      ZIO.foreachPar_(trackUris)(importTracks)*/
+      RIO.unit
     }
 
   private def extractTrackUris(album: GetSeveralAlbumsResponse.Success.AlbumResponse): List[TrackUri] =

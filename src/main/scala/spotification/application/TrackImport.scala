@@ -1,5 +1,6 @@
 package spotification.application
 
+import cats.data.NonEmptyList
 import spotification.domain.spotify.authorization.AccessToken
 import spotification.domain.spotify.playlist._
 import spotification.domain.spotify.track.TrackUri
@@ -9,12 +10,12 @@ import zio.{RIO, ZIO}
 
 object TrackImport {
   def importTracks(
-    trackUris: List[TrackUri],
+    trackUris: NonEmptyList[TrackUri],
     accessToken: AccessToken,
     destPlaylist: PlaylistId
   ): RIO[PlaylistModule, Unit] =
     ZIO.foreachPar_ {
-      trackUris
+      trackUris.toList
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)

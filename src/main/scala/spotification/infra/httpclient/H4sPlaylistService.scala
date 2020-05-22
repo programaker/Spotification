@@ -30,14 +30,13 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
   import H4sClientDsl._
 
   override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse.Success] = {
-    val (accessToken, uri) = req match {
-      case first: FirstRequest =>
-        (first.accessToken, getItemsUri(first, "next,total,items.track.album(id,album_type)"))
-      case NextRequest(accessToken, nextUri) =>
-        (accessToken, Uri.fromString(nextUri))
-    }
-
+    val accessToken = GetPlaylistsItemsRequest.accessToken(req)
     val get = GET(_: Uri, authorizationBearerHeader(accessToken))
+
+    val uri = req match {
+      case fr: FirstRequest        => getItemsUri(fr)
+      case NextRequest(_, nextUri) => Uri.fromString(nextUri)
+    }
 
     doRequest[GetPlaylistsItemsResponse](httpClient, uri)(get).flatMap {
       case s: GetPlaylistsItemsResponse.Success =>
@@ -71,12 +70,15 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     }
   }
 
-  private def getItemsUri(req: FirstRequest, fields: FieldsToReturn): Either[ParseFailure, Uri] =
+  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] = {
+    val fields: FieldsToReturn = "next,total,items.track.album(id,album_type)"
+
     tracksUri(req.playlistId).map {
       _.withQueryParam("fields", fields.show)
         .withQueryParam("limit", req.limit.show)
         .withQueryParam("offset", req.offset.show)
     }
+  }
 
   private def tracksUri(playlistId: PlaylistId): Either[ParseFailure, Uri] =
     Uri.fromString(show"$playlistApiUri/$playlistId/tracks")

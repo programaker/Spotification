@@ -71,7 +71,7 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
   }
 
   private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] = {
-    val fields: FieldsToReturn = "next,total,items.track.album(id,album_type)"
+    val fields: FieldsToReturn = "next,items.track(uri,album(id,album_type))"
 
     tracksUri(req.playlistId).map {
       _.withQueryParam("fields", fields.show)

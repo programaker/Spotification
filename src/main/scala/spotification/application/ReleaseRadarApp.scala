@@ -31,10 +31,11 @@ object ReleaseRadarApp {
     destPlaylist: PlaylistId
   ): RIO[ReleaseRadarAppEnv, Unit] =
     PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-      val importAlbums = AlbumImport.importAlbums(resp.items.mapFilter(extractAlbumId), req.accessToken, destPlaylist)
+      val accessToken = GetPlaylistsItemsRequest.accessToken(req)
+      val importAlbums = AlbumImport.importAlbums(resp.items.mapFilter(extractAlbumId), accessToken, destPlaylist)
 
       val nextPage = resp.next match {
-        case Some(uri) => fillReleaseRadarNoSingles(NextRequest(req.accessToken, uri), destPlaylist)
+        case Some(uri) => fillReleaseRadarNoSingles(NextRequest(accessToken, uri), destPlaylist)
         case None      => RIO.unit
       }
 

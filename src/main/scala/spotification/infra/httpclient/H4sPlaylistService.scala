@@ -12,6 +12,7 @@ import spotification.infra.spotify.playlist.PlaylistModule
 import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
+import spotification.domain.FieldsToReturn
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 
 // ==========
@@ -30,8 +31,10 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
 
   override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse.Success] = {
     val (accessToken, uri) = req match {
-      case first: FirstRequest               => (first.accessToken, getItemsUri(first))
-      case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
+      case first: FirstRequest =>
+        (first.accessToken, getItemsUri(first, "next,total,items.track.album(id,album_type)"))
+      case NextRequest(accessToken, nextUri) =>
+        (accessToken, Uri.fromString(nextUri))
     }
 
     val get = GET(_: Uri, authorizationBearerHeader(accessToken))
@@ -68,9 +71,9 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     }
   }
 
-  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =
+  private def getItemsUri(req: FirstRequest, fields: FieldsToReturn): Either[ParseFailure, Uri] =
     tracksUri(req.playlistId).map {
-      _.withQueryParam("fields", req.fields.show)
+      _.withQueryParam("fields", fields.show)
         .withQueryParam("limit", req.limit.show)
         .withQueryParam("offset", req.offset.show)
     }

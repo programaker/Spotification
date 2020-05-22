@@ -19,7 +19,6 @@ object ReleaseRadarApp {
       req = FirstRequest(
         accessToken = accessToken,
         playlistId = playlistConfig.releaseRadarId,
-        fields = "next,total,items.track.album(id,album_type)",
         limit = playlistConfig.getPlaylistItemsLimit,
         offset = 0
       )

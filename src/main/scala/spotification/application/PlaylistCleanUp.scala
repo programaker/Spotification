@@ -13,7 +13,7 @@ object PlaylistCleanUp {
     accessToken: AccessToken,
     limit: PositiveInt
   ): RIO[PlaylistModule, Unit] =
-    PlaylistPagination.foreachPage(playlistId, accessToken, limit) { items =>
+    PlaylistPagination.foreachPage(playlistId, limit, accessToken) { items =>
       ZIO.foreachPar_(
         items
           .to(LazyList)

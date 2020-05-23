@@ -11,8 +11,8 @@ import zio.{RIO, ZIO}
 object TrackImport {
   def importTracks(
     trackUris: NonEmptyList[TrackUri],
-    accessToken: AccessToken,
-    destPlaylist: PlaylistId
+    destPlaylist: PlaylistId,
+    accessToken: AccessToken
   ): RIO[PlaylistModule, Unit] =
     ZIO.foreachPar_ {
       trackUris.toList
@@ -20,14 +20,14 @@ object TrackImport {
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
-        .map(_.flatMap(importTrackChunk(_, accessToken, destPlaylist)))
+        .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
         .to(Iterable)
     }(identity)
 
   private def importTrackChunk(
     trackUris: PlaylistItemsToProcess[TrackUri],
-    accessToken: AccessToken,
-    destPlaylist: PlaylistId
+    destPlaylist: PlaylistId,
+    accessToken: AccessToken
   ): RIO[PlaylistModule, Unit] =
     PlaylistModule
       .addItemsToPlaylist(AddItemsToPlaylistRequest.make(accessToken, destPlaylist, trackUris))

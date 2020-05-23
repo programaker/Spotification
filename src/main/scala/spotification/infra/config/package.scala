@@ -1,19 +1,7 @@
 package spotification.infra
 
-import pureconfig.ConfigSource
 import spotification.domain.config._
-import spotification.infra.config.Config
 import zio._
-
-//==========
-// IntelliJ is complaining about:
-// import pureconfig.generic.auto._
-// import eu.timepit.refined.pureconfig._
-// not being used, but without them it does not compile
-//==========
-import pureconfig.generic.auto._
-import eu.timepit.refined.pureconfig._
-import Config.Implicits._
 
 package object config {
   type AuthorizationConfigModule = Has[AuthorizationConfig]
@@ -44,9 +32,5 @@ package object config {
     appConfigLayer.map(f).map(Has(_))
 
   private val appConfigLayer: TaskLayer[Has[AppConfig]] =
-    ZLayer.fromEffect {
-      IO.fromEither(ConfigSource.default.load[AppConfig])
-        .mapError(_.prettyPrint())
-        .absorbWith(new Exception(_))
-    }
+    ZLayer.fromEffect(PureConfigService.readAppConfig)
 }

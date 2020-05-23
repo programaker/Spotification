@@ -3,7 +3,6 @@ package spotification.infra.config
 import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
-import spotification.domain.spotify.album.AlbumApiUri
 import spotification.domain.spotify.authorization.{RefreshToken, _}
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
 
@@ -35,9 +34,6 @@ object Config {
 
     implicit val PlaylistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
       makeConfigReader(PlaylistApiUri.apply)
-
-    implicit val AlbumApiUriConfigReader: ConfigReader[AlbumApiUri] =
-      makeConfigReader(AlbumApiUri.apply)
 
     implicit val RefreshTokenConfigReader: ConfigReader[RefreshToken] =
       makeConfigReader(RefreshToken.apply)

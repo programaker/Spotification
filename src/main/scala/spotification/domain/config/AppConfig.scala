@@ -1,6 +1,5 @@
 package spotification.domain.config
 
-import spotification.domain.spotify.album.AlbumApiUri
 import spotification.domain.spotify.authorization._
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
 import spotification.domain.{Host, PositiveInt}
@@ -10,7 +9,6 @@ import scala.concurrent.duration.FiniteDuration
 final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
-  album: AlbumConfig,
   server: ServerConfig,
   log: LogConfig
 )
@@ -30,10 +28,6 @@ final case class PlaylistConfig(
   releaseRadarNoSinglesId: PlaylistId,
   playlistApiUri: PlaylistApiUri,
   getPlaylistItemsLimit: PositiveInt
-)
-
-final case class AlbumConfig(
-  albumApiUri: AlbumApiUri
 )
 
 final case class ServerConfig(

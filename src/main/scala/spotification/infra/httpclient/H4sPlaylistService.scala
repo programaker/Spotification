@@ -12,7 +12,6 @@ import spotification.infra.spotify.playlist.PlaylistModule
 import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
-import spotification.domain.FieldsToReturn
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 
 // ==========
@@ -70,15 +69,12 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     }
   }
 
-  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] = {
-    val fields: FieldsToReturn = "next,items.track(uri,album(id,album_type))"
-
+  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =
     tracksUri(req.playlistId).map {
-      _.withQueryParam("fields", fields.show)
+      _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
         .withQueryParam("limit", req.limit.show)
         .withQueryParam("offset", req.offset.show)
     }
-  }
 
   private def tracksUri(playlistId: PlaylistId): Either[ParseFailure, Uri] =
     Uri.fromString(show"$playlistApiUri/$playlistId/tracks")

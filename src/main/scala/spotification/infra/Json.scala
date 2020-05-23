@@ -6,9 +6,8 @@ import io.circe.refined._
 import io.estatico.newtype.ops._
 import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
-import spotification.domain.{NonBlankString, SpotifyId}
+import spotification.domain.NonBlankString
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
-import spotification.domain.spotify.album.AlbumId
 import eu.timepit.refined.auto._
 
 object Json {
@@ -27,8 +26,5 @@ object Json {
 
     implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
       implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
-
-    implicit val AlbumIdDecoder: Decoder[AlbumId] =
-      implicitly[Decoder[SpotifyId]].map(_.coerce[AlbumId])
   }
 }

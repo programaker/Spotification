@@ -28,12 +28,6 @@ package object config {
     val layer: TaskLayer[PlaylistConfigModule] = makeLayer(_.get.playlist)
   }
 
-  type AlbumConfigModule = Has[AlbumConfig]
-  object AlbumConfigModule {
-    val config: RIO[AlbumConfigModule, AlbumConfig] = ZIO.access(_.get)
-    val layer: TaskLayer[AlbumConfigModule] = makeLayer(_.get.album)
-  }
-
   type ServerConfigModule = Has[ServerConfig]
   object ServerConfigModule {
     val config: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)

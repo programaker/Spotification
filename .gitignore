@@ -6,3 +6,4 @@
 logs
 target
 project/metals.sbt
+*.sc

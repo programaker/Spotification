@@ -3,14 +3,10 @@ package spotification.infra.httpclient
 import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.jawn
-import org.http4s.Method._
-import org.http4s.{Uri, UrlForm}
 import spotification.domain.spotify.authorization._
 import zio.Task
-import zio.interop.catz._
 import eu.timepit.refined.auto._
 import HttpClient._
-import AuthorizationHttpClient._
 import spotification.domain.spotify.authorization.Authorization.base64Credentials
 import spotification.infra.httpclient.JHttpClient.jPost
 import spotification.infra.spotify.authorization.AuthorizationModule
@@ -24,11 +20,7 @@ import spotification.infra.spotify.authorization.AuthorizationModule
 import io.circe.refined._
 import spotification.infra.Json.Implicits._
 
-final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient)
-    extends AuthorizationModule.Service {
-
-  import H4sClientDsl._
-
+final class H4sAuthorizationService(apiTokenUri: ApiTokenUri) extends AuthorizationModule.Service {
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params: ParamMap = Map(
       "grant_type"   -> req.grant_type,

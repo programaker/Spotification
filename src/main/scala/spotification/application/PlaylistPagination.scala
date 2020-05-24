@@ -15,7 +15,7 @@ object PlaylistPagination {
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-        val thisPage = f(resp.items)
+        val thisPage = f(resp.items.map(_.track))
 
         val nextPage = resp.next match {
           case None      => RIO.unit

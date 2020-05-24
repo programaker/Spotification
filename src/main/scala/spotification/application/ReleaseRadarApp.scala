@@ -22,7 +22,7 @@ object ReleaseRadarApp {
       //_ <- PlaylistCleanUp.clearPlaylist(releaseRadarNoSingles, accessToken, limit)
 
       _ <- PlaylistPagination.foreachPage(releaseRadar, limit, accessToken) { tracks =>
-        RIO.succeed(tracks.map(_.uri)).flatMap(uris => ZIO.succeed(show">>> ${uris.size}"))
+        RIO.succeed(tracks.map(_.uri)).flatMap(uris => ZIO.succeed(println(show">>> ${uris.size}")))
       /*val trackUris = tracks.mapFilter(trackUriIfAlbum)
         val ifEmpty: RIO[PlaylistModule, Unit] = RIO.unit
         val importTracks = TrackImport.importTracks(_, releaseRadarNoSingles, accessToken)

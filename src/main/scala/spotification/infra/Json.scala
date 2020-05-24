@@ -1,14 +1,21 @@
 package spotification.infra
 
 import cats.Applicative
+import cats.implicits._
 import io.circe.{Decoder, Encoder}
 import io.circe.refined._
+import io.circe.generic.auto._
 import io.estatico.newtype.ops._
 import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 import spotification.domain.NonBlankString
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
 import eu.timepit.refined.auto._
+import spotification.domain.spotify.playlist.{
+  AddItemsToPlaylistResponse,
+  GetPlaylistsItemsResponse,
+  RemoveItemsFromPlaylistResponse
+}
 
 object Json {
   object Implicits {
@@ -26,5 +33,17 @@ object Json {
 
     implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
       implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
+
+    implicit val GetPlaylistsItemsResponseDecoder: Decoder[GetPlaylistsItemsResponse] =
+      Decoder[GetPlaylistsItemsResponse.Success].widen or
+        Decoder[GetPlaylistsItemsResponse.Error].widen
+
+    implicit val AddItemsToPlaylistResponseDecoder: Decoder[AddItemsToPlaylistResponse] =
+      Decoder[AddItemsToPlaylistResponse.Success].widen or
+        Decoder[AddItemsToPlaylistResponse.Error].widen
+
+    implicit val RemoveItemsFromPlaylistResponseDecoder: Decoder[RemoveItemsFromPlaylistResponse] =
+      Decoder[RemoveItemsFromPlaylistResponse.Success].widen or
+        Decoder[RemoveItemsFromPlaylistResponse.Error].widen
   }
 }

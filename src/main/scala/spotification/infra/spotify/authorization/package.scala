@@ -3,7 +3,7 @@ package spotification.infra.spotify
 import spotification.domain.config.AuthorizationConfig
 import spotification.domain.spotify.authorization._
 import spotification.infra.config.AuthorizationConfigModule
-import spotification.infra.httpclient.{H4sAuthorizationService, H4sClient, HttpClientModule}
+import spotification.infra.httpclient.{H4sAuthorizationService, HttpClientModule}
 import zio._
 
 package object authorization {

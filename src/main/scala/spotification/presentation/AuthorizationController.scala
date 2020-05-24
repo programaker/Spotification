@@ -24,8 +24,8 @@ import spotification.infra.Json.Implicits._
 final class AuthorizationController[R <: SpotifyAuthorizationAppEnv] {
   private val Callback: String = "callback"
 
-  private val H4sAuthorizationDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
-  import H4sAuthorizationDsl._
+  private val H4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
+  import H4sDsl._
 
   private object CodeQP extends QueryParamDecoderMatcher[String]("code")
   private object ErrorQP extends QueryParamDecoderMatcher[String]("error")
@@ -34,14 +34,14 @@ final class AuthorizationController[R <: SpotifyAuthorizationAppEnv] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root =>
       makeAuthorizeUriProgram.foldM(
-        handleGenericError(H4sAuthorizationDsl, _),
+        handleGenericError(H4sDsl, _),
         uri => Found(Location(uri))
       )
 
     case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>
-      authorizeCallbackProgram(code).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
+      authorizeCallbackProgram(code).foldM(handleGenericError(H4sDsl, _), Ok(_))
 
     case GET -> Root / Callback :? ErrorQP(error) +& StateQP(_) =>
-      authorizeCallbackErrorProgram(error).foldM(handleGenericError(H4sAuthorizationDsl, _), Ok(_))
+      authorizeCallbackErrorProgram(error).foldM(handleGenericError(H4sDsl, _), Ok(_))
   }
 }

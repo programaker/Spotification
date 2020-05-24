@@ -19,15 +19,15 @@ object ReleaseRadarApp {
       releaseRadarNoSingles = playlistConfig.releaseRadarNoSinglesId
       limit = playlistConfig.getPlaylistItemsLimit
 
-      //_ <- PlaylistCleanUp.clearPlaylist(releaseRadarNoSingles, accessToken, limit)
+      _ <- PlaylistCleanUp.clearPlaylist(releaseRadarNoSingles, accessToken, limit)
 
-      _ <- PlaylistPagination.foreachPage(releaseRadar, limit, accessToken) { tracks =>
-        RIO.succeed(tracks.map(_.uri)).flatMap(uris => ZIO.succeed(println(show">>> ${uris.size}")))
-      /*val trackUris = tracks.mapFilter(trackUriIfAlbum)
+      /*_ <- PlaylistPagination.foreachPage(releaseRadar, limit, accessToken) { tracks =>
+        //RIO.succeed(tracks.map(_.uri)).flatMap(uris => ZIO.succeed(println(show">>> ${uris.size}")))
+      val trackUris = tracks.mapFilter(trackUriIfAlbum)
         val ifEmpty: RIO[PlaylistModule, Unit] = RIO.unit
         val importTracks = TrackImport.importTracks(_, releaseRadarNoSingles, accessToken)
-        NonEmptyList.fromList(trackUris).fold(ifEmpty)(importTracks)*/
-      }
+        NonEmptyList.fromList(trackUris).fold(ifEmpty)(importTracks)
+      }*/
     } yield ()
 
   private def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =

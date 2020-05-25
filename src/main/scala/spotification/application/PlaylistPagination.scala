@@ -29,20 +29,25 @@ object PlaylistPagination {
   )(
     processTracks: List[TrackResponse] => RIO[R, Unit]
   )(
-    nextPageUri: (CurrentUri, NextUri) => UriString
+    chooseUri: (CurrentUri, NextUri) => UriString
   )(
     combinePageEffects: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-        val thisPage = processTracks(resp.items.map(_.track))
+        val thisPage =
+          if (resp.items.isEmpty) RIO.unit
+          else processTracks(resp.items.map(_.track))
 
-        val nextPage = resp.next match {
-          case None =>
-            RIO.unit
-          case Some(nextUri) =>
-            loop(NextRequest(GetPlaylistsItemsRequest.accessToken(req), nextPageUri(resp.href, nextUri)))
-        }
+        val nextPage =
+          resp.next match {
+            case None =>
+              RIO.unit
+            case Some(nextUri) =>
+              val accessToken = GetPlaylistsItemsRequest.accessToken(req)
+              val uri = chooseUri(resp.href, nextUri)
+              loop(NextRequest(accessToken, uri))
+          }
 
         combinePageEffects(thisPage, nextPage)
       }

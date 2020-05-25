@@ -17,8 +17,9 @@ object GetPlaylistsItemsRequest {
     nextUri: UriString
   ) extends GetPlaylistsItemsRequest
 
-  def accessToken(req: GetPlaylistsItemsRequest): AccessToken = req match {
-    case fr: FirstRequest => fr.accessToken
-    case nr: NextRequest  => nr.accessToken
-  }
+  def accessToken(req: GetPlaylistsItemsRequest): AccessToken =
+    req match {
+      case fr: FirstRequest => fr.accessToken
+      case nr: NextRequest  => nr.accessToken
+    }
 }

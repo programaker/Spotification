@@ -12,6 +12,22 @@ import zio.RIO
 object PlaylistPagination {
   def foreachPage[R <: PlaylistModule](playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken)(
     f: List[TrackResponse] => RIO[R, Unit]
+  ): RIO[R, Unit] =
+    foreachPageCombining(playlistId, limit, accessToken)(f)(_ *> _)
+
+  def foreachPagePar[R <: PlaylistModule](playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken)(
+    f: List[TrackResponse] => RIO[R, Unit]
+  ): RIO[R, Unit] =
+    foreachPageCombining(playlistId, limit, accessToken)(f)(_ &> _)
+
+  private def foreachPageCombining[R <: PlaylistModule](
+    playlistId: PlaylistId,
+    limit: PositiveInt,
+    accessToken: AccessToken
+  )(
+    f: List[TrackResponse] => RIO[R, Unit]
+  )(
+    combine: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
@@ -22,7 +38,7 @@ object PlaylistPagination {
           case Some(uri) => loop(NextRequest(accessToken, uri))
         }
 
-        thisPage.zipParRight(nextPage)
+        combine(thisPage, nextPage)
       }
 
     loop(FirstRequest(accessToken, playlistId, limit, offset = 0))

@@ -8,7 +8,7 @@ import spotification.infra.spotify.playlist.PlaylistModule
 import zio.RIO
 
 object PlaylistPagination {
-  def foreachPagePar[R <: PlaylistModule](req: GetPlaylistsItemsRequest)(
+  def foreachPagePar[R <: PlaylistModule](req: GetPlaylistsItemsRequest.FirstRequest)(
     f: List[TrackResponse] => RIO[R, Unit]
   ): RIO[R, Unit] =
     foreachPage(req)(f)((_, nextUri) => nextUri)(_ &> _)

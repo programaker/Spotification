@@ -1,46 +1,52 @@
 package spotification.application
 
-import eu.timepit.refined.auto._
-import spotification.domain.PositiveInt
-import spotification.domain.spotify.authorization.AccessToken
-import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.domain.{CurrentUri, NextUri, UriString}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.NextRequest
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
-import spotification.domain.spotify.playlist.{GetPlaylistsItemsRequest, PlaylistId}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.RIO
 
 object PlaylistPagination {
-  def foreachPage[R <: PlaylistModule](playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken)(
+  def foreachPagePar[R <: PlaylistModule](req: GetPlaylistsItemsRequest)(
     f: List[TrackResponse] => RIO[R, Unit]
   ): RIO[R, Unit] =
-    foreachPageCombining(playlistId, limit, accessToken)(f)(_ *> _)
+    foreachPage(req)(f)((_, nextUri) => nextUri)(_ &> _)
 
-  def foreachPagePar[R <: PlaylistModule](playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken)(
-    f: List[TrackResponse] => RIO[R, Unit]
-  ): RIO[R, Unit] =
-    foreachPageCombining(playlistId, limit, accessToken)(f)(_ &> _)
-
-  private def foreachPageCombining[R <: PlaylistModule](
-    playlistId: PlaylistId,
-    limit: PositiveInt,
-    accessToken: AccessToken
+  /** Uses GetPlaylistsItemsRequest to fetch items from a playlist with pagination.
+   *
+   * @param req The initial request
+   * @param processTracks A function to process the tracks in a page
+   *
+   * @param nextPageUri A function to choose whether to go to the next page
+   * or stay in the current (useful to delete tracks for instance)
+   *
+   * @param combinePageEffects A function to combine the result of processing
+   * the current page with the result of the next page request (useful to choose if parallel or not)
+   * */
+  def foreachPage[R <: PlaylistModule](
+    req: GetPlaylistsItemsRequest
   )(
-    f: List[TrackResponse] => RIO[R, Unit]
+    processTracks: List[TrackResponse] => RIO[R, Unit]
   )(
-    combine: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
+    nextPageUri: (CurrentUri, NextUri) => UriString
+  )(
+    combinePageEffects: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-        val thisPage = f(resp.items.map(_.track))
+        val thisPage = processTracks(resp.items.map(_.track))
 
         val nextPage = resp.next match {
-          case None      => RIO.unit
-          case Some(uri) => loop(NextRequest(accessToken, uri))
+          case None =>
+            RIO.unit
+          case Some(nextUri) =>
+            loop(NextRequest(GetPlaylistsItemsRequest.accessToken(req), nextPageUri(resp.href, nextUri)))
         }
 
-        combine(thisPage, nextPage)
+        combinePageEffects(thisPage, nextPage)
       }
 
-    loop(FirstRequest(accessToken, playlistId, limit, offset = 0))
+    loop(req)
   }
 }

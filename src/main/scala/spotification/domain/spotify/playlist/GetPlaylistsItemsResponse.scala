@@ -4,15 +4,18 @@ import eu.timepit.refined.auto._
 import spotification.domain.spotify.album.AlbumType
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.ItemResponse
 import spotification.domain.spotify.track.TrackUri
-import spotification.domain.{FieldsToReturn, UriString}
+import spotification.domain.CurrentUri
+import spotification.domain.NextUri
+import spotification.domain.FieldsToReturn
 
 sealed abstract class GetPlaylistsItemsResponse extends Product with Serializable
 object GetPlaylistsItemsResponse {
-  val Fields: FieldsToReturn = "next,items.track(uri,album(album_type))"
+  val Fields: FieldsToReturn = "items.track(uri,album(album_type)),href,next"
 
   final case class Success(
     items: List[ItemResponse],
-    next: Option[UriString]
+    href: CurrentUri,
+    next: Option[NextUri]
   ) extends GetPlaylistsItemsResponse
   object Success {
     final case class ItemResponse(track: TrackResponse)

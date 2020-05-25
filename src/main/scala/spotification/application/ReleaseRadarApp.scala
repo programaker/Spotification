@@ -8,6 +8,8 @@ import spotification.domain.spotify.track.TrackUri
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, ZIO}
+import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
+import eu.timepit.refined.auto._
 
 object ReleaseRadarApp {
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] =
@@ -19,9 +21,9 @@ object ReleaseRadarApp {
       releaseRadarNoSingles = playlistConfig.releaseRadarNoSinglesId
       limit = playlistConfig.getPlaylistItemsLimit
 
-      _ <- PlaylistCleanUp.clearPlaylist(releaseRadarNoSingles, accessToken, limit)
+      _ <- PlaylistCleanUp.clearPlaylist(FirstRequest(accessToken, releaseRadarNoSingles, limit, offset = 0))
 
-      /*_ <- PlaylistPagination.foreachPagePar(releaseRadar, limit, accessToken) { tracks =>
+      /*_ <- PlaylistPagination.foreachPagePar(FirstRequest(accessToken, releaseRadar, limit, offset = 0)) { tracks =>
         ////RIO.succeed(tracks.map(_.uri)).flatMap(uris => ZIO.succeed(println(show">>> GOT ${uris.size} URIs")))
       //val trackUris = tracks.mapFilter(trackUriIfAlbum)
       //val ifEmpty: RIO[PlaylistModule, Unit] = RIO.unit

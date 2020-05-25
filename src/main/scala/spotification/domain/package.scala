@@ -18,6 +18,8 @@ package object domain {
   type HexString32 = String Refined HexString32R
 
   type UriString = String Refined Uri
+  type CurrentUri = UriString
+  type NextUri = UriString
 
   type PositiveIntR = Positive
   type PositiveInt = Int Refined PositiveIntR

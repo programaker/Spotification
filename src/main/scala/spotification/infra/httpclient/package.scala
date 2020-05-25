@@ -23,7 +23,7 @@ package object httpclient {
         ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 
       val addLogger: Client[Task] => Client[Task] =
-        Logger(logHeaders = true, logBody = true)(_)
+        Logger(logHeaders = false, logBody = false)(_)
 
       ExecutionContextModule.layer >>>
         ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.map(addLogger).provide)

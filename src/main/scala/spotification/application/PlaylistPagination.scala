@@ -20,7 +20,7 @@ object PlaylistPagination {
    * @param req The initial request
    * @param processTracks A function to process the tracks in a page
    *
-   * @param nextPageUri A function to choose whether to go to the next page
+   * @param chooseUri A function to choose whether to go to the next page
    * or stay in the current (useful to delete tracks for instance)
    *
    * @param combinePageEffects A function to combine the result of processing
@@ -37,16 +37,14 @@ object PlaylistPagination {
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
-        val runit: RIO[R, Unit] = RIO.unit
+        val unit: RIO[R, Unit] = RIO.unit
 
-        if (resp.items.isEmpty)
-          runit
-        else {
-          val thisPage = NonEmptyList.fromList(resp.items.map(_.track)).fold(runit)(processTracks)
+        NonEmptyList.fromList(resp.items.map(_.track)).fold(unit) { tracks =>
+          val thisPage = processTracks(tracks)
 
           val nextPage = resp.next match {
             case None =>
-              runit
+              unit
             case Some(nextUri) =>
               val accessToken = GetPlaylistsItemsRequest.accessToken(req)
               val uri = chooseUri(resp.href, nextUri)

@@ -55,6 +55,12 @@ lazy val root = (project in file("."))
     ).map(addCompilerPlugin)
   )
 
+enablePlugins(
+  JavaAppPackaging,
+  DockerPlugin,
+  AshScriptPlugin
+)
+
 ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Recursion,
   Wart.Nothing,
@@ -86,3 +92,6 @@ ThisBuild / scalacOptions ++= Seq(
 
   "-Ymacro-annotations"
 )
+
+mainClass in Compile := Some("spotification.Spotification")
+dockerBaseImage := "adoptopenjdk/openjdk12:x86_64-alpine-jre-12.0.2_10"

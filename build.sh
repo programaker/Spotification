@@ -1,2 +1,2 @@
 #! /bin/bash
-sbt scalafmtAll docker:publishLocal
+sbt scalafmtAll docker:clean docker:publishLocal

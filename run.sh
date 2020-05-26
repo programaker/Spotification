@@ -1,2 +1,2 @@
 #! /bin/bash
-docker run --rm -p80:80 `docker images spotification --format "{{.ID}}"`
+docker run --name spotification --rm -p80:80 --env-file .env "$(docker images spotification --format '{{.ID}}')"

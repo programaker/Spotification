@@ -12,6 +12,8 @@ import spotification.infra.httpclient.HttpClient.{addScopeParam, makeQueryString
 import zio.Task
 
 object AuthorizationHttpClient {
+  val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
+
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))
 

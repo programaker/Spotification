@@ -14,7 +14,6 @@ import zio.{IO, Task}
 import zio.interop.catz._
 
 object HttpClient {
-  val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
   val H4sClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
 
   // HTTP4s Uri should be able to encode query params, but in my tests

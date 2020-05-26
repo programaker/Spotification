@@ -96,4 +96,4 @@ ThisBuild / scalacOptions ++= Seq(
 mainClass in Compile := Some("spotification.Spotification")
 
 dockerBaseImage := "adoptopenjdk/openjdk12:x86_64-alpine-jre-12.0.2_10"
-dockerExposedPorts += 80
+dockerExposedPorts += 8080

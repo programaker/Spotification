@@ -18,25 +18,26 @@ import zio.Task
  * PS - I'm impressed about how simple the new Java HttpClient is!
  * It looks like a library */
 object JHttpClient {
-  def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] = Task {
-    val client = HttpClient
-      .newBuilder()
-      .version(HttpClient.Version.HTTP_2)
-      .build()
+  def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] =
+    Task {
+      val client = HttpClient
+        .newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .build()
 
-    val request = {
-      val builder = HttpRequest
-        .newBuilder(URI.create(uri))
-        .POST(BodyPublishers.ofString(body, UTF_8))
+      val request = {
+        val builder = HttpRequest
+          .newBuilder(URI.create(uri))
+          .POST(BodyPublishers.ofString(body, UTF_8))
 
-      val builder2 = headers.foldLeft(builder) {
-        case (builder, (key, value)) =>
-          builder.header(key, value)
+        val builder2 = headers.foldLeft(builder) {
+          case (builder, (key, value)) =>
+            builder.header(key, value)
+        }
+
+        builder2.build()
       }
 
-      builder2.build()
+      client.send(request, BodyHandlers.ofString()).body()
     }
-
-    client.send(request, BodyHandlers.ofString()).body()
-  }
 }

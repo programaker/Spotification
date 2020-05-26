@@ -15,7 +15,7 @@ object PlaylistPagination {
     foreachPage(req)(f)((_, nextUri) => nextUri)(_ &> _)
 
   /** Uses GetPlaylistsItemsRequest to fetch items from a playlist with pagination.
-   * This function has a strange signature, but the tread-off is "unparalleled type-inference"
+   * This function has a strange signature, but the trade-off is "unparalleled type-inference"
    *
    * @param req The initial request
    * @param processTracks A function to process the tracks in a page

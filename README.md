@@ -28,7 +28,7 @@ sbt ~reStart
 ```
 
 You can see if everything is ok accessing: 
-[http://localhost/health](http://localhost/health)
+[http://localhost:8080/health](http://localhost:8080/health)
 
 ## Authorization
 
@@ -40,7 +40,25 @@ Get the refresh_token and add it to the ".env" file as the variable `REFRESH_TOK
 
 Just execute the following command:
 ```
-curl -v -X POST "http://localhost/release-radar"
+curl -v -X POST "http://localhost:8080/release-radar"
 ```
 
 Then go to Spotify app and enjoy your brand new full albums! 🎶🎵
+
+## Docker
+
+It's possible to run locally inside docker too. For this:
+
+1) Build the image
+```
+./build.sh
+```
+2) Run it
+```
+./run.sh
+```
+
+The logs can be watched with the command:
+```
+./logs.sh
+```

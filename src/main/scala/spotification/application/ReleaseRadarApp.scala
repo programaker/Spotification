@@ -9,6 +9,7 @@ import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.spotify.playlist.PlaylistModule
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import eu.timepit.refined.auto._
+import spotification.application.TrackImport.importTracks
 import zio.RIO
 
 object ReleaseRadarApp {
@@ -20,13 +21,14 @@ object ReleaseRadarApp {
       releaseRadar = playlistConfig.releaseRadarId
       releaseRadarNoSingles = playlistConfig.releaseRadarNoSinglesId
       limit = playlistConfig.getPlaylistItemsLimit
+      firstRequest = FirstRequest.make(accessToken, _, limit)
 
-      _ <- PlaylistCleanUp.clearPlaylist(FirstRequest(accessToken, releaseRadarNoSingles, limit, offset = 0))
+      _ <- PlaylistCleanUp.clearPlaylist(firstRequest(releaseRadarNoSingles))
 
-      _ <- PlaylistPagination.foreachPagePar(FirstRequest(accessToken, releaseRadar, limit, offset = 0)) { tracks =>
+      _ <- PlaylistPagination.foreachPagePar(firstRequest(releaseRadar)) { tracks =>
         val trackUris = tracks.toList.mapFilter(trackUriIfAlbum)
-        val runit: RIO[PlaylistModule, Unit] = RIO.unit
-        NonEmptyList.fromList(trackUris).fold(runit)(TrackImport.importTracks(_, releaseRadarNoSingles, accessToken))
+        val unit: RIO[PlaylistModule, Unit] = RIO.unit
+        NonEmptyList.fromList(trackUris).fold(unit)(importTracks(_, releaseRadarNoSingles, accessToken))
       }
     } yield ()
 

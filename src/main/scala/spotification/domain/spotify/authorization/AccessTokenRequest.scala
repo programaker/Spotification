@@ -13,10 +13,10 @@ final case class AccessTokenRequest(
 object AccessTokenRequest {
   def make(cfg: AuthorizationConfig, code: NonBlankString): AccessTokenRequest =
     AccessTokenRequest(
-      client_id = cfg.clientId,
-      client_secret = cfg.clientSecret,
-      grant_type = AccessTokenGrantType.AuthorizationCode,
-      code = code,
-      redirect_uri = cfg.redirectUri
+      cfg.clientId,
+      cfg.clientSecret,
+      AccessTokenGrantType.AuthorizationCode,
+      code,
+      cfg.redirectUri
     )
 }

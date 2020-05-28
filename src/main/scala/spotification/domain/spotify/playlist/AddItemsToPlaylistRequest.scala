@@ -17,9 +17,5 @@ object AddItemsToPlaylistRequest {
     playlistId: PlaylistId,
     uris: PlaylistItemsToProcess[TrackUri]
   ): AddItemsToPlaylistRequest =
-    AddItemsToPlaylistRequest(
-      accessToken = accessToken,
-      playlistId = playlistId,
-      body = AddItemsToPlaylistRequest.Body(uris = uris)
-    )
+    AddItemsToPlaylistRequest(accessToken, playlistId, Body(uris = uris))
 }

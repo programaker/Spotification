@@ -19,12 +19,12 @@ object RemoveItemsFromPlaylistRequest {
     tracks: PlaylistItemsToProcess[TrackUri]
   ): RemoveItemsFromPlaylistRequest =
     RemoveItemsFromPlaylistRequest(
-      accessToken = accessToken,
-      playlistId = playlistId,
-      body = RemoveItemsFromPlaylistRequest.Body(
+      accessToken,
+      playlistId,
+      Body(
         // Since `PlaylistItemsToProcess[TrackUri]` is already valid, we don't need to refine again
         // We know the result of `map` will respect the refinement
-        tracks = refineV[PlaylistItemsToProcessR].unsafeFrom(tracks.value.map(TrackToRemove))
+        refineV[PlaylistItemsToProcessR].unsafeFrom(tracks.value.map(TrackToRemove))
       )
     )
 }

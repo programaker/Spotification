@@ -10,6 +10,7 @@ final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
   server: ServerConfig,
+  client: ClientConfig,
   log: LogConfig
 )
 
@@ -33,6 +34,11 @@ final case class PlaylistConfig(
 final case class ServerConfig(
   host: Host,
   port: PositiveInt
+)
+
+final case class ClientConfig(
+  logHeaders: Boolean,
+  logBody: Boolean
 )
 
 final case class LogConfig(

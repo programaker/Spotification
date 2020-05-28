@@ -4,7 +4,9 @@ import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import shapeless.ops.product.ToMap
+import spotification.domain.config.ClientConfig
 import spotification.infra.concurrent.ExecutionContextModule
+import spotification.infra.config.ClientConfigModule
 import zio.interop.catz._
 import zio._
 
@@ -22,11 +24,14 @@ package object httpclient {
       val makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
         ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 
-      val addLogger: Client[Task] => Client[Task] =
-        Logger(logHeaders = false, logBody = false)(_)
+      def addLogger(config: ClientConfig): Client[Task] => Client[Task] =
+        Logger(config.logHeaders, config.logBody)(_)
 
-      ExecutionContextModule.layer >>>
-        ZLayer.fromServiceManaged(makeHttpClient.toManaged_.flatten.map(addLogger).provide)
+      val l = ZLayer.fromServicesManaged[ExecutionContext, ClientConfig, Any, Throwable, H4sClient] { (ex, config) =>
+        makeHttpClient.toManaged_.flatten.map(addLogger(config)).provide(ex)
+      }
+
+      (ExecutionContextModule.layer ++ ClientConfigModule.layer) >>> l
     }
   }
 }

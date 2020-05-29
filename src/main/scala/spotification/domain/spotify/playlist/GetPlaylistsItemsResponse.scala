@@ -18,7 +18,7 @@ object GetPlaylistsItemsResponse {
     next: Option[NextUri]
   ) extends GetPlaylistsItemsResponse
   object Success {
-    final case class ItemResponse(track: TrackResponse)
+    final case class ItemResponse(track: Option[TrackResponse]) //`track:null` shouldn't happen, but I saw myself
     final case class TrackResponse(album: AlbumResponse, uri: TrackUri)
     final case class AlbumResponse(album_type: AlbumType)
   }

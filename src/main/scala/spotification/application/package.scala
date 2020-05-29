@@ -18,4 +18,10 @@ package object application {
     val layer: TaskLayer[ReleaseRadarAppEnv] =
       LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
   }
+
+  type MergePlaylistsEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationAppEnv
+  object MergePlaylistsEnv {
+    val layer: TaskLayer[MergePlaylistsEnv] =
+      LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
+  }
 }

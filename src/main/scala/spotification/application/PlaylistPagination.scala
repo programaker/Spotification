@@ -39,7 +39,7 @@ object PlaylistPagination {
       PlaylistModule.getPlaylistItems(req).flatMap { resp =>
         val unit: RIO[R, Unit] = RIO.unit
 
-        NonEmptyList.fromList(resp.items.map(_.track)).fold(unit) { tracks =>
+        NonEmptyList.fromList(resp.items.flatMap(_.track)).fold(unit) { tracks =>
           val thisPage = processTracks(tracks)
 
           val nextPage = resp.next match {

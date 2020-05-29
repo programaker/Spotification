@@ -19,8 +19,9 @@ object Presentation {
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"        -> new HealthCheckController[R].routes,
-      "/authorization" -> new AuthorizationController[R].routes,
-      "/release-radar" -> new ReleaseRadarController[R].routes
+      "/health"          -> new HealthCheckController[R].routes,
+      "/authorization"   -> new AuthorizationController[R].routes,
+      "/release-radar"   -> new ReleaseRadarController[R].routes,
+      "/merge-playlists" -> new MergePlaylistsController[R].routes
     )
 }

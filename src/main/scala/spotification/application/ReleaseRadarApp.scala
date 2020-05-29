@@ -6,13 +6,14 @@ import spotification.domain.spotify.album._
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
 import spotification.domain.spotify.track.TrackUri
 import spotification.infra.config.PlaylistConfigModule
-import spotification.infra.spotify.playlist.PlaylistModule
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.application.TrackImport.importTracks
 import zio.RIO
 import spotification.infra.log.LogModule._
 
 object ReleaseRadarApp {
+  private val unit: RIO[ReleaseRadarAppEnv, Unit] = RIO.unit
+
   val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] =
     for {
       accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
@@ -29,7 +30,6 @@ object ReleaseRadarApp {
       _ <- info(show"Feeding release-radar-no-singles using release-radar($releaseRadar)")
       _ <- PlaylistPagination.foreachPagePar(firstRequest(releaseRadar)) { tracks =>
         val trackUris = tracks.toList.mapFilter(trackUriIfAlbum)
-        val unit: RIO[PlaylistModule, Unit] = RIO.unit
         NonEmptyList.fromList(trackUris).fold(unit)(importTracks(_, releaseRadarNoSingles, accessToken))
       }
 

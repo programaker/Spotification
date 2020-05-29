@@ -27,6 +27,8 @@ final case class AuthorizationConfig(
 final case class PlaylistConfig(
   releaseRadarId: PlaylistId,
   releaseRadarNoSinglesId: PlaylistId,
+  mergedPlaylistId: PlaylistId,
+  playlistsToMerge: List[PlaylistId],
   playlistApiUri: PlaylistApiUri,
   getPlaylistItemsLimit: PositiveInt
 )

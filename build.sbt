@@ -12,48 +12,47 @@ val simulacrumV = "1.0.0"
 val newtypeV = "0.4.4"
 val odinV = "0.7.0"
 
-lazy val root = (project in file("."))
-  .settings(
-    organization := "com.github.programaker",
-    name := "spotification",
-    version := "1.0",
-    scalaVersion := "2.13.1",
+lazy val root = (project in file(".")).settings(
+  organization := "com.github.programaker",
+  name := "spotification",
+  version := "1.0",
+  scalaVersion := "2.13.1",
 
-    libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-blaze-server" % http4sV,
-      "org.http4s" %% "http4s-blaze-client" % http4sV,
-      "org.http4s" %% "http4s-circe" % http4sV,
-      "org.http4s" %% "http4s-dsl" % http4sV,
+  libraryDependencies ++= Seq(
+    "org.http4s" %% "http4s-blaze-server" % http4sV,
+    "org.http4s" %% "http4s-blaze-client" % http4sV,
+    "org.http4s" %% "http4s-circe" % http4sV,
+    "org.http4s" %% "http4s-dsl" % http4sV,
 
-      "io.circe" %% "circe-generic" % circeV,
-      "io.circe" %% "circe-refined" % circeV,
+    "io.circe" %% "circe-generic" % circeV,
+    "io.circe" %% "circe-refined" % circeV,
 
-      "ch.qos.logback" % "logback-classic" % logbackV,
+    "ch.qos.logback" % "logback-classic" % logbackV,
 
-      "com.github.valskalla" %% "odin-core" % odinV,
-      "com.github.valskalla" %% "odin-zio" % odinV,
+    "com.github.valskalla" %% "odin-core" % odinV,
+    "com.github.valskalla" %% "odin-zio" % odinV,
 
-      "eu.timepit" %% "refined" % refinedV,
-      "eu.timepit" %% "refined-cats" % refinedV,
-      "eu.timepit" %% "refined-pureconfig" % refinedV,
+    "eu.timepit" %% "refined" % refinedV,
+    "eu.timepit" %% "refined-cats" % refinedV,
+    "eu.timepit" %% "refined-pureconfig" % refinedV,
 
-      "io.estatico" %% "newtype" % newtypeV,
+    "io.estatico" %% "newtype" % newtypeV,
 
-      "dev.zio" %% "zio" % zioV,
-      "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
+    "dev.zio" %% "zio" % zioV,
+    "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
 
-      "com.github.pureconfig" %% "pureconfig" % pureConfigV,
+    "com.github.pureconfig" %% "pureconfig" % pureConfigV,
 
-      "org.typelevel" %% "simulacrum" % simulacrumV,
+    "org.typelevel" %% "simulacrum" % simulacrumV,
 
-      "org.specs2" %% "specs2-core" % specs2V % Test
-    ),
-    
-    Seq(
-      "org.typelevel" %% "kind-projector" % kindProjectorV,
-      "com.olegpy" %% "better-monadic-for" % betterMonadicForV
-    ).map(addCompilerPlugin)
-  )
+    "org.specs2" %% "specs2-core" % specs2V % Test
+  ),
+
+  Seq(
+    "org.typelevel" %% "kind-projector" % kindProjectorV,
+    "com.olegpy" %% "better-monadic-for" % betterMonadicForV
+  ).map(addCompilerPlugin)
+)
 
 enablePlugins(
   JavaServerAppPackaging,

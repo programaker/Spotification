@@ -9,10 +9,12 @@ import zio.RIO
 
 // ==========
 // Despite IntelliJ telling that
+// `import io.circe.generic.auto._`
 // `import zio.interop.catz._`
 // `import spotification.infra.json._`
 // are not being used, they are required to compile
 // ==========
+import io.circe.generic.auto._
 import zio.interop.catz._
 import spotification.infra.Json.Implicits._
 
@@ -24,7 +26,7 @@ final class ReleaseRadarController[R <: ReleaseRadarAppEnv] {
     case POST -> Root =>
       fillReleaseRadarNoSinglesProgram.foldM(
         handleGenericError(H4sDsl, _),
-        _ => Ok("The playlist is being filled...")
+        _ => Ok(GenericResponse.Success("Enjoy your albums-only Release Radar!"))
       )
   }
 }

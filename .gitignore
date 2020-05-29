@@ -3,7 +3,7 @@
 .metals
 .vscode
 .env
-logs
+log
 target
 project/metals.sbt
 *.sc

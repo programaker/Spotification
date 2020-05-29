@@ -1,9 +1,9 @@
 val sbtRevolverV = "0.9.1"
-val wartRemoverV = "2.4.7"
-val sbtUpdatesV = "0.5.0"
-val sbtDotEnvV = "2.1.146"
+val wartRemoverV = "2.4.8"
+val sbtUpdatesV = "0.5.1"
 val sbtNativePackagerV = "1.7.2"
 val sbtScalaFmtV = "2.4.0"
+val sbtDotEnvV = "2.1.146"
 
 Seq(
   "io.spray" % "sbt-revolver" % sbtRevolverV,

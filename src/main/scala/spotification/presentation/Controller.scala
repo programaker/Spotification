@@ -3,7 +3,6 @@ package spotification.presentation
 import cats.Applicative
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
-import zio.interop.catz._
 import io.circe.generic.auto._
 import spotification.infra.Json.Implicits._
 

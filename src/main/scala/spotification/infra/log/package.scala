@@ -16,7 +16,11 @@ package object log {
     val layer: TaskLayer[LogModule] =
       LogConfigModule.layer >>> ZLayer.fromServiceManaged[LogConfig, Any, Throwable, Logger[Task]](makeLogger)
 
-    val log: RIO[LogModule, Logger[Task]] = ZIO.access(_.get)
+    def debug(msg: String): RIO[LogModule, Unit] = ZIO.accessM(_.get.debug(msg))
+    def info(msg: String): RIO[LogModule, Unit] = ZIO.accessM(_.get.info(msg))
+    def warn(msg: String): RIO[LogModule, Unit] = ZIO.accessM(_.get.warn(msg))
+    def error(msg: String): RIO[LogModule, Unit] = ZIO.accessM(_.get.error(msg))
+    def error(msg: String, e: Throwable): RIO[LogModule, Unit] = ZIO.accessM(_.get.error(msg, e))
 
     private def makeLogger(logConfig: LogConfig): TaskManaged[Logger[Task]] =
       // Why not just combine the logs and call `toManaged`?

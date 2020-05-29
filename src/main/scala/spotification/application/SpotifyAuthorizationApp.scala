@@ -45,10 +45,10 @@ object SpotifyAuthorizationApp {
       }
 
       req = RefreshTokenRequest(
-        client_id = config.clientId,
-        client_secret = config.clientSecret,
-        grant_type = RefreshTokenGrantType.RefreshToken,
-        refresh_token = refreshToken
+        config.clientId,
+        config.clientSecret,
+        RefreshTokenGrantType.RefreshToken,
+        refreshToken
       )
 
       resp <- AuthorizationModule.refreshToken(req)

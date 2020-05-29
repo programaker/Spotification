@@ -63,10 +63,11 @@ enablePlugins(
 
 ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Recursion,
-  Wart.Nothing,
   Wart.ImplicitParameter,
   Wart.Any,
-  Wart.ImplicitConversion
+  Wart.Nothing,
+  Wart.ImplicitConversion,
+  Wart.Overloading
 )
 
 ThisBuild / scalacOptions ++= Seq(

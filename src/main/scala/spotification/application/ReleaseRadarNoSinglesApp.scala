@@ -8,29 +8,31 @@ import spotification.domain.spotify.track.TrackUri
 import spotification.infra.config.PlaylistConfigModule
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.application.TrackImport.importTracks
+import spotification.domain.spotify.playlist.PlaylistId
 import zio.RIO
 import spotification.infra.log.LogModule._
 
-object ReleaseRadarApp {
-  private val unit: RIO[ReleaseRadarAppEnv, Unit] = RIO.unit
+object ReleaseRadarNoSinglesApp {
+  private val unit: RIO[ReleaseRadarNoSinglesAppEnv, Unit] = RIO.unit
 
-  val fillReleaseRadarNoSinglesProgram: RIO[ReleaseRadarAppEnv, Unit] =
+  def fillReleaseRadarNoSinglesProgram(
+    releaseRadarId: PlaylistId,
+    releaseRadarNoSinglesId: PlaylistId
+  ): RIO[ReleaseRadarNoSinglesAppEnv, Unit] =
     for {
       accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
       playlistConfig <- PlaylistConfigModule.config
 
-      releaseRadar = playlistConfig.releaseRadarId
-      releaseRadarNoSingles = playlistConfig.releaseRadarNoSinglesId
       limit = playlistConfig.getPlaylistItemsLimit
       firstRequest = FirstRequest.make(accessToken, _, limit)
 
-      _ <- info(show"Cleaning up release-radar-no-singles($releaseRadarNoSingles)")
-      _ <- PlaylistCleanUp.clearPlaylist(firstRequest(releaseRadarNoSingles))
+      _ <- info(show"Cleaning up release-radar-no-singles($releaseRadarNoSinglesId)")
+      _ <- PlaylistCleanUp.clearPlaylist(firstRequest(releaseRadarNoSinglesId))
 
-      _ <- info(show"Feeding release-radar-no-singles using release-radar($releaseRadar)")
-      _ <- PlaylistPagination.foreachPagePar(firstRequest(releaseRadar)) { tracks =>
+      _ <- info(show"Feeding release-radar-no-singles using release-radar($releaseRadarId)")
+      _ <- PlaylistPagination.foreachPagePar(firstRequest(releaseRadarId)) { tracks =>
         val trackUris = tracks.toList.mapFilter(trackUriIfAlbum)
-        NonEmptyList.fromList(trackUris).fold(unit)(importTracks(_, releaseRadarNoSingles, accessToken))
+        NonEmptyList.fromList(trackUris).fold(unit)(importTracks(_, releaseRadarNoSinglesId, accessToken))
       }
 
       _ <- info("Done!")

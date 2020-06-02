@@ -3,15 +3,7 @@ package spotification.application
 import cats.implicits._
 import org.http4s.Uri
 import spotification.domain.NonBlankStringR
-import spotification.domain.spotify.authorization.{
-  AccessToken,
-  AccessTokenRequest,
-  AccessTokenResponse,
-  AuthorizeErrorResponse,
-  AuthorizeRequest,
-  RefreshTokenGrantType,
-  RefreshTokenRequest
-}
+import spotification.domain.spotify.authorization._
 import spotification.infra.Infra.refineRIO
 import spotification.infra.config.AuthorizationConfigModule
 import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUri

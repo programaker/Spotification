@@ -10,15 +10,16 @@ import spotification.infra.log.LogModule._
 import zio.{RIO, ZIO}
 
 object MergePlaylistsApp {
-  private val unit: RIO[MergePlaylistsEnv, Unit] = RIO.unit
+  private val unit: RIO[MergedPlaylistsEnv, Unit] = RIO.unit
 
-  val mergePlaylistsProgram: RIO[MergePlaylistsEnv, Unit] =
+  def mergePlaylistsProgram(
+    mergedPlaylistId: PlaylistId,
+    playlistsToMerge: List[PlaylistId]
+  ): RIO[MergedPlaylistsEnv, Unit] =
     for {
       accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
       playlistConfig <- PlaylistConfigModule.config
 
-      mergedPlaylistId = playlistConfig.mergedPlaylistId
-      playlistsToMerge = playlistConfig.playlistsToMerge
       limit = playlistConfig.getPlaylistItemsLimit
       firstRequest = FirstRequest.make(accessToken, _, limit)
 
@@ -35,7 +36,7 @@ object MergePlaylistsApp {
     sources: List[PlaylistId],
     dest: PlaylistId,
     mkReq: PlaylistId => FirstRequest
-  ): RIO[MergePlaylistsEnv, Unit] =
+  ): RIO[MergedPlaylistsEnv, Unit] =
     NonEmptyList.fromList(sources).fold(unit) { playlists =>
       ZIO.foreachPar_(playlists.toIterable) { playlist =>
         info(show"> playlist($playlist) is being imported") *>
@@ -44,7 +45,7 @@ object MergePlaylistsApp {
       }
     }
 
-  private def importPlaylist(source: FirstRequest, dest: PlaylistId): RIO[MergePlaylistsEnv, Unit] =
+  private def importPlaylist(source: FirstRequest, dest: PlaylistId): RIO[MergedPlaylistsEnv, Unit] =
     PlaylistPagination.foreachPagePar(source) { tracks =>
       importTracks(tracks.map(_.uri), dest, source.accessToken)
     }

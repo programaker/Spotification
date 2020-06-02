@@ -15,13 +15,6 @@ package object authorization {
     def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationModule, RefreshTokenResponse] =
       ZIO.accessM(_.get.refreshToken(req))
 
-    /*val layer: TaskLayer[AuthorizationModule] = {
-      val l1 = ZLayer.fromService[AuthorizationConfig, AuthorizationModule.Service] { config =>
-        new H4sAuthorizationService(config.apiTokenUri)
-      }
-
-      (AuthorizationConfigModule.layer ++ HttpClientModule.layer) >>> l1
-    }*/
     val layer: TaskLayer[AuthorizationModule] = {
       val l1 = ZLayer.fromServices[AuthorizationConfig, H4sClient, AuthorizationModule.Service] {
         (config, httpClient) => new H4sAuthorizationService(config.apiTokenUri, httpClient)

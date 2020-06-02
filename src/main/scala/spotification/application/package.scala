@@ -13,15 +13,18 @@ package object application {
       AuthorizationModule.layer ++ AuthorizationConfigModule.layer
   }
 
-  type ReleaseRadarAppEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationAppEnv
-  object ReleaseRadarAppEnv {
-    val layer: TaskLayer[ReleaseRadarAppEnv] =
+  type ReleaseRadarNoSinglesAppEnv = LogModule
+    with PlaylistModule
+    with PlaylistConfigModule
+    with SpotifyAuthorizationAppEnv
+  object ReleaseRadarNoSinglesAppEnv {
+    val layer: TaskLayer[ReleaseRadarNoSinglesAppEnv] =
       LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
   }
 
-  type MergePlaylistsEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationAppEnv
-  object MergePlaylistsEnv {
-    val layer: TaskLayer[MergePlaylistsEnv] =
+  type MergedPlaylistsEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationAppEnv
+  object MergedPlaylistsEnv {
+    val layer: TaskLayer[MergedPlaylistsEnv] =
       LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
   }
 }

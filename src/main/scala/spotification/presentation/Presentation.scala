@@ -11,17 +11,19 @@ object Presentation {
     for {
       config <- ServerConfigModule.config
       ex     <- ExecutionContextModule.executionContext
+
       controllers = allRoutes[HttpAppEnv]
       app = addCors(addLogger(httpApp(controllers)))
+
       _ <- runHttpServer[RIO[HttpAppEnv, *]](config, app, ex)
     } yield ()
   }
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"          -> new HealthCheckController[R].routes,
-      "/authorization"   -> new AuthorizationController[R].routes,
-      "/release-radar"   -> new ReleaseRadarController[R].routes,
-      "/merge-playlists" -> new MergePlaylistsController[R].routes
+      "/health"                             -> new HealthCheckController[R].routes,
+      "/authorization"                      -> new AuthorizationController[R].routes,
+      "/playlists/release-radar-no-singles" -> new ReleaseRadarNoSinglesController[R].routes,
+      "/playlists/merged-playlist"          -> new MergedPlaylistsController[R].routes
     )
 }

@@ -1,7 +1,7 @@
 package spotification.domain.config
 
 import spotification.domain.spotify.authorization._
-import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
+import spotification.domain.spotify.playlist.PlaylistApiUri
 import spotification.domain.{Host, PositiveInt}
 
 import scala.concurrent.duration.FiniteDuration
@@ -25,10 +25,6 @@ final case class AuthorizationConfig(
 )
 
 final case class PlaylistConfig(
-  releaseRadarId: PlaylistId,
-  releaseRadarNoSinglesId: PlaylistId,
-  mergedPlaylistId: PlaylistId,
-  playlistsToMerge: List[PlaylistId],
   playlistApiUri: PlaylistApiUri,
   getPlaylistItemsLimit: PositiveInt
 )

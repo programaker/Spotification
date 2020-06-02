@@ -23,7 +23,7 @@ import spotification.infra.spotify.authorization.AuthorizationModule
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
-import spotification.infra.Json.Implicits._
+import spotification.infra.Json.Implicits.{PlaylistIdDecoder => _, FEntityDecoder => _, _}
 
 final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient)
     extends AuthorizationModule.Service {
@@ -58,7 +58,8 @@ final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sCli
     val post = POST.apply(
       urlForm,
       Uri.unsafeFromString(apiTokenUri.show),
-      authorizationBasicHeader(req.client_id, req.client_secret), Accept(MediaRange.`*/*`)
+      authorizationBasicHeader(req.client_id, req.client_secret),
+      Accept(MediaRange.`*/*`)
     )
 
     httpClient

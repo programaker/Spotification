@@ -24,7 +24,7 @@ class MergedPlaylistsController[R <: MergedPlaylistsEnv] {
   import H4sDsl._
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
-    case rawReq @ POST -> Root =>
+    case rawReq @ PATCH -> Root =>
       for {
         req <- rawReq.as[MergedPlaylistsController.Request]
 

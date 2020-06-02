@@ -23,7 +23,9 @@ import spotification.infra.spotify.authorization.AuthorizationModule
 // are not being used, they are required to compile
 // ==========
 import io.circe.refined._
-import spotification.infra.Json.Implicits.{PlaylistIdDecoder => _, FEntityDecoder => _, _}
+
+// FEntityDecoder is messing with RefreshTokenResponse decoding somehow
+import spotification.infra.Json.Implicits.{FEntityDecoder => _, _}
 
 final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient)
     extends AuthorizationModule.Service {

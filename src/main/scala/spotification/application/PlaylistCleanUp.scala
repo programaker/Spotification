@@ -25,7 +25,7 @@ object PlaylistCleanUp {
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
-        .map(_.map(RemoveItemsFromPlaylistRequest.make(req.accessToken, req.playlistId, _)))
+        .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.playlistId, req.accessToken)))
         .map(_.flatMap(PlaylistModule.removeItemsFromPlaylist))
         .to(Iterable)
     )(identity)

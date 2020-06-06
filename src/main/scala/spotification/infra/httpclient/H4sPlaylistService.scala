@@ -34,7 +34,7 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
 
     val uri = req match {
       case fr: FirstRequest        => getItemsUri(fr)
-      case NextRequest(_, nextUri) => Uri.fromString(nextUri)
+      case NextRequest(nextUri, _) => Uri.fromString(nextUri)
     }
 
     doRequest[GetPlaylistsItemsResponse](httpClient, uri)(get).flatMap {

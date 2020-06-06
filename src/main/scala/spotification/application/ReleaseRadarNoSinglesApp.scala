@@ -24,7 +24,7 @@ object ReleaseRadarNoSinglesApp {
       playlistConfig <- PlaylistConfigModule.config
 
       limit = playlistConfig.getPlaylistItemsLimit
-      firstRequest = FirstRequest.make(accessToken, _, limit)
+      firstRequest = FirstRequest.make(_, limit, accessToken)
 
       _ <- info(show"Cleaning up release-radar-no-singles($releaseRadarNoSinglesId)")
       _ <- PlaylistCleanUp.clearPlaylist(firstRequest(releaseRadarNoSinglesId))

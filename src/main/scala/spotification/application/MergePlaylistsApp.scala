@@ -21,7 +21,7 @@ object MergePlaylistsApp {
       playlistConfig <- PlaylistConfigModule.config
 
       limit = playlistConfig.getPlaylistItemsLimit
-      firstRequest = FirstRequest.make(accessToken, _, limit)
+      firstRequest = FirstRequest.make(_, limit, accessToken)
 
       _ <- info(show"Cleaning up merged-playlist($mergedPlaylistId)")
       _ <- PlaylistCleanUp.clearPlaylist(firstRequest(mergedPlaylistId))

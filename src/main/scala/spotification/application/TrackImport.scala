@@ -30,6 +30,6 @@ object TrackImport {
     accessToken: AccessToken
   ): RIO[PlaylistModule, Unit] =
     PlaylistModule
-      .addItemsToPlaylist(AddItemsToPlaylistRequest.make(accessToken, destPlaylist, trackUris))
+      .addItemsToPlaylist(AddItemsToPlaylistRequest.make(destPlaylist, trackUris, accessToken))
       .map(_ => ())
 }

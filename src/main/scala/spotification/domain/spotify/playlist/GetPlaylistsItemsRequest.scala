@@ -7,19 +7,19 @@ import eu.timepit.refined.auto._
 sealed abstract class GetPlaylistsItemsRequest extends Product with Serializable
 object GetPlaylistsItemsRequest {
   final case class FirstRequest(
-    accessToken: AccessToken,
     playlistId: PlaylistId,
     limit: PositiveInt,
-    offset: NonNegativeInt
+    offset: NonNegativeInt,
+    accessToken: AccessToken
   ) extends GetPlaylistsItemsRequest
   object FirstRequest {
-    def make(accessToken: AccessToken, playlistId: PlaylistId, limit: PositiveInt): FirstRequest =
-      FirstRequest(accessToken, playlistId, limit, offset = 0)
+    def make(playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken): FirstRequest =
+      FirstRequest(playlistId, limit, offset = 0, accessToken)
   }
 
   final case class NextRequest(
-    accessToken: AccessToken,
-    nextUri: UriString
+    nextUri: UriString,
+    accessToken: AccessToken
   ) extends GetPlaylistsItemsRequest
 
   def accessToken(req: GetPlaylistsItemsRequest): AccessToken =

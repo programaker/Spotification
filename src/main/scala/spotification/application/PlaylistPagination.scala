@@ -48,7 +48,7 @@ object PlaylistPagination {
             case Some(nextUri) =>
               val accessToken = GetPlaylistsItemsRequest.accessToken(req)
               val uri = chooseUri(resp.href, nextUri)
-              loop(NextRequest(accessToken, uri))
+              loop(NextRequest(uri, accessToken))
           }
 
           combinePageEffects(thisPage, nextPage)

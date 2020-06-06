@@ -11,6 +11,7 @@ val pureConfigV = "0.12.3"
 val simulacrumV = "1.0.0"
 val newtypeV = "0.4.4"
 val odinV = "0.7.0"
+val splainV = "0.5.6"
 
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
@@ -50,7 +51,8 @@ lazy val root = (project in file(".")).settings(
 
   Seq(
     "org.typelevel" %% "kind-projector" % kindProjectorV,
-    "com.olegpy" %% "better-monadic-for" % betterMonadicForV
+    "com.olegpy" %% "better-monadic-for" % betterMonadicForV,
+    "io.tryp" % "splain" % splainV cross CrossVersion.patch
   ).map(addCompilerPlugin)
 )
 

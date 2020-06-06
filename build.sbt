@@ -16,7 +16,7 @@ lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
   name := "spotification",
   version := "1.0",
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.13.2",
 
   libraryDependencies ++= Seq(
     "org.http4s" %% "http4s-blaze-server" % http4sV,
@@ -68,6 +68,9 @@ ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.ImplicitConversion,
   Wart.Overloading
 )
+
+// disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2
+Compile / console / scalacOptions := (console / scalacOptions).value.filterNot(_.contains("wartremover"))
 
 ThisBuild / scalacOptions ++= Seq(
   "-encoding", "utf8",

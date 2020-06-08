@@ -7,7 +7,8 @@ import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstReque
 import spotification.domain.spotify.playlist.PlaylistId
 import spotification.infra.config.PlaylistConfigModule
 import spotification.infra.log.LogModule._
-import zio.{RIO, ZIO}
+import zio.{RIO, Schedule, ZIO}
+import zio.duration._
 
 object MergePlaylistsApp {
   private val unit: RIO[MergedPlaylistsEnv, Unit] = RIO.unit
@@ -46,7 +47,9 @@ object MergePlaylistsApp {
     }
 
   private def importPlaylist(source: FirstRequest, dest: PlaylistId): RIO[MergedPlaylistsEnv, Unit] =
-    PlaylistPagination.foreachPagePar(source) { tracks =>
-      importTracks(tracks.map(_.uri), dest, source.accessToken)
-    }
+    PlaylistPagination
+      .foreachPagePar(source) { tracks =>
+        importTracks(tracks.map(_.uri), dest, source.accessToken)
+      }
+      .retry(Schedule.exponential(1.second) && Schedule.recurs(3)) //TODO => move to config
 }

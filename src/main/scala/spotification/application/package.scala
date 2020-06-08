@@ -5,6 +5,7 @@ import spotification.infra.log.LogModule
 import spotification.infra.spotify.authorization.AuthorizationModule
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.TaskLayer
+import zio.clock.Clock
 
 package object application {
   type SpotifyAuthorizationAppEnv = AuthorizationModule with AuthorizationConfigModule
@@ -19,12 +20,23 @@ package object application {
     with SpotifyAuthorizationAppEnv
   object ReleaseRadarNoSinglesAppEnv {
     val layer: TaskLayer[ReleaseRadarNoSinglesAppEnv] =
-      LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
+      LogModule.layer ++
+        PlaylistModule.layer ++
+        PlaylistConfigModule.layer ++
+        SpotifyAuthorizationAppEnv.layer
   }
 
-  type MergedPlaylistsEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationAppEnv
+  type MergedPlaylistsEnv = Clock
+    with LogModule
+    with PlaylistModule
+    with PlaylistConfigModule
+    with SpotifyAuthorizationAppEnv
   object MergedPlaylistsEnv {
     val layer: TaskLayer[MergedPlaylistsEnv] =
-      LogModule.layer ++ PlaylistModule.layer ++ PlaylistConfigModule.layer ++ SpotifyAuthorizationAppEnv.layer
+      Clock.live ++
+        LogModule.layer ++
+        PlaylistModule.layer ++
+        PlaylistConfigModule.layer ++
+        SpotifyAuthorizationAppEnv.layer
   }
 }

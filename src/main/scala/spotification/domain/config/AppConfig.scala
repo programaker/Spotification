@@ -26,7 +26,8 @@ final case class AuthorizationConfig(
 
 final case class PlaylistConfig(
   playlistApiUri: PlaylistApiUri,
-  getPlaylistItemsLimit: PositiveInt
+  getPlaylistItemsLimit: PositiveInt,
+  mergePlaylistsRetry: RetryConfig
 )
 
 final case class ServerConfig(
@@ -43,4 +44,9 @@ final case class LogConfig(
   logDir: Directory,
   maxFileSizeInBytes: Option[Bytes],
   rolloverInterval: Option[FiniteDuration]
+)
+
+final case class RetryConfig(
+  retryAfter: FiniteDuration,
+  attempts: PositiveInt
 )

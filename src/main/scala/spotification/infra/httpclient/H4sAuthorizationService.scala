@@ -4,7 +4,7 @@ import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.jawn
 import org.http4s.Method._
-import org.http4s.{MediaRange, Uri, UrlForm}
+import org.http4s.{MediaRange, MediaType, Uri, UrlForm}
 import spotification.domain.spotify.authorization._
 import zio.Task
 import zio.interop.catz._
@@ -61,7 +61,7 @@ final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sCli
       urlForm,
       Uri.unsafeFromString(apiTokenUri.show),
       authorizationBasicHeader(req.client_id, req.client_secret),
-      Accept(MediaRange.`*/*`)
+      Accept(MediaType.application.json)
     )
 
     httpClient

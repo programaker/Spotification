@@ -1,23 +1,23 @@
-val http4sV = "0.21.4"
+val http4sV = "0.21.5"
 val circeV = "0.13.0"
 val specs2V = "4.10.0"
 val logbackV = "1.2.3"
 val betterMonadicForV = "0.3.1"
 val kindProjectorV = "0.10.3"
 val refinedV = "0.9.14"
-val zioV = "1.0.0-RC21"
+val zioV = "1.0.0-RC21-1"
 val zioInteropCatsV = "2.1.3.0-RC16"
 val pureConfigV = "0.12.3"
 val simulacrumV = "1.0.0"
 val newtypeV = "0.4.4"
 val odinV = "0.7.0"
-val splainV = "0.5.6"
+val splainV = "0.5.7"
 
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
   name := "spotification",
   version := "1.0",
-  scalaVersion := "2.13.2",
+  scalaVersion := "2.13.3",
 
   libraryDependencies ++= Seq(
     "org.http4s" %% "http4s-blaze-server" % http4sV,

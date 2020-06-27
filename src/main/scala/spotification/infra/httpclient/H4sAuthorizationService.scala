@@ -4,7 +4,7 @@ import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.jawn
 import org.http4s.Method._
-import org.http4s.{MediaRange, MediaType, Uri, UrlForm}
+import org.http4s.{MediaType, Uri, UrlForm}
 import spotification.domain.spotify.authorization._
 import zio.Task
 import zio.interop.catz._

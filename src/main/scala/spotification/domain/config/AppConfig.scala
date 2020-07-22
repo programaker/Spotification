@@ -20,8 +20,7 @@ final case class AuthorizationConfig(
   redirectUri: RedirectUri,
   authorizeUri: AuthorizeUri,
   apiTokenUri: ApiTokenUri,
-  scopes: Option[List[Scope]],
-  refreshToken: Option[RefreshToken]
+  scopes: Option[List[Scope]]
 )
 
 final case class PlaylistConfig(

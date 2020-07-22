@@ -11,16 +11,18 @@ import spotification.infra.log.LogModule._
 import zio.{RIO, Schedule, ZIO}
 import zio.duration._
 import eu.timepit.refined.auto._
+import spotification.domain.spotify.authorization.RefreshToken
 
 object MergePlaylistsApp {
   private val unit: RIO[MergedPlaylistsEnv, Unit] = RIO.unit
 
   def mergePlaylistsProgram(
+    refreshToken: RefreshToken,
     mergedPlaylistId: PlaylistId,
     playlistsToMerge: List[PlaylistId]
   ): RIO[MergedPlaylistsEnv, Unit] =
     for {
-      accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
+      accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram(refreshToken)
       playlistConfig <- PlaylistConfigModule.config
 
       limit = playlistConfig.getPlaylistItemsLimit

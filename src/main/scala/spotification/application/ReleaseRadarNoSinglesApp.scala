@@ -8,6 +8,7 @@ import spotification.domain.spotify.track.TrackUri
 import spotification.infra.config.PlaylistConfigModule
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.application.TrackImport.importTracks
+import spotification.domain.spotify.authorization.RefreshToken
 import spotification.domain.spotify.playlist.PlaylistId
 import zio.RIO
 import spotification.infra.log.LogModule._
@@ -16,11 +17,12 @@ object ReleaseRadarNoSinglesApp {
   private val unit: RIO[ReleaseRadarNoSinglesAppEnv, Unit] = RIO.unit
 
   def fillReleaseRadarNoSinglesProgram(
+    refreshToken: RefreshToken,
     releaseRadarId: PlaylistId,
     releaseRadarNoSinglesId: PlaylistId
   ): RIO[ReleaseRadarNoSinglesAppEnv, Unit] =
     for {
-      accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram
+      accessToken    <- SpotifyAuthorizationApp.requestAccessTokenProgram(refreshToken)
       playlistConfig <- PlaylistConfigModule.config
 
       limit = playlistConfig.getPlaylistItemsLimit

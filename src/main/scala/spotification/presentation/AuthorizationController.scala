@@ -33,10 +33,7 @@ final class AuthorizationController[R <: SpotifyAuthorizationAppEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root =>
-      makeAuthorizeUriProgram.foldM(
-        handleGenericError(H4sDsl, _),
-        uri => Found(Location(uri))
-      )
+      makeAuthorizeUriProgram.foldM(handleGenericError(H4sDsl, _), uri => Found(Location(uri)))
 
     case GET -> Root / Callback :? CodeQP(code) +& StateQP(_) =>
       authorizeCallbackProgram(code).foldM(handleGenericError(H4sDsl, _), Ok(_))

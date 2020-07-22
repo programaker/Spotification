@@ -27,14 +27,9 @@ object SpotifyAuthorizationApp {
   def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationAppEnv, AuthorizeErrorResponse] =
     refineRIO[SpotifyAuthorizationAppEnv, NonBlankStringR](error).map(AuthorizeErrorResponse)
 
-  val requestAccessTokenProgram: RIO[SpotifyAuthorizationAppEnv, AccessToken] =
+  def requestAccessTokenProgram(refreshToken: RefreshToken): RIO[SpotifyAuthorizationAppEnv, AccessToken] =
     for {
       config <- AuthorizationConfigModule.config
-
-      refreshToken <- config.refreshToken match {
-        case None        => RIO.fail(new Exception("Refresh token absent from AuthorizationConfig"))
-        case Some(token) => RIO.succeed(token)
-      }
 
       req = RefreshTokenRequest(
         config.clientId,

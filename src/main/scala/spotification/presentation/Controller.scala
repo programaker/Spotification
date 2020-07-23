@@ -7,7 +7,7 @@ import org.http4s.AuthScheme.Bearer
 import org.http4s.Credentials.Token
 import org.http4s.headers.Authorization
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{Request, Response}
+import org.http4s.{EntityDecoder, Request, Response}
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization.RefreshToken
 import spotification.infra.Infra.refineRIO
@@ -20,6 +20,19 @@ object Controller {
     import dsl._
     InternalServerError(GenericResponse.Error(e.getMessage))
   }
+
+  def doRequest[R, A, B](
+    rawReq: Request[RIO[R, *]]
+  )(
+    f: (RefreshToken, A) => RIO[R, B]
+  )(implicit
+    D: EntityDecoder[RIO[R, *], A]
+  ): RIO[R, B] =
+    for {
+      refreshToken <- requiredRefreshTokenFromRequest(rawReq)
+      a            <- rawReq.as[A]
+      b            <- f(refreshToken, a)
+    } yield b
 
   def requiredRefreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, RefreshToken] =
     refreshTokenFromRequest(req).flatMap {

@@ -5,7 +5,7 @@ import org.http4s.dsl.Http4sDsl
 import spotification.application.ReleaseRadarNoSinglesApp.fillReleaseRadarNoSinglesProgram
 import spotification.application.ReleaseRadarNoSinglesAppEnv
 import spotification.domain.spotify.playlist.PlaylistId
-import spotification.presentation.Controller.{handleGenericError, requiredRefreshTokenFromRequest}
+import spotification.presentation.Controller.{doRequest, handleGenericError}
 import zio.RIO
 
 // ==========
@@ -25,13 +25,9 @@ final class ReleaseRadarNoSinglesController[R <: ReleaseRadarNoSinglesAppEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case rawReq @ PATCH -> Root =>
-      val resp = for {
-        refreshToken <- requiredRefreshTokenFromRequest(rawReq)
-        req          <- rawReq.as[ReleaseRadarNoSinglesController.Request]
-        _            <- fillReleaseRadarNoSinglesProgram(refreshToken, req.releaseRadarId, req.releaseRadarNoSinglesId)
-      } yield ()
-
-      resp.foldM(
+      doRequest(rawReq) { (refreshToken, req: ReleaseRadarNoSinglesController.Request) =>
+        fillReleaseRadarNoSinglesProgram(refreshToken, req.releaseRadarId, req.releaseRadarNoSinglesId)
+      }.foldM(
         handleGenericError(H4sDsl, _),
         _ => Ok(GenericResponse.Success("Enjoy your albums-only Release Radar!"))
       )

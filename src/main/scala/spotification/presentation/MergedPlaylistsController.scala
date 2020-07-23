@@ -25,15 +25,16 @@ class MergedPlaylistsController[R <: MergedPlaylistsEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case rawReq @ PATCH -> Root =>
-      for {
+      val resp = for {
         refreshToken <- requiredRefreshTokenFromRequest(rawReq)
         req          <- rawReq.as[MergedPlaylistsController.Request]
+        _            <- mergePlaylistsProgram(refreshToken, req.mergedPlaylistId, req.playlistsToMerge)
+      } yield ()
 
-        resp <- mergePlaylistsProgram(refreshToken, req.mergedPlaylistId, req.playlistsToMerge).foldM(
-          handleGenericError(H4sDsl, _),
-          _ => Ok(GenericResponse.Success("Enjoy your merged playlist!"))
-        )
-      } yield resp
+      resp.foldM(
+        handleGenericError(H4sDsl, _),
+        _ => Ok(GenericResponse.Success("Enjoy your merged playlist!"))
+      )
   }
 }
 object MergedPlaylistsController {

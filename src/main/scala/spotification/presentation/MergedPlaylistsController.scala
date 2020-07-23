@@ -5,7 +5,7 @@ import org.http4s.dsl.Http4sDsl
 import spotification.application.MergePlaylistsApp.mergePlaylistsProgram
 import spotification.application.MergedPlaylistsEnv
 import spotification.domain.spotify.playlist.PlaylistId
-import spotification.presentation.Controller.{handleGenericError, requiredRefreshTokenFromRequest}
+import spotification.presentation.Controller.{doRequest, handleGenericError}
 import zio.RIO
 
 // ==========
@@ -25,13 +25,9 @@ class MergedPlaylistsController[R <: MergedPlaylistsEnv] {
 
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case rawReq @ PATCH -> Root =>
-      val resp = for {
-        refreshToken <- requiredRefreshTokenFromRequest(rawReq)
-        req          <- rawReq.as[MergedPlaylistsController.Request]
-        _            <- mergePlaylistsProgram(refreshToken, req.mergedPlaylistId, req.playlistsToMerge)
-      } yield ()
-
-      resp.foldM(
+      doRequest(rawReq) { (refreshToken, req: MergedPlaylistsController.Request) =>
+        mergePlaylistsProgram(refreshToken, req.mergedPlaylistId, req.playlistsToMerge)
+      }.foldM(
         handleGenericError(H4sDsl, _),
         _ => Ok(GenericResponse.Success("Enjoy your merged playlist!"))
       )

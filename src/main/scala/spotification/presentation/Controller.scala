@@ -3,6 +3,8 @@ package spotification.presentation
 import cats.Applicative
 import cats.implicits._
 import io.circe.generic.auto._
+import org.http4s.AuthScheme.Bearer
+import org.http4s.Credentials.Token
 import org.http4s.headers.Authorization
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{Request, Response}
@@ -22,13 +24,17 @@ object Controller {
   def requiredRefreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, RefreshToken] =
     refreshTokenFromRequest(req).flatMap {
       case Some(refreshToken) => ZIO.succeed(refreshToken)
-      case None               => ZIO.fail(new Exception("Refresh token absent from request"))
+      case None               => ZIO.fail(new Exception("Bearer refresh token absent from request"))
     }
 
   def refreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, Option[RefreshToken]] =
     req.headers
       .get(Authorization)
-      .map(_.value)
+      .map(_.credentials)
+      .flatMap {
+        case Token(Bearer, refreshTokenString) => Some(refreshTokenString)
+        case _                                 => None
+      }
       .map(refineRIO[R, NonBlankStringR](_))
       .sequence
       .map(_.map(RefreshToken(_)))

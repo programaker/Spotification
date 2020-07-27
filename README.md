@@ -10,6 +10,8 @@ The "Release Radar (no singles)" use case is just the beginning; the possibiliti
 
 ## Project setup
 
+First of all, it requires at least JDK 11.
+
 To use the project, you need to register your application [here](https://developer.spotify.com/documentation/general/guides/app-settings/). This will give you the `CLIENT_ID` and `CLIENT_SECRET`.
 
 Then, on the Dashboard, you must configure your authorization `REDIRECT_URI`.

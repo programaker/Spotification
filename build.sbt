@@ -51,8 +51,7 @@ lazy val root = (project in file(".")).settings(
 
   Seq(
     "org.typelevel" %% "kind-projector" % kindProjectorV,
-    "com.olegpy" %% "better-monadic-for" % betterMonadicForV,
-    "io.tryp" % "splain" % splainV cross CrossVersion.patch
+    "com.olegpy" %% "better-monadic-for" % betterMonadicForV
   ).map(addCompilerPlugin)
 )
 

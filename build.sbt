@@ -71,7 +71,7 @@ ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Overloading
 )
 
-// disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2
+// disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2+
 Compile / console / scalacOptions := (console / scalacOptions).value.filterNot(_.contains("wartremover"))
 
 ThisBuild / scalacOptions ++= Seq(
@@ -100,5 +100,5 @@ ThisBuild / scalacOptions ++= Seq(
 
 mainClass in Compile := Some("spotification.Spotification")
 
-dockerBaseImage := "adoptopenjdk/openjdk12:x86_64-alpine-jre-14.0.1_7"
+dockerBaseImage := "adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.8_10"
 dockerExposedPorts += 8080

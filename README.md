@@ -55,14 +55,19 @@ It's possible to run locally inside docker too. For this:
 
 1) Build the image
 ```
-./build.sh
+./docker-build.sh
 ```
 2) Run it
 ```
-./run.sh
+./docker-run.sh
 ```
 
 The logs can be watched with the command:
 ```
-./logs.sh
+./docker-logs.sh
+```
+
+To stop the app:
+```
+./docker-stop.sh
 ```

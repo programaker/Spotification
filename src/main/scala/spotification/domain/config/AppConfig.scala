@@ -10,8 +10,7 @@ final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
   server: ServerConfig,
-  client: ClientConfig,
-  log: LogConfig
+  client: ClientConfig
 )
 
 final case class AuthorizationConfig(
@@ -37,12 +36,6 @@ final case class ServerConfig(
 final case class ClientConfig(
   logHeaders: Boolean,
   logBody: Boolean
-)
-
-final case class LogConfig(
-  logDir: Directory,
-  maxFileSizeInBytes: Option[Bytes],
-  rolloverInterval: Option[FiniteDuration]
 )
 
 final case class RetryConfig(

@@ -28,12 +28,6 @@ package object config {
     val layer: TaskLayer[ClientConfigModule] = makeLayer(_.get.client)
   }
 
-  type LogConfigModule = Has[LogConfig]
-  object LogConfigModule {
-    val config: RIO[LogConfigModule, LogConfig] = ZIO.access(_.get)
-    val layer: TaskLayer[LogConfigModule] = makeLayer(_.get.log)
-  }
-
   private def makeLayer[A: Tag](f: Has[AppConfig] => A): TaskLayer[Has[A]] =
     appConfigLayer.map(f).map(Has(_))
 

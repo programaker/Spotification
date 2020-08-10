@@ -2,6 +2,7 @@ package spotification.domain.config
 
 import spotification.domain.spotify.authorization._
 import spotification.domain.spotify.playlist.PlaylistApiUri
+import spotification.domain.spotify.track.TrackApiUri
 import spotification.domain.{Host, PositiveInt}
 
 import scala.concurrent.duration.FiniteDuration
@@ -9,6 +10,7 @@ import scala.concurrent.duration.FiniteDuration
 final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
+  track: TrackConfig,
   server: ServerConfig,
   client: ClientConfig
 )
@@ -26,6 +28,10 @@ final case class PlaylistConfig(
   playlistApiUri: PlaylistApiUri,
   getPlaylistItemsLimit: PositiveInt,
   mergePlaylistsRetry: RetryConfig
+)
+
+final case class TrackConfig(
+  trackApiUri: TrackApiUri
 )
 
 final case class ServerConfig(

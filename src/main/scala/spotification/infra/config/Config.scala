@@ -5,6 +5,7 @@ import pureconfig.ConfigReader
 import spotification.domain.config.{Bytes, Directory}
 import spotification.domain.spotify.authorization.{RefreshToken, _}
 import spotification.domain.spotify.playlist.{PlaylistApiUri, PlaylistId}
+import spotification.domain.spotify.track.TrackApiUri
 
 object Config {
   object Implicits {
@@ -34,6 +35,9 @@ object Config {
 
     implicit val PlaylistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
       makeConfigReader(PlaylistApiUri.apply)
+
+    implicit val TrackApiUriConfigReader: ConfigReader[TrackApiUri] =
+      makeConfigReader(TrackApiUri.apply)
 
     implicit val RefreshTokenConfigReader: ConfigReader[RefreshToken] =
       makeConfigReader(RefreshToken.apply)

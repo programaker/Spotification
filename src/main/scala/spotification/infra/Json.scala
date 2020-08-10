@@ -14,6 +14,7 @@ import spotification.domain.{NonBlankString, SpotifyId}
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.playlist._
+import spotification.domain.spotify.track.GetTrackResponse
 
 object Json {
   object Implicits {
@@ -49,5 +50,9 @@ object Json {
     implicit val RemoveItemsFromPlaylistResponseDecoder: Decoder[RemoveItemsFromPlaylistResponse] =
       Decoder[RemoveItemsFromPlaylistResponse.Success].widen or
         Decoder[RemoveItemsFromPlaylistResponse.Error].widen
+
+    implicit val GetTrackResponseDecoder: Decoder[GetTrackResponse] =
+      Decoder[GetTrackResponse.Success].widen or
+        Decoder[GetTrackResponse.Error].widen
   }
 }

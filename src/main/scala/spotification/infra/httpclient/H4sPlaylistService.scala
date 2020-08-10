@@ -13,6 +13,7 @@ import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import zio.interop.catz.monadErrorInstance
 
 // ==========
 // Despite IntelliJ telling that
@@ -21,7 +22,6 @@ import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequ
 // `import spotification.infra.Json.Implicits._`
 // are not being used, they are required to compile
 // ==========
-import zio.interop.catz._
 import io.circe.refined._
 import spotification.infra.Json.Implicits._
 

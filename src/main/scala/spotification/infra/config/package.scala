@@ -16,6 +16,12 @@ package object config {
     val layer: TaskLayer[PlaylistConfigModule] = makeLayer(_.get.playlist)
   }
 
+  type TrackConfigModule = Has[TrackConfig]
+  object TrackConfigModule {
+    val config: RIO[TrackConfigModule, TrackConfig] = ZIO.access(_.get)
+    val layer: TaskLayer[TrackConfigModule] = makeLayer(_.get.track)
+  }
+
   type ServerConfigModule = Has[ServerConfig]
   object ServerConfigModule {
     val config: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)

@@ -33,11 +33,11 @@ object HttpClient {
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
     joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
 
-  def doRequest[A: Decoder](httpClient: H4sClient, uri: Either[ParseFailure, Uri])(
+  def doRequest[A: Decoder](httpClient: H4sClient, uri: Either[Throwable, Uri])(
     req: Uri => Task[Request[Task]]
   ): Task[A] =
     IO.fromEither(uri)
-      .absorbWith(parseFailure => new Exception(parseFailure.message))
+      .absorbWith(identity)
       .map(req)
       .flatMap(httpClient.expect[String])
       .map(jawn.decode[A])

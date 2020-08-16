@@ -12,8 +12,12 @@ import org.http4s.circe.jsonEncoderOf
 import org.http4s.circe.jsonOf
 import spotification.domain.{NonBlankString, SpotifyId}
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
-import eu.timepit.refined.auto._
-import spotification.domain.spotify.playlist._
+import spotification.domain.spotify.playlist.{
+  AddItemsToPlaylistResponse,
+  GetPlaylistsItemsResponse,
+  PlaylistId,
+  RemoveItemsFromPlaylistResponse
+}
 import spotification.domain.spotify.track.GetTrackResponse
 
 object Json {
@@ -38,6 +42,19 @@ object Json {
 
     implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
       implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
+
+    /*implicit val SpotifyResponseDecoder: Decoder[SpotifyResponse] =
+      Decoder[SpotifyResponses.Error].widen or //<- compiles!
+        //
+        //Decoder[AuthorizationResponses.AuthorizeErrorResponse].widen or
+        //Decoder[AuthorizationResponses.AccessTokenResponse].widen or
+        //Decoder[AuthorizationResponses.RefreshTokenResponse].widen or
+        //
+        //Decoder[PlaylistResponses.PlaylistSnapshotResponse].widen or
+        //Decoder[PlaylistResponses.GetPlaylistsItemsResponse].widen or
+        //
+        Decoder[TrackResponses.GetTrackResponse].widen //<- compiles!
+     */
 
     implicit val GetPlaylistsItemsResponseDecoder: Decoder[GetPlaylistsItemsResponse] =
       Decoder[GetPlaylistsItemsResponse.Success].widen or

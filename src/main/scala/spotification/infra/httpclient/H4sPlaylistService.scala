@@ -4,7 +4,7 @@ import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.Method._
-import org.http4s.{ParseFailure, Uri}
+import org.http4s.Uri
 import spotification.domain.spotify.playlist._
 import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
 import spotification.infra.httpclient.HttpClient.{H4sClientDsl, doRequest}
@@ -13,17 +13,10 @@ import zio.Task
 import eu.timepit.refined.cats._
 import eu.timepit.refined.auto._
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.domain.spotify.playlist.Playlist.playlistTracksUri
 import zio.interop.catz.monadErrorInstance
-
-// ==========
-// Despite IntelliJ telling that
-// `import zio.interop.catz._`
-// `import io.circe.refined._`
-// `import spotification.infra.Json.Implicits._`
-// are not being used, they are required to compile
-// ==========
+import spotification.infra.Json.Implicits.FEntityEncoder
 import io.circe.refined._
-import spotification.infra.Json.Implicits._
 
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistModule.Service {
   import H4sClientDsl._
@@ -69,13 +62,15 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     }
   }
 
-  private def getItemsUri(req: FirstRequest): Either[ParseFailure, Uri] =
+  private def getItemsUri(req: FirstRequest): Either[Throwable, Uri] =
     tracksUri(req.playlistId).map {
       _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
         .withQueryParam("limit", req.limit.show)
         .withQueryParam("offset", req.offset.show)
     }
 
-  private def tracksUri(playlistId: PlaylistId): Either[ParseFailure, Uri] =
-    Uri.fromString(show"$playlistApiUri/$playlistId/tracks")
+  private def tracksUri(playlistId: PlaylistId): Either[Throwable, Uri] =
+    playlistTracksUri(playlistApiUri, playlistId)
+      .leftMap(new Exception(_))
+      .flatMap(Uri.fromString(_))
 }

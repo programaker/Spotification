@@ -17,6 +17,7 @@ package object domain {
   type HexString32R = StringLength[32] And HexStringSpec
   type HexString32 = String Refined HexString32R
 
+  type UriR = Uri
   type UriString = String Refined Uri
   type CurrentUri = UriString
   type NextUri = UriString

@@ -6,21 +6,17 @@ import spotification.domain.spotify.track.TrackUri
 import spotification.domain._
 
 sealed abstract class SpotifyResponse extends Product with Serializable
-object SpotifyResponse {
+
+object SpotifyResponses {
 
   /** Generic `ErrorObject` used by most Spotify endpoints when something goes wrong */
-  final case class Error(
-    status: Int,
-    message: String
-  ) extends SpotifyResponse
+  final case class Error(status: Int, message: String) extends SpotifyResponse
 }
 
-object AuthorizationResponse {
+object AuthorizationResponses {
   import spotification.domain.spotify.authorization.{AccessToken, RefreshToken, ScopeString, TokenType}
 
-  final case class AuthorizeErrorResponse(
-    error: String
-  ) extends SpotifyResponse
+  final case class AuthorizeErrorResponse(error: String) extends SpotifyResponse
 
   final case class AccessTokenResponse(
     access_token: AccessToken,
@@ -38,15 +34,11 @@ object AuthorizationResponse {
   ) extends SpotifyResponse
 }
 
-object PlaylistResponse {
-  import spotification.domain.spotify.PlaylistResponse.GetPlaylistsItemsResponse.ItemResponse
-
-  final case class PlaylistSnapshotResponse(
-    snapshot_id: NonBlankString
-  ) extends SpotifyResponse
+object PlaylistResponses {
+  final case class PlaylistSnapshotResponse(snapshot_id: NonBlankString) extends SpotifyResponse
 
   final case class GetPlaylistsItemsResponse(
-    items: List[ItemResponse],
+    items: List[GetPlaylistsItemsResponse.ItemResponse],
     href: CurrentUri,
     next: Option[NextUri]
   ) extends SpotifyResponse
@@ -58,11 +50,9 @@ object PlaylistResponse {
   }
 }
 
-object TrackResponse {
-  import spotification.domain.spotify.TrackResponse.GetTrackResponse.ArtistResponse
-
+object TrackResponses {
   final case class GetTrackResponse(
-    artists: List[ArtistResponse],
+    artists: List[GetTrackResponse.ArtistResponse],
     name: NonBlankString
   ) extends SpotifyResponse
   object GetTrackResponse {

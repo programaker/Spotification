@@ -6,11 +6,11 @@ import java.nio.charset.StandardCharsets.UTF_8
 import cats.implicits._
 import eu.timepit.refined.auto._
 import io.circe.{Decoder, jawn}
-import org.http4s.{ParseFailure, Request, Uri}
+import org.http4s.{Request, Uri}
 import org.http4s.client.dsl.Http4sClientDsl
 import spotification.domain.spotify.authorization.Scope
 import spotification.domain.spotify.authorization.Scope.joinScopes
-import zio.{IO, Task}
+import zio.Task
 import zio.interop.catz._
 
 object HttpClient {
@@ -36,8 +36,8 @@ object HttpClient {
   def doRequest[A: Decoder](httpClient: H4sClient, uri: Either[Throwable, Uri])(
     req: Uri => Task[Request[Task]]
   ): Task[A] =
-    IO.fromEither(uri)
-      .absorbWith(identity)
+    Task
+      .fromEither(uri)
       .map(req)
       .flatMap(httpClient.expect[String])
       .map(jawn.decode[A])

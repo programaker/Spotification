@@ -7,7 +7,7 @@ import spotification.domain._
 
 sealed abstract class SpotifyResponse extends Product with Serializable
 
-object SpotifyResponses {
+object CommonResponses {
 
   /** Generic `ErrorObject` used by most Spotify endpoints when something goes wrong */
   final case class Error(status: Int, message: String) extends SpotifyResponse

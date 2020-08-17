@@ -1,6 +1,7 @@
 package spotification.infra
 
 import cats.Applicative
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 import io.circe.{Decoder, Encoder}
@@ -10,6 +11,13 @@ import io.estatico.newtype.ops._
 import org.http4s.{EntityDecoder, EntityEncoder}
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.circe.jsonOf
+import spotification.domain.spotify.{
+  AuthorizationResponses,
+  CommonResponses,
+  PlaylistResponses,
+  SpotifyResponse,
+  TrackResponses
+}
 import spotification.domain.{NonBlankString, SpotifyId}
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
 import spotification.domain.spotify.playlist.{
@@ -43,18 +51,21 @@ object Json {
     implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
       implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
 
-    /*implicit val SpotifyResponseDecoder: Decoder[SpotifyResponse] =
-      Decoder[SpotifyResponses.Error].widen or //<- compiles!
-        //
-        //Decoder[AuthorizationResponses.AuthorizeErrorResponse].widen or
-        //Decoder[AuthorizationResponses.AccessTokenResponse].widen or
-        //Decoder[AuthorizationResponses.RefreshTokenResponse].widen or
-        //
-        //Decoder[PlaylistResponses.PlaylistSnapshotResponse].widen or
-        //Decoder[PlaylistResponses.GetPlaylistsItemsResponse].widen or
-        //
-        Decoder[TrackResponses.GetTrackResponse].widen //<- compiles!
-     */
+    implicit val SpotifyResponseDecoder: Decoder[SpotifyResponse] =
+      NonEmptyList
+        .of[Decoder[SpotifyResponse]](
+          Decoder[CommonResponses.Error].widen,
+          //
+          Decoder[AuthorizationResponses.AuthorizeErrorResponse].widen,
+          Decoder[AuthorizationResponses.AccessTokenResponse].widen,
+          Decoder[AuthorizationResponses.RefreshTokenResponse].widen,
+          //
+          Decoder[PlaylistResponses.PlaylistSnapshotResponse].widen,
+          Decoder[PlaylistResponses.GetPlaylistsItemsResponse].widen,
+          //
+          Decoder[TrackResponses.GetTrackResponse].widen
+        )
+        .reduceLeft(_ or _)
 
     implicit val GetPlaylistsItemsResponseDecoder: Decoder[GetPlaylistsItemsResponse] =
       Decoder[GetPlaylistsItemsResponse.Success].widen or

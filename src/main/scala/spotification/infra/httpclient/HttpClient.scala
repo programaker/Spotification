@@ -49,6 +49,6 @@ object HttpClient {
         case a: A =>
           Task.succeed(a)
         case _ =>
-          Task.fail(new Exception(s"Unexpected case. Check if the type params matches the URI"))
+          Task.fail(new Exception("Unexpected case. Check if the type params matches the URI"))
       }
 }

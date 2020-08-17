@@ -20,6 +20,6 @@ object Infra {
   def eitherToTask[L, R](either: Either[L, R])(f: L => Throwable): Task[R] =
     IO.fromEither(either).absorbWith(f)
 
-  def eitherStringToTask[R]: Either[String, R] => Task[R] =
+  def leftStringEitherToTask[R]: Either[String, R] => Task[R] =
     eitherToTask(_)(new Exception(_))
 }

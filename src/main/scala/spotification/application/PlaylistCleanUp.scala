@@ -4,7 +4,7 @@ import spotification.domain.spotify.playlist._
 import spotification.infra.Infra.refineRIO
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, ZIO}
-import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import cats.data.NonEmptyList
 
 object PlaylistCleanUp {

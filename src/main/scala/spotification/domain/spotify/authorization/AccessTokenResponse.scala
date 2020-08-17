@@ -1,6 +1,6 @@
 package spotification.domain.spotify.authorization
 
-import spotification.domain._
+import spotification.domain.PositiveInt
 
 final case class AccessTokenResponse(
   access_token: AccessToken,

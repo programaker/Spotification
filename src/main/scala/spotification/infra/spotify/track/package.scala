@@ -1,9 +1,7 @@
 package spotification.infra.spotify
 
 import spotification.domain.config.TrackConfig
-import spotification.domain.spotify.TrackResponses
-import spotification.domain.spotify.TrackResponses.GetTrackResponse
-import spotification.domain.spotify.track.GetTrackRequest
+import spotification.domain.spotify.track.{GetTrackRequest, GetTrackResponse}
 import spotification.infra.config.TrackConfigModule
 import spotification.infra.httpclient._
 import zio._

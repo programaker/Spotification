@@ -3,7 +3,7 @@ package spotification.application
 import cats.data.NonEmptyList
 import cats.implicits._
 import spotification.domain.spotify.album._
-import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.domain.spotify.track.TrackUri
 import spotification.infra.config.PlaylistConfigModule
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest

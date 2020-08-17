@@ -2,7 +2,7 @@ package spotification.application
 
 import spotification.domain.{CurrentUri, NextUri, UriString}
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.NextRequest
-import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.Success.TrackResponse
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.RIO

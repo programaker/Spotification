@@ -1,15 +1,17 @@
 package spotification.infra.spotify
 
 import spotification.domain.config.TrackConfig
-import spotification.domain.spotify.track.{GetTrackRequest, GetTrackResponse}
+import spotification.domain.spotify.TrackResponses
+import spotification.domain.spotify.TrackResponses.GetTrackResponse
+import spotification.domain.spotify.track.GetTrackRequest
 import spotification.infra.config.TrackConfigModule
-import spotification.infra.httpclient.{H4sClient, H4sTrackService, HttpClientModule}
-import zio.{Has, RIO, Task, TaskLayer, ZIO, ZLayer}
+import spotification.infra.httpclient._
+import zio._
 
 package object track {
   type TrackModule = Has[TrackModule.Service]
   object TrackModule {
-    def getTrack(req: GetTrackRequest): RIO[TrackModule, GetTrackResponse.Success] =
+    def getTrack(req: GetTrackRequest): RIO[TrackModule, GetTrackResponse] =
       ZIO.accessM(_.get.getTrack(req))
 
     val layer: TaskLayer[TrackModule] = {
@@ -21,7 +23,7 @@ package object track {
     }
 
     trait Service {
-      def getTrack(req: GetTrackRequest): Task[GetTrackResponse.Success]
+      def getTrack(req: GetTrackRequest): Task[GetTrackResponse]
     }
   }
 }

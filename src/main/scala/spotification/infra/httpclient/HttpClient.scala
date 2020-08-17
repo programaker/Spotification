@@ -8,6 +8,7 @@ import eu.timepit.refined.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.{Request, Uri}
 import org.http4s.client.dsl.Http4sClientDsl
+import spotification.domain.spotify.{CommonResponses, SpotifyResponse}
 import spotification.domain.spotify.authorization.Scope
 import spotification.domain.spotify.authorization.Scope.joinScopes
 import zio.Task
@@ -33,13 +34,21 @@ object HttpClient {
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
     joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
 
-  def doRequest[A: Decoder](httpClient: H4sClient, uri: Either[Throwable, Uri])(
+  def doRequest[A <: SpotifyResponse](httpClient: H4sClient, uri: Uri)(
     req: Uri => Task[Request[Task]]
+  )(implicit
+    D: Decoder[SpotifyResponse]
   ): Task[A] =
-    Task
-      .fromEither(uri)
-      .map(req)
+    req(uri)
       .flatMap(httpClient.expect[String])
-      .map(jawn.decode[A])
+      .map(jawn.decode[SpotifyResponse])
       .flatMap(Task.fromEither(_))
+      .flatMap {
+        case CommonResponses.Error(status, message) =>
+          Task.fail(new Exception(show"Error: status=$status, message='$message', uri='${uri.renderString}'"))
+        case a: A =>
+          Task.succeed(a)
+        case _ =>
+          Task.fail(new Exception(s"Unexpected case. Check if the type params matches the URI"))
+      }
 }

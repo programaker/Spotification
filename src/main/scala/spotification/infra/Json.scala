@@ -7,10 +7,8 @@ import io.circe.{Decoder, Encoder}
 import io.estatico.newtype.ops._
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
-import spotification.domain.spotify.ErrorResponse
 import spotification.domain.spotify.authorization.{AccessToken, RefreshToken}
-import spotification.domain.spotify.playlist.{GetPlaylistsItemsResponse, PlaylistId, PlaylistSnapshotResponse}
-import spotification.domain.spotify.track.GetTrackResponse
+import spotification.domain.spotify.playlist.PlaylistId
 import spotification.domain.{NonBlankString, SpotifyId}
 
 object Json {
@@ -33,19 +31,7 @@ object Json {
     implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
       implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
 
-    implicit val ErrorResponseDecoder: Decoder[ErrorResponse] =
-      Decoder[ErrorResponse]
-
     implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
       implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
-
-    implicit val GetPlaylistsItemsResponseDecoder: Decoder[GetPlaylistsItemsResponse] =
-      Decoder[GetPlaylistsItemsResponse]
-
-    implicit val PlaylistSnapshotResponseDecoder: Decoder[PlaylistSnapshotResponse] =
-      Decoder[PlaylistSnapshotResponse]
-
-    implicit val GetTrackResponseDecoder: Decoder[GetTrackResponse] =
-      Decoder[GetTrackResponse]
   }
 }

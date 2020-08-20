@@ -1,7 +1,11 @@
 package spotification.infra
 
+import pureconfig.ConfigSource
 import spotification.domain.config._
 import zio._
+import pureconfig.generic.auto._
+import eu.timepit.refined.pureconfig._
+import spotification.infra.config.Config.Implicits._
 
 package object config {
   type AuthorizationConfigModule = Has[AuthorizationConfig]
@@ -38,5 +42,9 @@ package object config {
     appConfigLayer.map(f).map(Has(_))
 
   private val appConfigLayer: TaskLayer[Has[AppConfig]] =
-    ZLayer.fromEffect(PureConfigService.readAppConfig)
+    ZLayer.fromEffect {
+      IO.fromEither(ConfigSource.default.load[AppConfig])
+        .mapError(_.prettyPrint())
+        .absorbWith(new Exception(_))
+    }
 }

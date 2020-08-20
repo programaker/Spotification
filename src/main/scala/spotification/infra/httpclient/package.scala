@@ -3,7 +3,6 @@ package spotification.infra
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
-import shapeless.ops.product.ToMap
 import spotification.domain.config.ClientConfig
 import spotification.infra.concurrent.ExecutionContextModule
 import spotification.infra.config.ClientConfigModule
@@ -15,7 +14,6 @@ import scala.concurrent.ExecutionContext
 package object httpclient {
   type H4sClient = Client[Task]
   type H4sAuthorization = org.http4s.headers.Authorization
-  type ToMapAux[A] = ToMap.Aux[A, Symbol, Any]
   type ParamMap = Map[String, String]
 
   type HttpClientModule = Has[H4sClient]

@@ -2,11 +2,11 @@ package spotification.presentation
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import Controller._
 import org.http4s.headers.Location
 import spotification.application.SpotifyAuthorizationAppEnv
 import zio.RIO
 import spotification.application.SpotifyAuthorizationApp._
+import spotification.presentation._
 
 // ==========
 // Despite IntelliJ telling that
@@ -19,7 +19,7 @@ import spotification.application.SpotifyAuthorizationApp._
 import io.circe.refined._
 import io.circe.generic.auto._
 import zio.interop.catz._
-import spotification.infra.Json.Implicits._
+import spotification.infra.json.implicits._
 
 final class AuthorizationController[R <: SpotifyAuthorizationAppEnv] {
   private val Callback: String = "callback"

@@ -4,9 +4,9 @@ import cats.implicits._
 import org.http4s.Uri
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization._
-import spotification.infra.Infra.refineRIO
+import spotification.infra._
 import spotification.infra.config.AuthorizationConfigModule
-import spotification.infra.httpclient.AuthorizationHttpClient.makeAuthorizeUri
+import spotification.infra.httpclient.makeAuthorizeUri
 import spotification.infra.spotify.authorization.AuthorizationModule
 import zio.RIO
 import zio.interop.catz._

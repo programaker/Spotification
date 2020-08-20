@@ -1,7 +1,7 @@
 package spotification.application
 
 import spotification.domain.spotify.playlist._
-import spotification.infra.Infra.refineRIO
+import spotification.infra._
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, ZIO}
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse

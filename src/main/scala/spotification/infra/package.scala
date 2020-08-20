@@ -1,10 +1,10 @@
-package spotification.infra
+package spotification
 
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
 import zio.{IO, RIO, Task, ZIO}
 
-object Infra {
+package object infra {
   def refineZIO[R, P]: PartialRefineZIO[R, P] = new PartialRefineZIO[R, P]
   final class PartialRefineZIO[R, P] {
     def apply[A](a: A)(implicit v: Validate[A, P]): ZIO[R, String, Refined[A, P]] =

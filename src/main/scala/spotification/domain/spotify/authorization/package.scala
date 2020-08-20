@@ -1,5 +1,8 @@
 package spotification.domain.spotify
 
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Base64
+
 import cats.Show
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
@@ -93,4 +96,10 @@ package object authorization {
   object RedirectUri {
     implicit val RedirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
   }
+
+  def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
+    base64(show"$clientId:$clientSecret")
+
+  def base64(s: String): String =
+    Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 }

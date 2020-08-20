@@ -8,13 +8,9 @@ import org.http4s.Method.POST
 import org.http4s.headers.Accept
 import org.http4s._
 import spotification.domain.config.AuthorizationConfig
-import spotification.domain.spotify.authorization.Authorization.base64Credentials
 import spotification.domain.spotify.authorization._
-import spotification.infra.Json.Implicits._
+import spotification.infra.json.implicits._
 import spotification.infra.config.AuthorizationConfigModule
-import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBasicHeader
-import spotification.infra.httpclient.HttpClient._
-import spotification.infra.httpclient.JHttpClient.jPost
 import spotification.infra.httpclient._
 import zio._
 import zio.interop.catz.monadErrorInstance

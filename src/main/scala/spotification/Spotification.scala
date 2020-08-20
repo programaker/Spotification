@@ -1,8 +1,7 @@
 package spotification
 
 import spotification.infra.log.LogModule._
-import spotification.presentation.HttpAppEnv
-import spotification.presentation.Presentation.runHttpApp
+import spotification.presentation._
 import zio.{ExitCode, ZEnv, ZIO}
 
 import scala.util.control.NonFatal

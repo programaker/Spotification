@@ -13,7 +13,7 @@ import zio.RIO
 // ==========
 import io.circe.generic.auto._
 import zio.interop.catz._
-import spotification.infra.Json.Implicits._
+import spotification.infra.json.implicits._
 
 final class HealthCheckController[R] {
   private val H4sHealthCheckDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

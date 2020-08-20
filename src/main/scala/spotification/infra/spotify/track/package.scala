@@ -5,12 +5,9 @@ import io.circe.generic.auto._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.domain.config.TrackConfig
-import spotification.domain.spotify.track.Track.trackUri
 import spotification.domain.spotify.track._
-import spotification.infra.Infra.leftStringEitherToTask
+import spotification.infra.leftStringEitherToTask
 import spotification.infra.config.TrackConfigModule
-import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
-import spotification.infra.httpclient.HttpClient.{H4sClientDsl, doRequest}
 import spotification.infra.httpclient._
 import zio.{Task, _}
 import zio.interop.catz.monadErrorInstance

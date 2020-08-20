@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import spotification.domain.spotify.authorization.AccessToken
 import spotification.domain.spotify.playlist._
 import spotification.domain.spotify.track.TrackUri
-import spotification.infra.Infra.refineRIO
+import spotification.infra._
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.{RIO, ZIO}
 

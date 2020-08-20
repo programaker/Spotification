@@ -9,13 +9,10 @@ import org.http4s.Method.{DELETE, GET, POST}
 import org.http4s.Uri
 import spotification.domain.config.PlaylistConfig
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
-import spotification.domain.spotify.playlist.Playlist.playlistTracksUri
 import spotification.domain.spotify.playlist._
-import spotification.infra.Json.Implicits._
+import spotification.infra.json.implicits._
 import spotification.infra.config.PlaylistConfigModule
-import spotification.infra.httpclient.AuthorizationHttpClient.authorizationBearerHeader
-import spotification.infra.httpclient.HttpClient.{H4sClientDsl, doRequest}
-import spotification.infra.httpclient.{H4sClient, HttpClientModule}
+import spotification.infra.httpclient._
 import zio._
 import zio.interop.catz.monadErrorInstance
 import io.circe.refined._

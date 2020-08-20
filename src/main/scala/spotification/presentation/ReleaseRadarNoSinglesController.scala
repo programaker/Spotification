@@ -5,7 +5,7 @@ import org.http4s.dsl.Http4sDsl
 import spotification.application.ReleaseRadarNoSinglesApp.fillReleaseRadarNoSinglesProgram
 import spotification.application.ReleaseRadarNoSinglesAppEnv
 import spotification.domain.spotify.playlist.PlaylistId
-import spotification.presentation.Controller.{doRequest, handleGenericError}
+import spotification.presentation._
 import zio.RIO
 
 // ==========
@@ -17,7 +17,7 @@ import zio.RIO
 // ==========
 import io.circe.generic.auto._
 import zio.interop.catz._
-import spotification.infra.Json.Implicits._
+import spotification.infra.json.implicits._
 
 final class ReleaseRadarNoSinglesController[R <: ReleaseRadarNoSinglesAppEnv] {
   private val H4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

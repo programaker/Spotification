@@ -15,7 +15,6 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.domain._
 import eu.timepit.refined.string.MatchesRegex
-import spotification.domain.spotify.authorization.Scope.addScopeParam
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
@@ -55,16 +54,6 @@ package object authorization {
 
   type ScopeR = PlaylistScopeR //we can add more scopes later
   type Scope = String Refined ScopeR
-  object Scope {
-    def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =
-      rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
-
-    def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
-      refineV[ScopeStringR](scopes.mkString_(" "))
-
-    def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
-      joinScopes(scopes).map(s => params + ("scope" -> Some(encode(s))))
-  }
 
   @newtype case class AccessToken(value: NonBlankString)
   object AccessToken {
@@ -100,6 +89,15 @@ package object authorization {
   object RedirectUri {
     implicit val RedirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
   }
+
+  def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =
+    rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
+
+  def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
+    refineV[ScopeStringR](scopes.mkString_(" "))
+
+  def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
+    joinScopes(scopes).map(s => params + ("scope" -> Some(encode(s))))
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")

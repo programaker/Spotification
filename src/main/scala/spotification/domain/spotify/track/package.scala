@@ -8,7 +8,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.domain.{SpotifyId, UriR, UriString}
+import spotification.domain._
 
 package object track {
   @newtype case class TrackId(value: SpotifyId)
@@ -26,4 +26,14 @@ package object track {
 
   def trackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =
     refineV[UriR](show"$trackApiUri/$trackId")
+
+  def trackIdFromUri(uri: TrackUri): TrackId = {
+    val s"spotify:track:$id" = uri.show
+
+    // Input type `TrackUri` already ensures that `id` is a valid SpotifyId
+    TrackId(refineV[SpotifyIdR].unsafeFrom(id))
+  }
+
+  def makeShareTrackString(resp: GetTrackResponse): String =
+    show"${resp.name} by ${resp.artists.mkString(", ")} - ${resp.external_urls.spotify}"
 }

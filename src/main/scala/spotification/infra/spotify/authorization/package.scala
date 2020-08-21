@@ -14,6 +14,7 @@ import spotification.infra.config.AuthorizationConfigModule
 import spotification.infra.httpclient._
 import zio._
 import zio.interop.catz.monadErrorInstance
+import spotification.domain.{ParamMap, encode, makeQueryString}
 import io.circe.refined._
 
 package object authorization {
@@ -46,9 +47,9 @@ package object authorization {
 
     override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
       val params: ParamMap = Map(
-        "grant_type"   -> req.grant_type,
-        "code"         -> req.code,
-        "redirect_uri" -> encode(req.redirect_uri.show)
+        "grant_type"   -> Some(req.grant_type),
+        "code"         -> Some(req.code),
+        "redirect_uri" -> Some(encode(req.redirect_uri.show))
       )
 
       val headers = Map(

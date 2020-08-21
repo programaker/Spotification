@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 import cats.Show
+import cats.implicits._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
@@ -13,8 +14,8 @@ import eu.timepit.refined.cats._
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.domain._
-import cats.implicits._
 import eu.timepit.refined.string.MatchesRegex
+import spotification.domain.spotify.authorization.Scope.addScopeParam
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
@@ -60,6 +61,9 @@ package object authorization {
 
     def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
       refineV[ScopeStringR](scopes.mkString_(" "))
+
+    def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
+      joinScopes(scopes).map(s => params + ("scope" -> Some(encode(s))))
   }
 
   @newtype case class AccessToken(value: NonBlankString)
@@ -102,4 +106,21 @@ package object authorization {
 
   def base64(s: String): String =
     Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
+
+  def makeAuthorizeUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Either[String, UriString] = {
+    val params = Map(
+      "client_id"     -> Some(req.client_id.show),
+      "response_type" -> Some(req.response_type.show),
+      "redirect_uri"  -> Some(encode(req.redirect_uri.show)),
+      "show_dialog"   -> req.show_dialog.map(_.show),
+      "state"         -> req.state.map(_.show)
+    )
+
+    req.scope
+      .map(addScopeParam(params, _))
+      .getOrElse(Right(params))
+      .map(makeQueryString)
+      .map(q => show"$authorizeUri?$q")
+      .flatMap(refineV[UriR](_))
+  }
 }

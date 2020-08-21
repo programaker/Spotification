@@ -3,7 +3,7 @@ package spotification.infra
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
-import java.net.{URI, URLEncoder}
+import java.net.URI
 import java.nio.charset.StandardCharsets.UTF_8
 
 import cats.implicits._
@@ -18,8 +18,7 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.Logger
 import spotification.domain.config.ClientConfig
-import spotification.domain.spotify.ErrorResponse
-import spotification.domain.spotify.authorization.Scope.joinScopes
+import spotification.domain.spotify.{ErrorResponse, authorization}
 import spotification.domain.spotify.authorization._
 import spotification.infra.concurrent.ExecutionContextModule
 import spotification.infra.config.ClientConfigModule
@@ -31,7 +30,6 @@ import scala.concurrent.ExecutionContext
 package object httpclient {
   type H4sClient = Client[Task]
   type H4sAuthorization = org.http4s.headers.Authorization
-  type ParamMap = Map[String, String]
 
   val H4sClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
@@ -52,23 +50,6 @@ package object httpclient {
       (ExecutionContextModule.layer ++ ClientConfigModule.layer) >>> l
     }
   }
-
-  // HTTP4s Uri should be able to encode query params, but in my tests
-  // URIs are not properly encoded:
-  //
-  // uri"https://foo.com".withQueryParam("redirect_uri", "https://bar.com")
-  // > org.http4s.Uri = https://foo.com?redirect_uri=https%3A//bar.com <- did not encode `//`
-  //
-  // URLEncoder.encode("https://bar.com", UTF_8.toString)
-  // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  val encode: String => String =
-    URLEncoder.encode(_, UTF_8)
-
-  val makeQueryString: ParamMap => String =
-    _.map { case (k, v) => show"$k=$v" } mkString "&"
-
-  def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
-    joinScopes(scopes).map(s => params + ("scope" -> encode(s)))
 
   def doRequest[A: Decoder](httpClient: H4sClient, uri: Uri)(
     req: Uri => Task[Request[Task]]
@@ -121,33 +102,7 @@ package object httpclient {
   def authorizationBearerHeader(accessToken: AccessToken): H4sAuthorization =
     H4sAuthorization(Token(Bearer, accessToken.value))
 
-  def makeAuthorizeUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Task[Uri] = {
-    // required params
-    val params: ParamMap = Map(
-      "client_id"     -> req.client_id.show,
-      "response_type" -> req.response_type,
-      "redirect_uri"  -> encode(req.redirect_uri.show)
-    )
-
-    // optional params
-    val params2 = req.show_dialog
-      .fold(params)(b => params + ("show_dialog" -> b.show))
-    val params3 = req.state
-      .fold(params2)(s => params2 + ("state" -> s.show))
-
-    // decoding optional scope
-    val params4 = req.scope
-      .map(addScopeParam(params3, _))
-      .map(_.leftMap(new Exception(_)))
-      .map(Task.fromEither(_))
-      .getOrElse(Task(params3))
-
-    // https://github.com/http4s/http4s/issues/2445
-    // I did this for the same reason I've created `HttpClient.encode` function
-    // which is the encoding choice of http4s not being accepted by Spotify.
-    // Adding everything to `path` bypasses their encoding.
-    params4
-      .map(makeQueryString)
-      .map(q => Uri(path = show"$authorizeUri?$q"))
-  }
+  def makeAuthorizeUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Task[Uri] =
+    leftStringEitherToTask(authorization.makeAuthorizeUri(authorizeUri, req))
+      .map(uriString => Uri(path = show"$uriString"))
 }

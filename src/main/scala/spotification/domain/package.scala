@@ -1,5 +1,9 @@
 package spotification
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets.UTF_8
+
+import cats.implicits._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}
@@ -18,7 +22,7 @@ package object domain {
   type HexString32 = String Refined HexString32R
 
   type UriR = Uri
-  type UriString = String Refined Uri
+  type UriString = String Refined UriR
   type CurrentUri = UriString
   type NextUri = UriString
 
@@ -40,4 +44,22 @@ package object domain {
   // the Spotify URI for an artist, track, album, playlist, etc
   type SpotifyIdR = MatchesRegex["^[0-9a-zA-Z]+$"]
   type SpotifyId = String Refined SpotifyIdR
+
+  type ParamMap = Map[String, Option[String]]
+
+  // HTTP4s Uri should be able to encode query params, but in my tests
+  // URIs are not properly encoded:
+  //
+  // uri"https://foo.com".withQueryParam("redirect_uri", "https://bar.com")
+  // > org.http4s.Uri = https://foo.com?redirect_uri=https%3A//bar.com <- did not encode `//`
+  //
+  // URLEncoder.encode("https://bar.com", UTF_8.toString)
+  // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
+  val encode: String => String = URLEncoder.encode(_, UTF_8)
+
+  val makeQueryString: ParamMap => String =
+    _.map {
+      case (_, None)    => ""
+      case (k, Some(v)) => show"$k=$v"
+    } mkString "&"
 }

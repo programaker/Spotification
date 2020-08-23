@@ -6,3 +6,11 @@ final case class GetTrackRequest(
   trackId: TrackId,
   accessToken: AccessToken
 )
+object GetTrackRequest {
+  def make(trackUri: TrackUri, accessToken: AccessToken): GetTrackRequest =
+    new GetTrackRequest(
+      trackId = trackIdFromUri(trackUri),
+      accessToken = accessToken
+    )
+
+}

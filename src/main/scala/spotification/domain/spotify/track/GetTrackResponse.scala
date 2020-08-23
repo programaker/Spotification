@@ -1,5 +1,7 @@
 package spotification.domain.spotify.track
 
+import cats.Show
+import eu.timepit.refined.auto._
 import spotification.domain.{NonBlankString, UriString}
 
 final case class GetTrackResponse(
@@ -9,5 +11,9 @@ final case class GetTrackResponse(
 )
 object GetTrackResponse {
   final case class ArtistResponse(name: NonBlankString)
+  object ArtistResponse {
+    implicit val ArtistResponseShow: Show[ArtistResponse] = (ar: ArtistResponse) => ar.name
+  }
+
   final case class ExternalUrls(spotify: UriString)
 }

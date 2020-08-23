@@ -11,6 +11,9 @@ import io.estatico.newtype.ops._
 import spotification.domain._
 
 package object track {
+  type TrackUriR = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]
+  type TrackUri = String Refined TrackUriR
+
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
     implicit val TrackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
@@ -20,9 +23,6 @@ package object track {
   object TrackApiUri {
     implicit val TrackApiUriShow: Show[TrackApiUri] = implicitly[Show[UriString]].coerce
   }
-
-  type TrackUriR = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]
-  type TrackUri = String Refined TrackUriR
 
   def trackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =
     refineV[UriR](show"$trackApiUri/$trackId")
@@ -35,5 +35,5 @@ package object track {
   }
 
   def makeShareTrackString(resp: GetTrackResponse): String =
-    show"${resp.name} by ${resp.artists.mkString(", ")} - ${resp.external_urls.spotify}"
+    show"🎶 '${resp.name}' by '${resp.artists.mkString_(", ")}' - ${resp.external_urls.spotify}"
 }

@@ -53,11 +53,10 @@ package object presentation {
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"                             -> new HealthCheckController[R].routes,
-      "/authorization"                      -> new AuthorizationController[R].routes,
-      "/playlists/release-radar-no-singles" -> new ReleaseRadarNoSinglesController[R].routes,
-      "/playlists/merged-playlist"          -> new MergePlaylistsController[R].routes,
-      "/tracks"                             -> new TracksController[R].routes
+      "/health"        -> new HealthCheckController[R].routes,
+      "/authorization" -> new AuthorizationController[R].routes,
+      "/playlists"     -> new PlaylistsController[R].routes,
+      "/tracks"        -> new TracksController[R].routes
     )
 
   def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {

@@ -1,16 +1,16 @@
 val http4sV = "0.21.7"
 val circeV = "0.13.0"
-val specs2V = "4.10.2"
+val specs2V = "4.10.3"
 val logbackV = "1.2.3"
 val betterMonadicForV = "0.3.1"
 val kindProjectorV = "0.10.3"
 val refinedV = "0.9.15"
-val zioV = "1.0.0"
+val zioV = "1.0.1"
 val zioInteropCatsV = "2.1.4.0"
 val pureConfigV = "0.13.0"
 val simulacrumV = "1.0.0"
 val newtypeV = "0.4.4"
-val odinV = "0.7.0"
+val odinV = "0.8.1"
 
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",

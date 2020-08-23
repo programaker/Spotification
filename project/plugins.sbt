@@ -1,8 +1,8 @@
 val sbtRevolverV = "0.9.1"
-val wartRemoverV = "2.4.9"
+val wartRemoverV = "2.4.10"
 val sbtUpdatesV = "0.5.1"
-val sbtNativePackagerV = "1.7.4"
-val sbtScalaFmtV = "2.4.0"
+val sbtNativePackagerV = "1.7.5"
+val sbtScalaFmtV = "2.4.2"
 val sbtDotEnvV = "2.1.146"
 
 Seq(

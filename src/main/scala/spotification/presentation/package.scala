@@ -10,6 +10,7 @@ import org.http4s.headers.Authorization
 import org.http4s._
 import spotification.application.mergeplaylists.MergePlaylistsEnv
 import spotification.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
+import spotification.application.sharetrack.ShareTrackEnv
 import spotification.application.spotifyauthorization.SpotifyAuthorizationEnv
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization.RefreshToken
@@ -26,10 +27,10 @@ package object presentation {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 
-  type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv
+  type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
   object PresentationEnv {
     val layer: TaskLayer[PresentationEnv] =
-      SpotifyAuthorizationEnv.layer ++ ReleaseRadarNoSinglesEnv.layer ++ MergePlaylistsEnv.layer
+      SpotifyAuthorizationEnv.layer ++ ReleaseRadarNoSinglesEnv.layer ++ MergePlaylistsEnv.layer ++ ShareTrackEnv.layer
   }
 
   type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv with Clock
@@ -55,7 +56,8 @@ package object presentation {
       "/health"                             -> new HealthCheckController[R].routes,
       "/authorization"                      -> new AuthorizationController[R].routes,
       "/playlists/release-radar-no-singles" -> new ReleaseRadarNoSinglesController[R].routes,
-      "/playlists/merged-playlist"          -> new MergePlaylistsController[R].routes
+      "/playlists/merged-playlist"          -> new MergePlaylistsController[R].routes,
+      "/tracks"                             -> new TracksController[R].routes
     )
 
   def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {

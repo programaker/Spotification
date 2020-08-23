@@ -8,7 +8,6 @@ import zio.RIO
 import io.circe.generic.auto._
 import zio.interop.catz._
 import spotification.infra.json.implicits._
-import spotification.presentation._
 
 class MergePlaylistsController[R <: MergePlaylistsEnv] {
   private val H4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

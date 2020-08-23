@@ -4,11 +4,14 @@ import cats.Show
 import cats.implicits._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.And
-import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops._
 import eu.timepit.refined.cats._
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
+import io.estatico.newtype.macros.newtype
+import io.estatico.newtype.ops._
+import spotification.domain.spotify.album.isAlbum
+import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
+import spotification.domain.spotify.track.TrackUri
 import spotification.domain.{SpotifyId, UriR, UriString}
 
 package object playlist {
@@ -33,4 +36,8 @@ package object playlist {
 
   def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =
     refineV[UriR](show"$playlistApiUri/$playlistId/tracks")
+
+  def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
+    if (isAlbum(track.album.album_type)) Some(track.uri)
+    else None
 }

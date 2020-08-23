@@ -8,7 +8,6 @@ import eu.timepit.refined.generic.Equal
 package object album {
   type AlbumTypeR = Equal["album"] Or Equal["single"] Or Equal["compilation"]
   type AlbumType = String Refined AlbumTypeR
-  object AlbumType {
-    val isAlbum: AlbumType => Boolean = _.value === "album"
-  }
+
+  val isAlbum: AlbumType => Boolean = _.value === "album"
 }

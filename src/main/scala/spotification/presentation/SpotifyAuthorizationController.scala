@@ -11,7 +11,7 @@ import io.circe.generic.auto._
 import zio.interop.catz._
 import spotification.infra.json.implicits._
 
-final class AuthorizationController[R <: SpotifyAuthorizationEnv] {
+final class SpotifyAuthorizationController[R <: SpotifyAuthorizationEnv] {
   private val Callback: String = "callback"
 
   private val H4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

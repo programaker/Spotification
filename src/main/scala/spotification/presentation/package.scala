@@ -16,7 +16,7 @@ import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization.RefreshToken
 import spotification.infra.concurrent.ExecutionContextModule
 import spotification.infra.config.ServerConfigModule
-import spotification.infra.httpserver.HttpServer._
+import spotification.infra.httpserver._
 import spotification.infra.json.implicits._
 import spotification.infra.refineRIO
 import zio.clock.Clock

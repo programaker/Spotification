@@ -3,17 +3,9 @@ package spotification.presentation
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import zio.RIO
-
-// ==========
-// Despite IntelliJ telling that
-// `import io.circe.generic.auto._`
-// `import zio.interop.catz._`
-// `import spotification.infra.json._`
-// are not being used, they are required to compile
-// ==========
+import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._
-import zio.interop.catz._
-import spotification.infra.json.implicits._
+import spotification.infra.json.implicits.FEntityEncoder
 
 final class HealthCheckController[R] {
   private val H4sHealthCheckDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

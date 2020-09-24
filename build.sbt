@@ -96,7 +96,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-Ymacro-annotations"
 )
 
-mainClass in Compile := Some("spotification.Spotification")
+mainClass in Compile := Some("spotification.SpotificationHttpApp")
 
 dockerBaseImage := "adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.8_10"
 dockerExposedPorts += 8080

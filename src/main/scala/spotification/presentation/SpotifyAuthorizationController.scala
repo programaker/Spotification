@@ -1,15 +1,14 @@
 package spotification.presentation
 
+import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
-import zio.RIO
 import spotification.application.spotifyauthorization._
-import spotification.presentation._
-import io.circe.refined._
-import io.circe.generic.auto._
-import zio.interop.catz._
 import spotification.infra.json.implicits._
+import zio.RIO
+import zio.interop.catz.{deferInstance, monadErrorInstance}
+import io.circe.refined._
 
 final class SpotifyAuthorizationController[R <: SpotifyAuthorizationEnv] {
   private val Callback: String = "callback"

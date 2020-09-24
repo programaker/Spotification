@@ -5,23 +5,19 @@ import cats.implicits._
 import io.circe.generic.auto._
 import org.http4s.AuthScheme.Bearer
 import org.http4s.Credentials.Token
+import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Authorization
-import org.http4s._
 import spotification.application.mergeplaylists.MergePlaylistsEnv
 import spotification.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
 import spotification.application.sharetrack.ShareTrackEnv
 import spotification.application.spotifyauthorization.SpotifyAuthorizationEnv
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization.RefreshToken
-import spotification.infra.concurrent.ExecutionContextModule
-import spotification.infra.config.ServerConfigModule
-import spotification.infra.httpserver._
 import spotification.infra.json.implicits._
 import spotification.infra.refineRIO
-import zio.clock.Clock
-import zio.interop.catz._
 import zio.{RIO, ZIO, _}
+import zio.interop.catz._
 
 package object presentation {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
@@ -31,24 +27,6 @@ package object presentation {
   object PresentationEnv {
     val layer: TaskLayer[PresentationEnv] =
       SpotifyAuthorizationEnv.layer ++ ReleaseRadarNoSinglesEnv.layer ++ MergePlaylistsEnv.layer ++ ShareTrackEnv.layer
-  }
-
-  type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv with Clock
-  object HttpAppEnv {
-    val layer: TaskLayer[HttpAppEnv] =
-      ServerConfigModule.layer ++ ExecutionContextModule.layer ++ PresentationEnv.layer ++ Clock.live
-  }
-
-  val runHttpApp: RIO[HttpAppEnv, Unit] = ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>
-    for {
-      config <- ServerConfigModule.config
-      ex     <- ExecutionContextModule.executionContext
-
-      controllers = allRoutes[HttpAppEnv]
-      app = addCors(addLogger(httpApp(controllers)))
-
-      _ <- runHttpServer[RIO[HttpAppEnv, *]](config, app, ex)
-    } yield ()
   }
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =

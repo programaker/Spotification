@@ -15,7 +15,7 @@ val odinV = "0.9.0"
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
   name := "spotification",
-  version := "3.2.1",
+  version := "3.2.2",
   scalaVersion := "2.13.3",
 
   libraryDependencies ++= Seq(

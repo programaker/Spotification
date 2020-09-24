@@ -3,9 +3,9 @@ package spotification.infra
 import pureconfig.ConfigSource
 import spotification.domain.config._
 import zio._
+import spotification.infra.config.implicits._
 import pureconfig.generic.auto._
 import eu.timepit.refined.pureconfig._
-import spotification.infra.config.Config.Implicits._
 
 package object config {
   type AuthorizationConfigModule = Has[AuthorizationConfig]

@@ -11,16 +11,13 @@ import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._
 import spotification.infra.json.implicits.entityEncoderF
 
-final class TracksController[R <: ShareTrackEnv] {
-  private val h4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
-  import h4sDsl._
-
+final class TracksController[R <: ShareTrackEnv] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case rawReq @ GET -> Root / TrackUriVar(trackUri) / "share-message" =>
       requiredRefreshTokenFromRequest(rawReq)
         .flatMap(shareTrackMessageProgram(_, trackUri))
         .foldM(
-          handleGenericError(h4sDsl, _),
+          handleGenericError(this, _),
           message => Ok(GenericResponse.Success(message))
         )
   }

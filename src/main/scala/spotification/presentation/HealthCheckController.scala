@@ -7,10 +7,7 @@ import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._
 import spotification.infra.json.implicits.entityEncoderF
 
-final class HealthCheckController[R] {
-  private val h4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
-  import h4sDsl._
-
+final class HealthCheckController[R] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case GET -> Root => Ok(GenericResponse.Success("I'm doing well, thanks for asking ^_^"))
   }

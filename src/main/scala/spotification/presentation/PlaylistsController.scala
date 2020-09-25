@@ -11,16 +11,13 @@ import zio.interop.catz._
 import spotification.infra.json.implicits._
 import spotification.presentation.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
 
-final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylistsEnv] {
-  private val h4sDsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
-  import h4sDsl._
-
+final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylistsEnv] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {
     case rawReq @ PATCH -> Root / "release-radar-no-singles" =>
       doRequest(rawReq) { (refreshToken, req: ReleaseRadarNoSinglesRequest) =>
         releaseRadarNoSinglesProgram(refreshToken, req.releaseRadarId, req.releaseRadarNoSinglesId)
       }.foldM(
-        handleGenericError(h4sDsl, _),
+        handleGenericError(this, _),
         _ => Ok(GenericResponse.Success("Enjoy your albums-only Release Radar!"))
       )
 
@@ -28,7 +25,7 @@ final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylist
       doRequest(rawReq) { (refreshToken, req: MergePlaylistsRequest) =>
         mergePlaylistsProgram(refreshToken, req.mergedPlaylistId, req.playlistsToMerge)
       }.foldM(
-        handleGenericError(h4sDsl, _),
+        handleGenericError(this, _),
         _ => Ok(GenericResponse.Success("Enjoy your merged playlist!"))
       )
   }

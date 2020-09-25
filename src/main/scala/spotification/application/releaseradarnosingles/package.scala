@@ -8,8 +8,8 @@ import spotification.application.spotifyauthorization.{SpotifyAuthorizationEnv, 
 import spotification.domain.spotify.authorization.RefreshToken
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.domain.spotify.playlist.{PlaylistId, trackUriIfAlbum}
-import spotification.infra.config.PlaylistConfigModule
-import spotification.infra.log.LogModule.info
+import spotification.infra.config.{PlaylistConfigModule, playlistConfig}
+import spotification.infra.log.info
 import zio.{RIO, TaskLayer}
 
 package object releaseradarnosingles {
@@ -29,7 +29,7 @@ package object releaseradarnosingles {
   ): RIO[ReleaseRadarNoSinglesEnv, Unit] =
     for {
       accessToken    <- requestAccessTokenProgram(refreshToken)
-      playlistConfig <- PlaylistConfigModule.config
+      playlistConfig <- playlistConfig
 
       limit = playlistConfig.getPlaylistItemsLimit
       firstRequest = FirstRequest.make(_, limit, accessToken)

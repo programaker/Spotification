@@ -5,10 +5,10 @@ import eu.timepit.refined.auto._
 import org.http4s.Uri
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization._
-import spotification.infra.config.AuthorizationConfigModule
+import spotification.infra.config.{AuthorizationConfigModule, authorizationConfig}
 import spotification.infra.httpclient.makeAuthorizeUri
 import spotification.infra.refineRIO
-import spotification.infra.spotify.authorization.AuthorizationModule
+import spotification.infra.spotify.authorization.{AuthorizationModule, refreshToken, requestToken}
 import zio.{RIO, TaskLayer}
 import zio.interop.catz._
 
@@ -21,30 +21,29 @@ package object spotifyauthorization {
 
   val makeAuthorizeUriProgram: RIO[SpotifyAuthorizationEnv, Uri] =
     for {
-      config <- AuthorizationConfigModule.config
+      config <- authorizationConfig
       resp   <- makeAuthorizeUri(config.authorizeUri, AuthorizeRequest.make(config))
     } yield resp
 
-  def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] = {
-    val config = AuthorizationConfigModule.config
-    val code = refineRIO[AuthorizationConfigModule, NonBlankStringR](rawCode)
-    (config, code).mapN(AccessTokenRequest.make).flatMap(AuthorizationModule.requestToken)
-  }
+  def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] =
+    (authorizationConfig, refineRIO[AuthorizationConfigModule, NonBlankStringR](rawCode))
+      .mapN(AccessTokenRequest.make)
+      .flatMap(requestToken)
 
   def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationEnv, AuthorizeErrorResponse] =
     refineRIO[SpotifyAuthorizationEnv, NonBlankStringR](error).map(AuthorizeErrorResponse)
 
-  def requestAccessTokenProgram(refreshToken: RefreshToken): RIO[SpotifyAuthorizationEnv, AccessToken] =
+  def requestAccessTokenProgram(token: RefreshToken): RIO[SpotifyAuthorizationEnv, AccessToken] =
     for {
-      config <- AuthorizationConfigModule.config
+      config <- authorizationConfig
 
       req = RefreshTokenRequest(
         config.clientId,
         config.clientSecret,
-        "refresh_token",
-        refreshToken
+        RefreshTokenGrantType.refreshToken,
+        token
       )
 
-      resp <- AuthorizationModule.refreshToken(req)
+      resp <- refreshToken(req)
     } yield resp.access_token
 }

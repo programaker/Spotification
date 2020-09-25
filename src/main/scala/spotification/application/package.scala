@@ -16,7 +16,12 @@ import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.NextReques
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.domain.spotify.track.TrackUri
 import spotification.infra.refineRIO
-import spotification.infra.spotify.playlist.PlaylistModule
+import spotification.infra.spotify.playlist.{
+  PlaylistModule,
+  addItemsToPlaylist,
+  getPlaylistItems,
+  removeItemsFromPlaylist
+}
 import zio.{RIO, ZIO}
 
 package object application {
@@ -47,7 +52,7 @@ package object application {
     combinePageEffects: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
   ): RIO[R, Unit] = {
     def loop(req: GetPlaylistsItemsRequest): RIO[R, Unit] =
-      PlaylistModule.getPlaylistItems(req).flatMap { resp =>
+      getPlaylistItems(req).flatMap { resp =>
         NonEmptyList
           .fromList(resp.items.flatMap(_.track))
           .map { tracks =>
@@ -103,7 +108,7 @@ package object application {
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
         .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.playlistId, req.accessToken)))
-        .map(_.flatMap(PlaylistModule.removeItemsFromPlaylist))
+        .map(_.flatMap(removeItemsFromPlaylist))
         .to(Iterable)
     )(identity)
 
@@ -112,7 +117,5 @@ package object application {
     destPlaylist: PlaylistId,
     accessToken: AccessToken
   ): RIO[PlaylistModule, Unit] =
-    PlaylistModule
-      .addItemsToPlaylist(AddItemsToPlaylistRequest.make(destPlaylist, trackUris, accessToken))
-      .map(_ => ())
+    addItemsToPlaylist(AddItemsToPlaylistRequest.make(destPlaylist, trackUris, accessToken)).map(_ => ())
 }

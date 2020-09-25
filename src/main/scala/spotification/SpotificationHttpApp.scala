@@ -1,9 +1,9 @@
 package spotification
 
-import spotification.infra.concurrent.ExecutionContextModule
-import spotification.infra.config.ServerConfigModule
+import spotification.infra.concurrent.{ExecutionContextModule, executionContext}
+import spotification.infra.config.{ServerConfigModule, serverConfig}
 import spotification.infra.httpserver.{addCors, addLogger, httpApp, runHttpServer}
-import spotification.infra.log.LogModule._
+import spotification.infra.log._
 import spotification.presentation._
 import zio.clock.Clock
 import zio.interop.catz._
@@ -20,8 +20,8 @@ object SpotificationHttpApp extends zio.App {
 
   val runHttpApp: RIO[HttpAppEnv, Unit] = ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>
     for {
-      config <- ServerConfigModule.config
-      ex     <- ExecutionContextModule.executionContext
+      config <- serverConfig
+      ex     <- executionContext
 
       controllers = allRoutes[HttpAppEnv]
       app = addCors(addLogger(httpApp(controllers)))

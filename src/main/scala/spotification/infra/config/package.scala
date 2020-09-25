@@ -10,33 +10,43 @@ import eu.timepit.refined.pureconfig._
 package object config {
   type AuthorizationConfigModule = Has[AuthorizationConfig]
   object AuthorizationConfigModule {
-    val config: RIO[AuthorizationConfigModule, AuthorizationConfig] = ZIO.access(_.get)
     val live: TaskLayer[AuthorizationConfigModule] = makeLayer(_.get.authorization)
   }
 
   type PlaylistConfigModule = Has[PlaylistConfig]
   object PlaylistConfigModule {
-    val config: RIO[PlaylistConfigModule, PlaylistConfig] = ZIO.access(_.get)
     val live: TaskLayer[PlaylistConfigModule] = makeLayer(_.get.playlist)
   }
 
   type TrackConfigModule = Has[TrackConfig]
   object TrackConfigModule {
-    val config: RIO[TrackConfigModule, TrackConfig] = ZIO.access(_.get)
     val live: TaskLayer[TrackConfigModule] = makeLayer(_.get.track)
   }
 
   type ServerConfigModule = Has[ServerConfig]
   object ServerConfigModule {
-    val config: RIO[ServerConfigModule, ServerConfig] = ZIO.access(_.get)
     val live: TaskLayer[ServerConfigModule] = makeLayer(_.get.server)
   }
 
   type ClientConfigModule = Has[ClientConfig]
   object ClientConfigModule {
-    val config: RIO[ClientConfigModule, ClientConfig] = ZIO.access(_.get)
     val live: TaskLayer[ClientConfigModule] = makeLayer(_.get.client)
   }
+
+  val authorizationConfig: RIO[AuthorizationConfigModule, AuthorizationConfig] =
+    ZIO.access(_.get)
+
+  val playlistConfig: RIO[PlaylistConfigModule, PlaylistConfig] =
+    ZIO.access(_.get)
+
+  val trackConfig: RIO[TrackConfigModule, TrackConfig] =
+    ZIO.access(_.get)
+
+  val serverConfig: RIO[ServerConfigModule, ServerConfig] =
+    ZIO.access(_.get)
+
+  val clientConfig: RIO[ClientConfigModule, ClientConfig] =
+    ZIO.access(_.get)
 
   private def makeLayer[A: Tag](f: Has[AppConfig] => A): TaskLayer[Has[A]] =
     appConfigLayer.map(f).map(Has(_))

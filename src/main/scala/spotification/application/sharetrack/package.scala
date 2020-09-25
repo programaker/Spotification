@@ -3,7 +3,7 @@ package spotification.application
 import spotification.application.spotifyauthorization.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
 import spotification.domain.spotify.authorization.RefreshToken
 import spotification.domain.spotify.track.{GetTrackRequest, TrackUri, makeShareTrackString}
-import spotification.infra.spotify.track.TrackModule
+import spotification.infra.spotify.track.{TrackModule, getTrack}
 import zio.{RIO, TaskLayer}
 
 package object sharetrack {
@@ -15,6 +15,6 @@ package object sharetrack {
   def shareTrackMessageProgram(refreshToken: RefreshToken, trackUri: TrackUri): RIO[ShareTrackEnv, String] =
     for {
       accessToken  <- requestAccessTokenProgram(refreshToken)
-      getTrackResp <- TrackModule.getTrack(GetTrackRequest.make(trackUri, accessToken))
+      getTrackResp <- getTrack(GetTrackRequest.make(trackUri, accessToken))
     } yield makeShareTrackString(getTrackResp)
 }

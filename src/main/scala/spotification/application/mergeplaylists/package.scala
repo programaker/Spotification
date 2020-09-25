@@ -8,9 +8,9 @@ import spotification.domain.config.RetryConfig
 import spotification.domain.spotify.authorization.RefreshToken
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.domain.spotify.playlist.PlaylistId
-import spotification.infra.config.PlaylistConfigModule
+import spotification.infra.config.{PlaylistConfigModule, playlistConfig}
 import spotification.infra.log.LogModule
-import spotification.infra.log.LogModule.info
+import spotification.infra.log.info
 import spotification.infra.spotify.playlist.PlaylistModule
 import zio.clock.Clock
 import zio.duration.Duration
@@ -38,7 +38,7 @@ package object mergeplaylists {
   ): RIO[MergePlaylistsEnv, Unit] =
     for {
       accessToken    <- requestAccessTokenProgram(refreshToken)
-      playlistConfig <- PlaylistConfigModule.config
+      playlistConfig <- playlistConfig
 
       limit = playlistConfig.getPlaylistItemsLimit
       firstRequest = FirstRequest.make(_, limit, accessToken)

@@ -9,9 +9,6 @@ import zio._
 package object track {
   type TrackModule = Has[TrackService]
   object TrackModule {
-    def getTrack(req: GetTrackRequest): RIO[TrackModule, GetTrackResponse] =
-      ZIO.accessM(_.get.getTrack(req))
-
     val live: TaskLayer[TrackModule] = {
       val l1 = ZLayer.fromServices[TrackConfig, H4sClient, TrackService] { (config, httpClient) =>
         new H4sTrackService(config.trackApiUri, httpClient)
@@ -20,4 +17,7 @@ package object track {
       (TrackConfigModule.live ++ HttpClientModule.live) >>> l1
     }
   }
+
+  def getTrack(req: GetTrackRequest): RIO[TrackModule, GetTrackResponse] =
+    ZIO.accessM(_.get.getTrack(req))
 }

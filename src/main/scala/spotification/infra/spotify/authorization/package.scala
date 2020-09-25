@@ -9,12 +9,6 @@ import zio._
 package object authorization {
   type AuthorizationModule = Has[AuthorizationService]
   object AuthorizationModule {
-    def requestToken(req: AccessTokenRequest): RIO[AuthorizationModule, AccessTokenResponse] =
-      ZIO.accessM(_.get.requestToken(req))
-
-    def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationModule, RefreshTokenResponse] =
-      ZIO.accessM(_.get.refreshToken(req))
-
     val live: TaskLayer[AuthorizationModule] = {
       val l1 = ZLayer.fromServices[AuthorizationConfig, H4sClient, AuthorizationService] { (config, httpClient) =>
         new H4sAuthorizationService(config.apiTokenUri, httpClient)
@@ -23,4 +17,10 @@ package object authorization {
       (AuthorizationConfigModule.live ++ HttpClientModule.live) >>> l1
     }
   }
+
+  def requestToken(req: AccessTokenRequest): RIO[AuthorizationModule, AccessTokenResponse] =
+    ZIO.accessM(_.get.requestToken(req))
+
+  def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationModule, RefreshTokenResponse] =
+    ZIO.accessM(_.get.refreshToken(req))
 }

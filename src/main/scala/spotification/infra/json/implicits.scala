@@ -12,24 +12,24 @@ import spotification.domain.spotify.playlist.PlaylistId
 import spotification.domain.{NonBlankString, SpotifyId}
 
 object implicits {
-  implicit def FEntityEncoder[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =
+  implicit def entityEncoderF[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =
     jsonEncoderOf[F, A]
 
-  implicit def FEntityDecoder[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] =
+  implicit def entityDecoderF[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] =
     jsonOf[F, A]
 
-  implicit val AccessTokenEncoder: Encoder[AccessToken] =
+  implicit val accessTokenEncoder: Encoder[AccessToken] =
     implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-  implicit val AccessTokenDecoder: Decoder[AccessToken] =
+  implicit val accessTokenDecoder: Decoder[AccessToken] =
     implicitly[Decoder[NonBlankString]].map(_.coerce[AccessToken])
 
-  implicit val RefreshTokenEncoder: Encoder[RefreshToken] =
+  implicit val refreshTokenEncoder: Encoder[RefreshToken] =
     implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-  implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
+  implicit val refreshTokenDecoder: Decoder[RefreshToken] =
     implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
 
-  implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
+  implicit val playlistIdDecoder: Decoder[PlaylistId] =
     implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
 }

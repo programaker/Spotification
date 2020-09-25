@@ -25,8 +25,8 @@ package object presentation {
 
   type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
   object PresentationEnv {
-    val layer: TaskLayer[PresentationEnv] =
-      SpotifyAuthorizationEnv.layer ++ ReleaseRadarNoSinglesEnv.layer ++ MergePlaylistsEnv.layer ++ ShareTrackEnv.layer
+    val live: TaskLayer[PresentationEnv] =
+      SpotifyAuthorizationEnv.live ++ ReleaseRadarNoSinglesEnv.live ++ MergePlaylistsEnv.live ++ ShareTrackEnv.live
   }
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =

@@ -15,11 +15,11 @@ import zio.{RIO, TaskLayer}
 package object releaseradarnosingles {
   type ReleaseRadarNoSinglesEnv = LogModule with PlaylistModule with PlaylistConfigModule with SpotifyAuthorizationEnv
   object ReleaseRadarNoSinglesEnv {
-    val layer: TaskLayer[ReleaseRadarNoSinglesEnv] =
-      LogModule.layer ++
-        PlaylistModule.layer ++
-        PlaylistConfigModule.layer ++
-        SpotifyAuthorizationEnv.layer
+    val live: TaskLayer[ReleaseRadarNoSinglesEnv] =
+      LogModule.live ++
+        PlaylistModule.live ++
+        PlaylistConfigModule.live ++
+        SpotifyAuthorizationEnv.live
   }
 
   def releaseRadarNoSinglesProgram(

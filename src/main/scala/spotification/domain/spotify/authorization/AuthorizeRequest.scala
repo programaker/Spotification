@@ -16,7 +16,7 @@ object AuthorizeRequest {
     AuthorizeRequest(
       cfg.clientId,
       cfg.redirectUri,
-      AuthorizationResponseType.Code,
+      AuthorizationResponseType.code,
       state = None, //we'll not use it for now
       cfg.scopes,
       show_dialog = None //defaults to false, which is what we want

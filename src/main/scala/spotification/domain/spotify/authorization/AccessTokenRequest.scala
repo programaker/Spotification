@@ -15,7 +15,7 @@ object AccessTokenRequest {
     AccessTokenRequest(
       cfg.clientId,
       cfg.clientSecret,
-      AccessTokenGrantType.AuthorizationCode,
+      AccessTokenGrantType.authorizationCode,
       code,
       cfg.redirectUri
     )

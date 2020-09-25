@@ -9,7 +9,8 @@ import spotification.domain.spotify.playlist.{
   PlaylistId,
   PlaylistItemsToProcess,
   PlaylistItemsToProcessR,
-  RemoveItemsFromPlaylistRequest
+  RemoveItemsFromPlaylistRequest,
+  accessTokenFromRequest
 }
 import spotification.domain.spotify.playlist.GetPlaylistsItemsRequest.NextRequest
 import spotification.domain.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
@@ -56,7 +57,7 @@ package object application {
               case None =>
                 RIO.unit
               case Some(nextUri) =>
-                val accessToken = GetPlaylistsItemsRequest.accessToken(req)
+                val accessToken = accessTokenFromRequest(req)
                 val uri = chooseUri(resp.href, nextUri)
                 loop(NextRequest(uri, accessToken))
             }
@@ -83,7 +84,7 @@ package object application {
     ZIO.foreachPar_ {
       trackUris.toList
         .to(LazyList)
-        .grouped(PlaylistItemsToProcess.MaxSize)
+        .grouped(PlaylistItemsToProcess.maxSize)
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
         .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
@@ -98,7 +99,7 @@ package object application {
       items.toList
         .to(LazyList)
         .map(_.uri)
-        .grouped(PlaylistItemsToProcess.MaxSize)
+        .grouped(PlaylistItemsToProcess.maxSize)
         .map(_.toVector)
         .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
         .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.playlistId, req.accessToken)))

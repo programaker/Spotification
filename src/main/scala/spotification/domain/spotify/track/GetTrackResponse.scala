@@ -12,7 +12,7 @@ final case class GetTrackResponse(
 object GetTrackResponse {
   final case class ArtistResponse(name: NonBlankString)
   object ArtistResponse {
-    implicit val ArtistResponseShow: Show[ArtistResponse] = (ar: ArtistResponse) => ar.name
+    implicit val artistResponseShow: Show[ArtistResponse] = (ar: ArtistResponse) => ar.name
   }
 
   final case class ExternalUrls(spotify: UriString)

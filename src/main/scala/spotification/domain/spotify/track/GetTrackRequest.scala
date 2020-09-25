@@ -8,7 +8,7 @@ final case class GetTrackRequest(
 )
 object GetTrackRequest {
   def make(trackUri: TrackUri, accessToken: AccessToken): GetTrackRequest =
-    new GetTrackRequest(
+    GetTrackRequest(
       trackId = trackIdFromUri(trackUri),
       accessToken = accessToken
     )

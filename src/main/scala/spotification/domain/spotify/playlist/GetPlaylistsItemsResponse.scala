@@ -11,7 +11,10 @@ final case class GetPlaylistsItemsResponse(
   next: Option[NextUri]
 )
 object GetPlaylistsItemsResponse {
-  val Fields: FieldsToReturn = "items.track(uri,album(album_type)),href,next"
+  // Changes in this String will cause changes in the response structure
+  // That's why they are together
+  val fields: FieldsToReturn = "items.track(uri,album(album_type)),href,next"
+
   final case class ItemResponse(track: Option[TrackResponse]) //`"track": null` = track unavailable
   final case class TrackResponse(album: AlbumResponse, uri: TrackUri)
   final case class AlbumResponse(album_type: AlbumType)

@@ -14,8 +14,8 @@ import scala.util.control.NonFatal
 object SpotificationHttpApp extends zio.App {
   type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv with Clock
   object HttpAppEnv {
-    val layer: TaskLayer[HttpAppEnv] =
-      ServerConfigModule.layer ++ ExecutionContextModule.layer ++ PresentationEnv.layer ++ Clock.live
+    val live: TaskLayer[HttpAppEnv] =
+      ServerConfigModule.live ++ ExecutionContextModule.live ++ PresentationEnv.live ++ Clock.live
   }
 
   val runHttpApp: RIO[HttpAppEnv, Unit] = ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>
@@ -33,6 +33,6 @@ object SpotificationHttpApp extends zio.App {
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] =
     runHttpApp
       .catchSome { case NonFatal(e) => error(">>> Error <<<", e) }
-      .provideCustomLayer(HttpAppEnv.layer)
+      .provideCustomLayer(HttpAppEnv.live)
       .exitCode
 }

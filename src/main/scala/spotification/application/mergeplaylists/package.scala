@@ -23,12 +23,12 @@ package object mergeplaylists {
     with PlaylistConfigModule
     with SpotifyAuthorizationEnv
   object MergePlaylistsEnv {
-    val layer: TaskLayer[MergePlaylistsEnv] =
+    val live: TaskLayer[MergePlaylistsEnv] =
       Clock.live ++
-        LogModule.layer ++
-        PlaylistModule.layer ++
-        PlaylistConfigModule.layer ++
-        SpotifyAuthorizationEnv.layer
+        LogModule.live ++
+        PlaylistModule.live ++
+        PlaylistConfigModule.live ++
+        SpotifyAuthorizationEnv.live
   }
 
   def mergePlaylistsProgram(

@@ -9,7 +9,7 @@ import zio.{RIO, TaskLayer}
 package object sharetrack {
   type ShareTrackEnv = TrackModule with SpotifyAuthorizationEnv
   object ShareTrackEnv {
-    val layer: TaskLayer[ShareTrackEnv] = TrackModule.layer ++ SpotifyAuthorizationEnv.layer
+    val live: TaskLayer[ShareTrackEnv] = TrackModule.live ++ SpotifyAuthorizationEnv.live
   }
 
   def shareTrackMessageProgram(refreshToken: RefreshToken, trackUri: TrackUri): RIO[ShareTrackEnv, String] =

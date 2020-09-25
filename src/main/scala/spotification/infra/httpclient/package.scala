@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets.UTF_8
 
 import cats.implicits._
 import eu.timepit.refined.auto._
-import eu.timepit.refined.cats._
 import io.circe.{Decoder, jawn}
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
@@ -26,17 +25,20 @@ import zio._
 import zio.interop.catz._
 
 import scala.concurrent.ExecutionContext
+import eu.timepit.refined.cats._
 
 package object httpclient {
   type H4sClient = Client[Task]
-  type H4sAuthorization = org.http4s.headers.Authorization
+  object H4sClient {
+    val dsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
+  }
 
-  val H4sClientDsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
+  type H4sAuthorization = org.http4s.headers.Authorization
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
   type HttpClientModule = Has[H4sClient]
   object HttpClientModule {
-    val layer: TaskLayer[HttpClientModule] = {
+    val live: TaskLayer[HttpClientModule] = {
       val makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
         ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 
@@ -47,7 +49,7 @@ package object httpclient {
         makeHttpClient.toManaged_.flatten.map(addLogger(config)).provide(ex)
       }
 
-      (ExecutionContextModule.layer ++ ClientConfigModule.layer) >>> l
+      (ExecutionContextModule.live ++ ClientConfigModule.live) >>> l
     }
   }
 

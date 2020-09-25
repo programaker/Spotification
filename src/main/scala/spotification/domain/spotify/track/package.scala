@@ -16,12 +16,12 @@ package object track {
 
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
-    implicit val TrackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
+    implicit val trackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
   }
 
   @newtype case class TrackApiUri(value: UriString)
   object TrackApiUri {
-    implicit val TrackApiUriShow: Show[TrackApiUri] = implicitly[Show[UriString]].coerce
+    implicit val trackApiUriShow: Show[TrackApiUri] = implicitly[Show[UriString]].coerce
   }
 
   def trackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =
@@ -30,7 +30,7 @@ package object track {
   def trackIdFromUri(uri: TrackUri): TrackId = {
     val s"spotify:track:$id" = uri.show
 
-    // Input type `TrackUri` already ensures that `id` is a valid SpotifyId
+    // type `TrackUri` already ensures that `id` exists and is a valid SpotifyId
     TrackId(refineV[SpotifyIdR].unsafeFrom(id))
   }
 

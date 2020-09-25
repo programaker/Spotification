@@ -1,6 +1,7 @@
 package spotification.application
 
 import cats.implicits._
+import eu.timepit.refined.auto._
 import org.http4s.Uri
 import spotification.domain.NonBlankStringR
 import spotification.domain.spotify.authorization._
@@ -14,8 +15,8 @@ import zio.interop.catz._
 package object spotifyauthorization {
   type SpotifyAuthorizationEnv = AuthorizationModule with AuthorizationConfigModule
   object SpotifyAuthorizationEnv {
-    val layer: TaskLayer[SpotifyAuthorizationEnv] =
-      AuthorizationModule.layer ++ AuthorizationConfigModule.layer
+    val live: TaskLayer[SpotifyAuthorizationEnv] =
+      AuthorizationModule.live ++ AuthorizationConfigModule.live
   }
 
   val makeAuthorizeUriProgram: RIO[SpotifyAuthorizationEnv, Uri] =
@@ -40,7 +41,7 @@ package object spotifyauthorization {
       req = RefreshTokenRequest(
         config.clientId,
         config.clientSecret,
-        RefreshTokenGrantType.RefreshToken,
+        "refresh_token",
         refreshToken
       )
 

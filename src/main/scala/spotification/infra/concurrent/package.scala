@@ -11,6 +11,6 @@ package object concurrent {
 
     // Let's start with the good old global ExecutionContext
     // Later we can plug something more interesting
-    val layer: ULayer[ExecutionContextModule] = ZLayer.succeed(ExecutionContext.global)
+    val live: ULayer[ExecutionContextModule] = ZLayer.succeed(ExecutionContext.global)
   }
 }

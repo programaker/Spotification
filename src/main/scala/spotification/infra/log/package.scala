@@ -25,7 +25,7 @@ package object log {
     def error(msg: String, e: Throwable)(implicit position: Position): RIO[LogModule, Unit] =
       ZIO.accessM(_.get.error(msg, e))
 
-    val layer: TaskLayer[LogModule] = ZLayer.fromManaged {
+    val live: TaskLayer[LogModule] = ZLayer.fromManaged {
       // Why not just combine the logs and call `toManaged`?
       // This way to construct the ZManaged provides all the needed implicits through the `ceff` argument
       ZManaged.fromEffect(Task.concurrentEffect).flatMap { implicit ceff =>

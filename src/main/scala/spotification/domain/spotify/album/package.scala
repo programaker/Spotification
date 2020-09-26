@@ -9,5 +9,5 @@ package object album {
   type AlbumTypeR = Equal["album"] Or Equal["single"] Or Equal["compilation"]
   type AlbumType = String Refined AlbumTypeR
 
-  val isAlbum: AlbumType => Boolean = _.value === "album"
+  def isAlbum(albumType: AlbumType): Boolean = albumType.value === "album"
 }

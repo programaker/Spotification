@@ -55,10 +55,10 @@ package object domain {
   //
   // URLEncoder.encode("https://bar.com", UTF_8.toString)
   // > String = https%3A%2F%2Fbar.com <- encoded `//` correctly
-  val encode: String => String = URLEncoder.encode(_, UTF_8)
+  def encode(s: String): String = URLEncoder.encode(s, UTF_8)
 
-  val makeQueryString: ParamMap => String =
-    _.map {
+  def makeQueryString(params: ParamMap): String =
+    params.map {
       case (_, None)    => ""
       case (k, Some(v)) => show"$k=$v"
     } mkString "&"

@@ -3,6 +3,7 @@
 .metals
 .vscode
 .env
+.DS_Store
 log
 target
 project/metals.sbt

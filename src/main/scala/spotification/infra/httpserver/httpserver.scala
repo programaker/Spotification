@@ -10,7 +10,7 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.{CORS, Logger}
 import spotification.domain.config.ServerConfig
-import spotification.presentation.Routes
+import spotification.api.Routes
 
 import scala.concurrent.ExecutionContext
 

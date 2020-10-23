@@ -1,4 +1,4 @@
-package spotification.presentation
+package spotification.api
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl

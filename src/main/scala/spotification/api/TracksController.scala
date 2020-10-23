@@ -1,11 +1,11 @@
-package spotification.presentation
+package spotification.api
 
 import eu.timepit.refined._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import spotification.application.sharetrack.{ShareTrackEnv, shareTrackMessageProgram}
 import spotification.domain.spotify.track.{TrackUri, TrackUriR}
-import spotification.presentation.TracksController.TrackUriVar
+import spotification.api.TracksController.TrackUriVar
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._

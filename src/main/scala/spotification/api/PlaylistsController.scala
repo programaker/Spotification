@@ -1,4 +1,4 @@
-package spotification.presentation
+package spotification.api
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -9,7 +9,7 @@ import io.circe.generic.auto._
 import spotification.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
 import zio.interop.catz._
 import spotification.infra.json.implicits._
-import spotification.presentation.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
+import spotification.api.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
 
 final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylistsEnv] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {

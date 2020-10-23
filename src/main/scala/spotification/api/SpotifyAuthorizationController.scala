@@ -1,4 +1,4 @@
-package spotification.presentation
+package spotification.api
 
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes

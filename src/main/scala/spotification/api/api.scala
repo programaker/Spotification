@@ -19,7 +19,7 @@ import spotification.infra.refineRIO
 import zio.{RIO, ZIO, _}
 import zio.interop.catz._
 
-package object presentation {
+package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 

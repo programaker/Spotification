@@ -8,13 +8,13 @@ import org.http4s.Credentials.Token
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Authorization
-import spotification.application.mergeplaylists.MergePlaylistsEnv
-import spotification.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
-import spotification.application.sharetrack.ShareTrackEnv
-import spotification.application.spotifyauthorization.SpotifyAuthorizationEnv
+import spotification.spotify.playlist.application.mergeplaylists.MergePlaylistsEnv
+import spotification.spotify.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
+import spotification.spotify.track.application.sharetrack.ShareTrackEnv
+import spotification.spotify.authorization.application.spotifyauthorization.SpotifyAuthorizationEnv
 import spotification.domain.NonBlankStringR
-import spotification.domain.spotify.authorization.RefreshToken
-import spotification.infra.json.implicits._
+import spotification.spotify.authorization.RefreshToken
+import spotification.common.infra.json.implicits._
 import spotification.infra.refineRIO
 import zio.{RIO, ZIO, _}
 import zio.interop.catz._

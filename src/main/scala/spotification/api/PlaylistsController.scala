@@ -2,13 +2,13 @@ package spotification.api
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.application.releaseradarnosingles._
-import spotification.domain.spotify.playlist.PlaylistId
+import spotification.spotify.playlist.application.releaseradarnosingles._
+import spotification.spotify.playlist.PlaylistId
 import zio.RIO
 import io.circe.generic.auto._
-import spotification.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
+import spotification.spotify.playlist.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
 import zio.interop.catz._
-import spotification.infra.json.implicits._
+import spotification.common.infra.json.implicits._
 import spotification.api.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
 
 final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylistsEnv] extends Http4sDsl[RIO[R, *]] {

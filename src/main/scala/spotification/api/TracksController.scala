@@ -3,13 +3,13 @@ package spotification.api
 import eu.timepit.refined._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.application.sharetrack.{ShareTrackEnv, shareTrackMessageProgram}
-import spotification.domain.spotify.track.{TrackUri, TrackUriR}
+import spotification.spotify.track.application.sharetrack.{ShareTrackEnv, shareTrackMessageProgram}
+import spotification.spotify.track.{TrackUri, TrackUriR}
 import spotification.api.TracksController.TrackUriVar
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._
-import spotification.infra.json.implicits.entityEncoderF
+import spotification.common.infra.json.implicits.entityEncoderF
 
 final class TracksController[R <: ShareTrackEnv] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {

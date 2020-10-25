@@ -1,6 +1,6 @@
 package spotification.spotify.authorization
 
-import spotification.domain._
+import spotification.common._
 import spotification.config.AuthorizationConfig
 
 final case class AccessTokenRequest(

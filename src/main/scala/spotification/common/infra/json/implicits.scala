@@ -9,7 +9,7 @@ import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 import spotification.spotify.authorization.{AccessToken, RefreshToken}
 import spotification.spotify.playlist.PlaylistId
-import spotification.domain.{NonBlankString, SpotifyId}
+import spotification.common.{NonBlankString, SpotifyId}
 
 object implicits {
   implicit def entityEncoderF[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =

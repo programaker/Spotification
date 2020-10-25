@@ -1,12 +1,11 @@
-package spotification.application
+package spotification.spotify.track.application
 
-import spotification.spotify.authorization.application.spotifyauthorization.{
+import spotification.spotify.authorization.RefreshToken
+import spotification.spotify.authorization.application.spotifyauthorizarion.{
   SpotifyAuthorizationEnv,
   requestAccessTokenProgram
 }
-import spotification.spotify.authorization.RefreshToken
 import spotification.spotify.track.{GetTrackRequest, TrackUri, makeShareTrackString}
-import spotification.infra.spotify.track.{TrackModule, getTrack}
 import zio.{RIO, TaskLayer}
 
 package object sharetrack {

@@ -13,7 +13,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.cats._
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.domain._
+import spotification.common._
 import eu.timepit.refined.string.MatchesRegex
 
 package object authorization {

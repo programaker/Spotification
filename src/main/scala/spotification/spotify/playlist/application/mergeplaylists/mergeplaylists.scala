@@ -1,20 +1,19 @@
-package spotification.application
+package spotification.spotify.playlist.application
 
 import cats.data.NonEmptyList
 import cats.implicits._
 import eu.timepit.refined.auto._
-import spotification.spotify.authorization.application.spotifyauthorization.{
+import spotification.config.RetryConfig
+import spotification.config.application.{PlaylistConfigModule, playlistConfig}
+import spotification.log.application.{LogModule, info}
+import spotification.spotify.authorization.RefreshToken
+import spotification.spotify.authorization.application.spotifyauthorizarion.{
   SpotifyAuthorizationEnv,
   requestAccessTokenProgram
 }
-import spotification.config.RetryConfig
-import spotification.spotify.authorization.RefreshToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.spotify.playlist.PlaylistId
-import spotification.infra.config.{PlaylistConfigModule, playlistConfig}
-import spotification.log.LogModule
-import spotification.log.info
-import spotification.infra.spotify.playlist.PlaylistModule
+import spotification.spotify.track.application.importTracks
 import zio.clock.Clock
 import zio.duration.Duration
 import zio.{RIO, Schedule, TaskLayer, ZIO}

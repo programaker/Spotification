@@ -1,18 +1,17 @@
-package spotification.application
+package spotification.spotify.authorization.application
 
 import cats.implicits._
 import eu.timepit.refined.auto._
 import org.http4s.Uri
-import spotification.domain.NonBlankStringR
+import spotification.common.NonBlankStringR
+import spotification.common.application.refineRIO
 import spotification.spotify.authorization._
-import spotification.infra.config.{AuthorizationConfigModule, authorizationConfig}
 import spotification.common.infra.httpclient.makeAuthorizeUri
-import spotification.infra.refineRIO
-import spotification.infra.spotify.authorization.{AuthorizationModule, refreshToken, requestToken}
+import spotification.config.application.{AuthorizationConfigModule, authorizationConfig}
 import zio.{RIO, TaskLayer}
 import zio.interop.catz._
 
-package object spotifyauthorization {
+package object spotifyauthorizarion {
   type SpotifyAuthorizationEnv = AuthorizationModule with AuthorizationConfigModule
   object SpotifyAuthorizationEnv {
     val live: TaskLayer[SpotifyAuthorizationEnv] =

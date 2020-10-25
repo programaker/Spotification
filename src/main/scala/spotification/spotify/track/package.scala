@@ -8,7 +8,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.domain._
+import spotification.common._
 
 package object track {
   type TrackUriR = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]

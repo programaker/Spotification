@@ -1,7 +1,7 @@
 package spotification.spotify.playlist
 
 import spotification.spotify.authorization.AccessToken
-import spotification.domain.{NonNegativeInt, PositiveInt, UriString}
+import spotification.common.{NonNegativeInt, PositiveInt, UriString}
 import eu.timepit.refined.auto._
 
 sealed abstract class GetPlaylistsItemsRequest extends Product with Serializable

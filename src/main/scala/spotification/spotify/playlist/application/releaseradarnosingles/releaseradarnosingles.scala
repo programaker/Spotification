@@ -1,18 +1,17 @@
-package spotification.application
+package spotification.spotify.playlist.application
 
 import cats.data.NonEmptyList
 import cats.implicits._
-import spotification.log.LogModule
-import spotification.infra.spotify.playlist.PlaylistModule
-import spotification.spotify.authorization.application.spotifyauthorization.{
+import spotification.config.application.{PlaylistConfigModule, playlistConfig}
+import spotification.log.application.{LogModule, info}
+import spotification.spotify.authorization.RefreshToken
+import spotification.spotify.authorization.application.spotifyauthorizarion.{
   SpotifyAuthorizationEnv,
   requestAccessTokenProgram
 }
-import spotification.spotify.authorization.RefreshToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.FirstRequest
 import spotification.spotify.playlist.{PlaylistId, trackUriIfAlbum}
-import spotification.infra.config.{PlaylistConfigModule, playlistConfig}
-import spotification.log.info
+import spotification.spotify.track.application.importTracks
 import zio.{RIO, TaskLayer}
 
 package object releaseradarnosingles {

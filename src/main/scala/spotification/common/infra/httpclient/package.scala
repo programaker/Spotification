@@ -1,4 +1,4 @@
-package spotification.infra
+package spotification.common.infra
 
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
@@ -20,12 +20,13 @@ import spotification.config.ClientConfig
 import spotification.spotify.{ErrorResponse, authorization}
 import spotification.spotify.authorization._
 import spotification.common.infra.concurrent.ExecutionContextModule
-import spotification.infra.config.ClientConfigModule
 import zio._
 import zio.interop.catz._
 
 import scala.concurrent.ExecutionContext
 import eu.timepit.refined.cats._
+import spotification.common.application.leftStringEitherToTask
+import spotification.config.application.ClientConfigModule
 
 package object httpclient {
   type H4sClient = Client[Task]

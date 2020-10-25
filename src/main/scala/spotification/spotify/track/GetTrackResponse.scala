@@ -2,7 +2,7 @@ package spotification.spotify.track
 
 import cats.Show
 import eu.timepit.refined.auto._
-import spotification.domain.{NonBlankString, UriString}
+import spotification.common.{NonBlankString, UriString}
 
 final case class GetTrackResponse(
   artists: List[GetTrackResponse.ArtistResponse],

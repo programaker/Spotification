@@ -14,7 +14,7 @@ import spotification.spotify.authorization.AccessToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.spotify.track.TrackUri
-import spotification.domain.{SpotifyId, UriR, UriString}
+import spotification.common.{SpotifyId, UriR, UriString}
 
 package object playlist {
   @newtype case class PlaylistId(value: SpotifyId)

@@ -1,4 +1,4 @@
-package spotification.infra
+package spotification.common.infra
 
 import zio.{Has, RIO, ULayer, ZIO, ZLayer}
 

@@ -1,4 +1,4 @@
-package spotification.infra
+package spotification.common.infra
 
 import cats.Monad
 import cats.data.Kleisli

@@ -15,7 +15,7 @@ import zio._
 import zio.interop.catz.monadErrorInstance
 
 final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient) extends AuthorizationService {
-  import H4sClient.dsl._
+  import H4sClient.Dsl._
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params: ParamMap = Map(

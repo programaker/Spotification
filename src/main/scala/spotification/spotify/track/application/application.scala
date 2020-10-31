@@ -1,18 +1,18 @@
-package spotification.spotify.track.application
+package spotification.spotify.track
 
 import spotification.spotify.authorization.RefreshToken
 import spotification.spotify.authorization.application.spotifyauthorizarion.{
   SpotifyAuthorizationEnv,
   requestAccessTokenProgram
 }
-import spotification.spotify.track.{GetTrackRequest, TrackUri, makeShareTrackString}
-import zio.{RIO, TaskLayer}
+import zio.{Has, RIO, ZIO}
 
-package object sharetrack {
-  type ShareTrackEnv = TrackModule with SpotifyAuthorizationEnv
-  object ShareTrackEnv {
-    val live: TaskLayer[ShareTrackEnv] = TrackModule.live ++ SpotifyAuthorizationEnv.live
-  }
+package object application {
+  type TrackServiceEnv = Has[TrackService]
+  type ShareTrackEnv = TrackServiceEnv with SpotifyAuthorizationEnv
+
+  def getTrack(req: GetTrackRequest): RIO[TrackServiceEnv, GetTrackResponse] =
+    ZIO.accessM(_.get.getTrack(req))
 
   def shareTrackMessageProgram(refreshToken: RefreshToken, trackUri: TrackUri): RIO[ShareTrackEnv, String] =
     for {

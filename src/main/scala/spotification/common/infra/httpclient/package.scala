@@ -31,7 +31,7 @@ import spotification.config.application.ClientConfigModule
 package object httpclient {
   type H4sClient = Client[Task]
   object H4sClient {
-    val dsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
+    val Dsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
   }
 
   type H4sAuthorization = org.http4s.headers.Authorization

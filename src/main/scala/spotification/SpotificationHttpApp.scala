@@ -1,10 +1,10 @@
 package spotification
 
 import spotification.common.infra.concurrent.{ExecutionContextModule, executionContext}
-import spotification.infra.config.{ServerConfigModule, serverConfig}
 import spotification.common.infra.httpserver.{addCors, addLogger, httpApp, runHttpServer}
-import spotification.log._
 import spotification.api._
+import spotification.config.application.{ServerConfigModule, serverConfig}
+import spotification.log.application.error
 import zio.clock.Clock
 import zio.interop.catz._
 import zio._

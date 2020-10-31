@@ -19,12 +19,12 @@ import spotification.common.{SpotifyId, UriR, UriString}
 package object playlist {
   @newtype case class PlaylistId(value: SpotifyId)
   object PlaylistId {
-    implicit val playlistIdShow: Show[PlaylistId] = implicitly[Show[SpotifyId]].coerce
+    implicit val PlaylistIdShow: Show[PlaylistId] = implicitly[Show[SpotifyId]].coerce
   }
 
   @newtype case class PlaylistApiUri(value: UriString)
   object PlaylistApiUri {
-    implicit val playlistApiUriShow: Show[PlaylistApiUri] = implicitly[Show[UriString]].coerce
+    implicit val PlaylistApiUriShow: Show[PlaylistApiUri] = implicitly[Show[UriString]].coerce
   }
 
   // A maximum of 100 Tracks can be processed in a single request
@@ -33,7 +33,7 @@ package object playlist {
   type PlaylistItemsToProcessR = MinSize[1] And MaxSize[PlaylistItemsToProcessMax]
   type PlaylistItemsToProcess[A] = Vector[A] Refined PlaylistItemsToProcessR
   object PlaylistItemsToProcess {
-    val maxSize: PlaylistItemsToProcessMax = 100
+    val MaxSize: PlaylistItemsToProcessMax = 100
   }
 
   def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =

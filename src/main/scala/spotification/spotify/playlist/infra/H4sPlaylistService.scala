@@ -15,6 +15,7 @@ import zio._
 import zio.interop.catz._
 
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistService {
+  import H4sClient.Dsl._
 
   override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
     val get = GET(_: Uri, authorizationBearerHeader(accessTokenFromRequest(req)))
@@ -45,7 +46,7 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
 
   private def getItemsUri(req: FirstRequest): Either[Throwable, Uri] =
     tracksUri(req.playlistId).map {
-      _.withQueryParam("fields", GetPlaylistsItemsResponse.fields.show)
+      _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
         .withQueryParam("limit", req.limit.show)
         .withQueryParam("offset", req.offset.show)
     }

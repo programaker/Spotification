@@ -1,15 +1,18 @@
 package spotification.spotify.playlist.infra
 
 import cats.implicits._
+import eu.timepit.refined.cats._
+import eu.timepit.refined.auto._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.Method.{DELETE, GET, POST}
 import org.http4s.Uri
+import spotification.common.infra.httpclient.{H4sClient, authorizationBearerHeader, doRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist._
 import spotification.spotify.playlist.application.PlaylistService
 import zio._
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz._
 
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistService {
 

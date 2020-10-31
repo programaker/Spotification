@@ -1,11 +1,16 @@
 package spotification.spotify.playlist
 
 import cats.data.NonEmptyList
-import spotification.application.deleteTracks
+import spotification.common.{CurrentUri, NextUri, UriString}
+import spotification.common.application.refineRIO
+import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
 import spotification.config.PlaylistConfig
+import spotification.config.application.PlaylistConfigModule
+import spotification.spotify.authorization.AccessToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.NextRequest
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.spotify.playlist.infra.H4sPlaylistService
+import spotification.spotify.track.TrackUri
 import zio._
 
 package object application {
@@ -84,4 +89,42 @@ package object application {
     // since we are deleting tracks,
     // we should always stay in the first page
     paginatePlaylist(req)(deleteTracks(_, req))((currentUri, _) => currentUri)(_ *> _)
+
+  def importTracks(
+    trackUris: NonEmptyList[TrackUri],
+    destPlaylist: PlaylistId,
+    accessToken: AccessToken
+  ): RIO[PlaylistModule, Unit] =
+    ZIO.foreachPar_ {
+      trackUris.toList
+        .to(LazyList)
+        .grouped(PlaylistItemsToProcess.maxSize)
+        .map(_.toVector)
+        .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
+        .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
+        .to(Iterable)
+    }(identity)
+
+  private def deleteTracks(
+    items: NonEmptyList[TrackResponse],
+    req: GetPlaylistsItemsRequest.FirstRequest
+  ): RIO[PlaylistModule, Unit] =
+    ZIO.foreachPar_(
+      items.toList
+        .to(LazyList)
+        .map(_.uri)
+        .grouped(PlaylistItemsToProcess.maxSize)
+        .map(_.toVector)
+        .map(refineRIO[PlaylistModule, PlaylistItemsToProcessR](_))
+        .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.playlistId, req.accessToken)))
+        .map(_.flatMap(removeItemsFromPlaylist))
+        .to(Iterable)
+    )(identity)
+
+  private def importTrackChunk(
+    trackUris: PlaylistItemsToProcess[TrackUri],
+    destPlaylist: PlaylistId,
+    accessToken: AccessToken
+  ): RIO[PlaylistModule, Unit] =
+    addItemsToPlaylist(AddItemsToPlaylistRequest.make(destPlaylist, trackUris, accessToken)).map(_ => ())
 }

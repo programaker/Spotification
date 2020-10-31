@@ -17,6 +17,13 @@ package object track {
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
     implicit val TrackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
+
+    def fromUri(uri: TrackUri): TrackId = {
+      val s"spotify:track:$id" = uri.show
+
+      // type `TrackUri` already ensures that `id` exists and is a valid SpotifyId
+      TrackId(refineV[SpotifyIdR].unsafeFrom(id))
+    }
   }
 
   @newtype case class TrackApiUri(value: UriString)
@@ -26,13 +33,6 @@ package object track {
 
   def trackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =
     refineV[UriR](show"$trackApiUri/$trackId")
-
-  def trackIdFromUri(uri: TrackUri): TrackId = {
-    val s"spotify:track:$id" = uri.show
-
-    // type `TrackUri` already ensures that `id` exists and is a valid SpotifyId
-    TrackId(refineV[SpotifyIdR].unsafeFrom(id))
-  }
 
   def makeShareTrackString(resp: GetTrackResponse): String =
     show"🎶 '${resp.name}' by '${resp.artists.mkString_(", ")}' - ${resp.external_urls.spotify}"

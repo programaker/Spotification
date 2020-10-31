@@ -9,7 +9,7 @@ final case class GetTrackRequest(
 object GetTrackRequest {
   def make(trackUri: TrackUri, accessToken: AccessToken): GetTrackRequest =
     GetTrackRequest(
-      trackId = trackIdFromUri(trackUri),
+      trackId = TrackId.fromUri(trackUri),
       accessToken = accessToken
     )
 }

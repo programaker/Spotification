@@ -12,5 +12,4 @@ object GetTrackRequest {
       trackId = trackIdFromUri(trackUri),
       accessToken = accessToken
     )
-
 }

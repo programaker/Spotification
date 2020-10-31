@@ -16,12 +16,12 @@ package object track {
 
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
-    implicit val trackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
+    implicit val TrackIdShow: Show[TrackId] = implicitly[Show[SpotifyId]].coerce
   }
 
   @newtype case class TrackApiUri(value: UriString)
   object TrackApiUri {
-    implicit val trackApiUriShow: Show[TrackApiUri] = implicitly[Show[UriString]].coerce
+    implicit val TrackApiUriShow: Show[TrackApiUri] = implicitly[Show[UriString]].coerce
   }
 
   def trackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =

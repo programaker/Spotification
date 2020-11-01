@@ -2,11 +2,11 @@ package spotification.api
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.spotify.playlist.application.releaseradarnosingles._
-import spotification.spotify.playlist.PlaylistId
+import spotification.playlist.application.releaseradarnosingles._
+import spotification.playlist.PlaylistId
 import zio.RIO
 import io.circe.generic.auto._
-import spotification.spotify.playlist.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
+import spotification.playlist.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
 import zio.interop.catz._
 import spotification.common.infra.json.implicits._
 import spotification.api.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}

@@ -1,4 +1,4 @@
-package spotification.spotify.playlist
+package spotification.playlist
 
 import spotification.authorization.AccessToken
 import spotification.track.TrackUri

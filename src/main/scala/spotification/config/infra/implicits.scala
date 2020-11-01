@@ -4,7 +4,7 @@ import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import spotification.config.{Bytes, Directory}
 import spotification.authorization.{RefreshToken, _}
-import spotification.spotify.playlist.{PlaylistApiUri, PlaylistId}
+import spotification.playlist.{PlaylistApiUri, PlaylistId}
 import spotification.track.TrackApiUri
 
 object implicits {

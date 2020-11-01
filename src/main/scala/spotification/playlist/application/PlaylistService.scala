@@ -1,6 +1,6 @@
-package spotification.spotify.playlist.application
+package spotification.playlist.application
 
-import spotification.spotify.playlist._
+import spotification.playlist._
 import zio.Task
 
 trait PlaylistService {

@@ -13,8 +13,8 @@ import spotification.authorization.RefreshToken
 import spotification.common.infra.json.implicits._
 import spotification.common.application.refineRIO
 import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
-import spotification.spotify.playlist.application.mergeplaylists.MergePlaylistsEnv
-import spotification.spotify.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
+import spotification.playlist.application.mergeplaylists.MergePlaylistsEnv
+import spotification.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
 import spotification.track.application.sharetrack.ShareTrackEnv
 import zio.{RIO, ZIO, _}
 import zio.interop.catz._

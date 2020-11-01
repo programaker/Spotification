@@ -1,4 +1,4 @@
-package spotification.spotify.playlist
+package spotification.playlist
 
 import eu.timepit.refined.auto._
 import spotification.common.{CurrentUri, FieldsToReturn, NextUri}

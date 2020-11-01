@@ -1,7 +1,7 @@
 package spotification.config
 
 import spotification.authorization._
-import spotification.spotify.playlist.PlaylistApiUri
+import spotification.playlist.PlaylistApiUri
 import spotification.track.TrackApiUri
 import spotification.common.{Host, PositiveInt}
 

@@ -1,7 +1,7 @@
-package spotification.spotify.playlist
+package spotification.playlist
 
 import spotification.authorization.AccessToken
-import spotification.spotify.playlist.AddItemsToPlaylistRequest.Body
+import spotification.playlist.AddItemsToPlaylistRequest.Body
 import spotification.track.TrackUri
 
 final case class AddItemsToPlaylistRequest(

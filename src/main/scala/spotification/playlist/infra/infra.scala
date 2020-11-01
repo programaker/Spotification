@@ -1,16 +1,17 @@
-package spotification.spotify.playlist
+package spotification.playlist
 
-import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
 import spotification.config.PlaylistConfig
 import spotification.config.application.PlaylistConfigModule
 import spotification.log.application.LogModule
-import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
-import spotification.spotify.playlist.application.{
+import spotification.authorization.infra.SpotifyAuthorizationLayer
+import spotification.playlist.application.{
   MergePlaylistsEnv,
   PlaylistService,
   PlaylistServiceEnv,
   ReleaseRadarNoSinglesEnv
 }
+import spotification.common.infra.httpclient.H4sClient
+import spotification.common.infra.httpclient.HttpClientModule
 import zio.clock.Clock
 import zio.{TaskLayer, ZLayer}
 
@@ -27,12 +28,12 @@ package object infra {
     LogModule.live ++
       PlaylistServiceLayer ++
       PlaylistConfigModule.live ++
-      SpotifyAuthorizationEnv.SpotifyAuthorizationLayer
+      SpotifyAuthorizationLayer
 
   val MergePlaylistsLayer: TaskLayer[MergePlaylistsEnv] =
     Clock.live ++
       LogModule.live ++
       PlaylistServiceLayer ++
       PlaylistConfigModule.live ++
-      SpotifyAuthorizationEnv.SpotifyAuthorizationLayer
+      SpotifyAuthorizationLayer
 }

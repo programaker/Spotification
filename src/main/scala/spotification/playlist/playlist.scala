@@ -1,4 +1,4 @@
-package spotification.spotify
+package spotification
 
 import cats.Show
 import cats.implicits._
@@ -11,8 +11,8 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.album.isAlbum
 import spotification.authorization.AccessToken
-import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
-import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
+import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import spotification.common.{SpotifyId, UriR, UriString}
 

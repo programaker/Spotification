@@ -1,16 +1,17 @@
-package spotification.spotify.playlist
+package spotification.playlist
 
 import cats.data.NonEmptyList
 import cats.implicits._
+import eu.timepit.refined.auto._
+import spotification.authorization.application.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
 import spotification.common.application.refineRIO
 import spotification.common.{CurrentUri, NextUri, UriString}
 import spotification.config.RetryConfig
 import spotification.config.application.{PlaylistConfigModule, playlistConfig}
 import spotification.log.application.{LogModule, info}
-import spotification.authorization.application.spotifyauthorizarion.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
-import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
-import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
+import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import zio._
 import zio.clock.Clock
@@ -85,7 +86,7 @@ package object application {
       _ <- info("Done!")
     } yield ()
 
-  def paginatePlaylistPar[R <: PlaylistServiceEnv](req: GetPlaylistsItemsRequest.FirstRequest)(
+  private def paginatePlaylistPar[R <: PlaylistServiceEnv](req: GetPlaylistsItemsRequest.FirstRequest)(
     f: NonEmptyList[TrackResponse] => RIO[R, Unit]
   ): RIO[R, Unit] =
     paginatePlaylist(req)(f)((_, nextUri) => nextUri)(_ &> _)
@@ -102,7 +103,7 @@ package object application {
     * @param combinePageEffects A function to combine the result of processing
    * the current page with the result of the next page request (useful to choose if parallel or not)
    * */
-  def paginatePlaylist[R <: PlaylistServiceEnv](
+  private def paginatePlaylist[R <: PlaylistServiceEnv](
     req: GetPlaylistsItemsRequest
   )(
     processTracks: NonEmptyList[TrackResponse] => RIO[R, Unit]
@@ -135,13 +136,13 @@ package object application {
     loop(req)
   }
 
-  def clearPlaylist(req: GetPlaylistsItemsRequest.FirstRequest): RIO[PlaylistServiceEnv, Unit] =
+  private def clearPlaylist(req: GetPlaylistsItemsRequest.FirstRequest): RIO[PlaylistServiceEnv, Unit] =
     // `(currentUri, _) => currentUri`:
     // since we are deleting tracks,
     // we should always stay in the first page
     paginatePlaylist(req)(deleteTracks(_, req))((currentUri, _) => currentUri)(_ *> _)
 
-  def importTracks(
+  private def importTracks(
     trackUris: NonEmptyList[TrackUri],
     destPlaylist: PlaylistId,
     accessToken: AccessToken

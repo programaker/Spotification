@@ -1,6 +1,6 @@
 package spotification
 
-import spotification.concurrent.{ExecutionContextEnv, executionContext}
+import spotification.common.infra.concurrent.{ExecutionContextEnv, executionContext}
 import spotification.common.infra.httpserver.{addCors, addLogger, httpApp, runHttpServer}
 import spotification.api._
 import spotification.config.application.{ServerConfigEnv, serverConfig}

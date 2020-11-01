@@ -19,7 +19,7 @@ import org.http4s.{Request, Uri}
 import spotification.authorization._
 import spotification.common.ErrorResponse
 import spotification.common.application.leftStringEitherToTask
-import spotification.concurrent.infra.ExecutionContextLayer
+import spotification.common.infra.concurrent.ExecutionContextLayer
 import spotification.config.ClientConfig
 import spotification.config.infra.ClientConfigLayer
 import zio.interop.catz._

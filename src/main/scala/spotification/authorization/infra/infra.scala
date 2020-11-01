@@ -1,6 +1,6 @@
 package spotification.authorization
 
-import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
+import spotification.common.infra.httpclient.{H4sClient, HttpClientEnv}
 import spotification.config.AuthorizationConfig
 import spotification.config.application.AuthorizationConfigEnv
 import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv

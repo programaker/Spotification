@@ -11,7 +11,7 @@ import spotification.playlist.application.{
   ReleaseRadarNoSinglesEnv
 }
 import spotification.common.infra.httpclient.H4sClient
-import spotification.common.infra.httpclient.HttpClientModule
+import spotification.common.infra.httpclient.HttpClientEnv
 import zio.clock.Clock
 import zio.{TaskLayer, ZLayer}
 

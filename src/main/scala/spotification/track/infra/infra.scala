@@ -1,6 +1,6 @@
 package spotification.track
 
-import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
+import spotification.common.infra.httpclient.{H4sClient, HttpClientEnv}
 import spotification.config.TrackConfig
 import spotification.config.application.TrackConfigEnv
 import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv

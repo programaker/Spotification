@@ -18,18 +18,18 @@ object implicits {
   implicit def entityDecoderF[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] =
     jsonOf[F, A]
 
-  implicit val accessTokenEncoder: Encoder[AccessToken] =
+  implicit val AccessTokenEncoder: Encoder[AccessToken] =
     implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-  implicit val accessTokenDecoder: Decoder[AccessToken] =
+  implicit val AccessTokenDecoder: Decoder[AccessToken] =
     implicitly[Decoder[NonBlankString]].map(_.coerce[AccessToken])
 
-  implicit val refreshTokenEncoder: Encoder[RefreshToken] =
+  implicit val RefreshTokenEncoder: Encoder[RefreshToken] =
     implicitly[Encoder[NonBlankString]].contramap(_.coerce[NonBlankString])
 
-  implicit val refreshTokenDecoder: Decoder[RefreshToken] =
+  implicit val RefreshTokenDecoder: Decoder[RefreshToken] =
     implicitly[Decoder[NonBlankString]].map(_.coerce[RefreshToken])
 
-  implicit val playlistIdDecoder: Decoder[PlaylistId] =
+  implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
     implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
 }

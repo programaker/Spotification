@@ -25,14 +25,12 @@ import zio.{RIO, ZIO, _}
 package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
+  type ApiEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
 
-  type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
-  object PresentationEnv {
-    val live: TaskLayer[PresentationEnv] =
-      SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesLayer ++ MergePlaylistsLayer ++ ShareTrackLayer
-  }
+  val ApiLayer: TaskLayer[ApiEnv] =
+    SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesLayer ++ MergePlaylistsLayer ++ ShareTrackLayer
 
-  def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =
+  def allRoutes[R <: ApiEnv]: Routes[RIO[R, *]] =
     Seq(
       "/health"                -> new HealthCheckController[R].routes,
       "/authorization/spotify" -> new SpotifyAuthorizationController[R].routes,

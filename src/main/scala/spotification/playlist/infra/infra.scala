@@ -2,7 +2,7 @@ package spotification.playlist
 
 import spotification.config.PlaylistConfig
 import spotification.config.application.PlaylistConfigEnv
-import spotification.log.application.LogModule
+import spotification.log.application.LogEnv
 import spotification.authorization.infra.SpotifyAuthorizationLayer
 import spotification.playlist.application.{
   MergePlaylistsEnv,

@@ -15,7 +15,7 @@ import spotification.common.application.refineRIO
 import spotification.spotify.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
 import spotification.spotify.playlist.application.mergeplaylists.MergePlaylistsEnv
 import spotification.spotify.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
-import spotification.spotify.track.application.sharetrack.ShareTrackEnv
+import spotification.track.application.sharetrack.ShareTrackEnv
 import zio.{RIO, ZIO, _}
 import zio.interop.catz._
 

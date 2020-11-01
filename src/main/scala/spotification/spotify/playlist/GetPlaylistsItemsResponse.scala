@@ -3,7 +3,7 @@ package spotification.spotify.playlist
 import eu.timepit.refined.auto._
 import spotification.common.{CurrentUri, FieldsToReturn, NextUri}
 import spotification.spotify.album.AlbumType
-import spotification.spotify.track.TrackUri
+import spotification.track.TrackUri
 
 final case class GetPlaylistsItemsResponse(
   items: List[GetPlaylistsItemsResponse.ItemResponse],

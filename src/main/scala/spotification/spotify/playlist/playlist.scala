@@ -13,7 +13,7 @@ import spotification.spotify.album.isAlbum
 import spotification.spotify.authorization.AccessToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
-import spotification.spotify.track.TrackUri
+import spotification.track.TrackUri
 import spotification.common.{SpotifyId, UriR, UriString}
 
 package object playlist {

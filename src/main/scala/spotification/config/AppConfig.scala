@@ -2,7 +2,7 @@ package spotification.config
 
 import spotification.spotify.authorization._
 import spotification.spotify.playlist.PlaylistApiUri
-import spotification.spotify.track.TrackApiUri
+import spotification.track.TrackApiUri
 import spotification.common.{Host, PositiveInt}
 
 import scala.concurrent.duration.FiniteDuration

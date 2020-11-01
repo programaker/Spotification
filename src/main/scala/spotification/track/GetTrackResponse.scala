@@ -1,4 +1,4 @@
-package spotification.spotify.track
+package spotification.track
 
 import cats.Show
 import eu.timepit.refined.auto._

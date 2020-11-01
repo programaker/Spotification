@@ -1,7 +1,7 @@
 package spotification.spotify.playlist
 
 import spotification.spotify.authorization.AccessToken
-import spotification.spotify.track.TrackUri
+import spotification.track.TrackUri
 import eu.timepit.refined._
 
 final case class RemoveItemsFromPlaylistRequest(

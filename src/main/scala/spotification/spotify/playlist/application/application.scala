@@ -14,7 +14,7 @@ import spotification.spotify.authorization.application.spotifyauthorizarion.{
 import spotification.spotify.authorization.{AccessToken, RefreshToken}
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
-import spotification.spotify.track.TrackUri
+import spotification.track.TrackUri
 import zio._
 import zio.clock.Clock
 import zio.duration.Duration

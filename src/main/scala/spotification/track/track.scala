@@ -1,4 +1,4 @@
-package spotification.spotify
+package spotification
 
 import cats.Show
 import cats.implicits._

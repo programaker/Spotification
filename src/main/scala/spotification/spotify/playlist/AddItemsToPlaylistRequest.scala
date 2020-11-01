@@ -2,7 +2,7 @@ package spotification.spotify.playlist
 
 import spotification.spotify.authorization.AccessToken
 import spotification.spotify.playlist.AddItemsToPlaylistRequest.Body
-import spotification.spotify.track.TrackUri
+import spotification.track.TrackUri
 
 final case class AddItemsToPlaylistRequest(
   playlistId: PlaylistId,

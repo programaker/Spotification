@@ -1,4 +1,4 @@
-package spotification.spotify.track.infra
+package spotification.track.infra
 
 import org.http4s.Method.GET
 import org.http4s.Uri
@@ -6,8 +6,9 @@ import eu.timepit.refined.auto._
 import io.circe.generic.auto._
 import spotification.common.application.leftStringEitherToTask
 import spotification.common.infra.httpclient.{H4sClient, authorizationBearerHeader, doRequest}
-import spotification.spotify.track.application.TrackService
-import spotification.spotify.track.{trackUri, _}
+import spotification.track.{TrackApiUri, trackUri}
+import spotification.track.application.TrackService
+import spotification.track._
 import zio.Task
 import zio.interop.catz.monadErrorInstance
 

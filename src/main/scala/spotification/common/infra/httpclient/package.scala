@@ -17,7 +17,7 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.Logger
 import spotification.config.ClientConfig
-import spotification.spotify.{ErrorResponse, spotification.authorization}
+import spotification.spotify.spotification.authorization
 import spotification.authorization._
 import spotification.common.infra.concurrent.ExecutionContextModule
 import zio._
@@ -25,6 +25,7 @@ import zio.interop.catz._
 
 import scala.concurrent.ExecutionContext
 import eu.timepit.refined.cats._
+import spotification.common.ErrorResponse
 import spotification.common.application.leftStringEitherToTask
 import spotification.config.application.ClientConfigModule
 

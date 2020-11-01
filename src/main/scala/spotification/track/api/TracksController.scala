@@ -1,11 +1,12 @@
-package spotification.api
+package spotification.track.api
 
 import eu.timepit.refined._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.track.application.sharetrack.{ShareTrackEnv, shareTrackMessageProgram}
+import spotification.common.api.{GenericResponse, handleGenericError, requiredRefreshTokenFromRequest}
+import spotification.track.api.TracksController.TrackUriVar
+import spotification.track.application.{ShareTrackEnv, shareTrackMessageProgram}
 import spotification.track.{TrackUri, TrackUriR}
-import spotification.api.TracksController.TrackUriVar
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.generic.auto._

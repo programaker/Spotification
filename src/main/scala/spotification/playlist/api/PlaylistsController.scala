@@ -1,15 +1,20 @@
-package spotification.api
+package spotification.playlist.api
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.playlist.application.releaseradarnosingles._
+import spotification.common.api.{GenericResponse, doRequest, handleGenericError}
 import spotification.playlist.PlaylistId
+import spotification.playlist.api.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
+import spotification.playlist.application.{
+  MergePlaylistsEnv,
+  ReleaseRadarNoSinglesEnv,
+  mergePlaylistsProgram,
+  releaseRadarNoSinglesProgram
+}
 import zio.RIO
+import zio.interop.catz.monadErrorInstance
 import io.circe.generic.auto._
-import spotification.playlist.application.mergeplaylists.{MergePlaylistsEnv, mergePlaylistsProgram}
-import zio.interop.catz._
 import spotification.common.infra.json.implicits._
-import spotification.api.PlaylistsController.{MergePlaylistsRequest, ReleaseRadarNoSinglesRequest}
 
 final class PlaylistsController[R <: ReleaseRadarNoSinglesEnv with MergePlaylistsEnv] extends Http4sDsl[RIO[R, *]] {
   val routes: HttpRoutes[RIO[R, *]] = HttpRoutes.of[RIO[R, *]] {

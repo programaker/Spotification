@@ -1,4 +1,4 @@
-package spotification.api
+package spotification.common.api
 
 sealed abstract class GenericResponse extends Product with Serializable
 object GenericResponse {

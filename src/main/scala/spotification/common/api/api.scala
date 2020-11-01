@@ -1,4 +1,4 @@
-package spotification
+package spotification.common
 
 import cats.Applicative
 import cats.implicits._
@@ -8,19 +8,19 @@ import org.http4s.Credentials.Token
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Authorization
-import spotification.common.NonBlankStringR
 import spotification.authorization.RefreshToken
-import spotification.common.infra.json.implicits._
-import spotification.common.application.refineRIO
+import spotification.authorization.api.SpotifyAuthorizationController
 import spotification.authorization.application.SpotifyAuthorizationEnv
 import spotification.authorization.infra.SpotifyAuthorizationLayer
-import spotification.playlist.application.MergePlaylistsEnv
-import spotification.playlist.application.ReleaseRadarNoSinglesEnv
+import spotification.common.application.refineRIO
+import spotification.common.infra.json.implicits._
+import spotification.playlist.api.PlaylistsController
+import spotification.playlist.application.{MergePlaylistsEnv, ReleaseRadarNoSinglesEnv}
 import spotification.playlist.infra.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer}
+import spotification.track.api.TracksController
 import spotification.track.application.ShareTrackEnv
 import spotification.track.infra.ShareTrackLayer
 import zio.{RIO, ZIO, _}
-import zio.interop.catz._
 
 package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])

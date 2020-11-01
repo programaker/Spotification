@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext
 import eu.timepit.refined.cats._
 import spotification.common.ErrorResponse
 import spotification.common.application.leftStringEitherToTask
-import spotification.config.application.ClientConfigModule
+import spotification.config.application.ClientConfigEnv
 
 package object httpclient {
   type H4sClient = Client[Task]

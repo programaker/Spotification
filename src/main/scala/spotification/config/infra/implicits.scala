@@ -8,37 +8,37 @@ import spotification.playlist.{PlaylistApiUri, PlaylistId}
 import spotification.track.TrackApiUri
 
 object implicits {
-  implicit val directoryConfigReader: ConfigReader[Directory] =
+  implicit val DirectoryConfigReader: ConfigReader[Directory] =
     makeConfigReader(Directory.apply)
 
-  implicit val bytesConfigReader: ConfigReader[Bytes] =
+  implicit val BytesConfigReader: ConfigReader[Bytes] =
     makeConfigReader(Bytes.apply)
 
-  implicit val clientIdConfigReader: ConfigReader[ClientId] =
+  implicit val ClientIdConfigReader: ConfigReader[ClientId] =
     makeConfigReader(ClientId.apply)
 
-  implicit val clientSecretConfigReader: ConfigReader[ClientSecret] =
+  implicit val ClientSecretConfigReader: ConfigReader[ClientSecret] =
     makeConfigReader(ClientSecret.apply)
 
-  implicit val playlistIdConfigReader: ConfigReader[PlaylistId] =
+  implicit val PlaylistIdConfigReader: ConfigReader[PlaylistId] =
     makeConfigReader(PlaylistId.apply)
 
-  implicit val redirectUriConfigReader: ConfigReader[RedirectUri] =
+  implicit val RedirectUriConfigReader: ConfigReader[RedirectUri] =
     makeConfigReader(RedirectUri.apply)
 
-  implicit val authorizeUriConfigReader: ConfigReader[AuthorizeUri] =
+  implicit val AuthorizeUriConfigReader: ConfigReader[AuthorizeUri] =
     makeConfigReader(AuthorizeUri.apply)
 
-  implicit val apiTokenUriConfigReader: ConfigReader[ApiTokenUri] =
+  implicit val ApiTokenUriConfigReader: ConfigReader[ApiTokenUri] =
     makeConfigReader(ApiTokenUri.apply)
 
-  implicit val playlistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
+  implicit val PlaylistApiUriConfigReader: ConfigReader[PlaylistApiUri] =
     makeConfigReader(PlaylistApiUri.apply)
 
-  implicit val trackApiUriConfigReader: ConfigReader[TrackApiUri] =
+  implicit val TrackApiUriConfigReader: ConfigReader[TrackApiUri] =
     makeConfigReader(TrackApiUri.apply)
 
-  implicit val refreshTokenConfigReader: ConfigReader[RefreshToken] =
+  implicit val RefreshTokenConfigReader: ConfigReader[RefreshToken] =
     makeConfigReader(RefreshToken.apply)
 
   private def makeConfigReader[A: ConfigReader, B](f: A => B): ConfigReader[B] =

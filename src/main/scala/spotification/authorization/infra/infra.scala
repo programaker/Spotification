@@ -2,7 +2,7 @@ package spotification.authorization
 
 import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
 import spotification.config.AuthorizationConfig
-import spotification.config.application.AuthorizationConfigModule
+import spotification.config.application.AuthorizationConfigEnv
 import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
 import spotification.authorization.application.{AuthorizationService, AuthorizationServiceEnv}
 import zio.{TaskLayer, ZLayer}

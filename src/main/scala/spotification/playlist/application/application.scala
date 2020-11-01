@@ -7,7 +7,7 @@ import spotification.authorization.application.{SpotifyAuthorizationEnv, request
 import spotification.common.application.refineRIO
 import spotification.common.{CurrentUri, NextUri, UriString}
 import spotification.config.RetryConfig
-import spotification.config.application.{PlaylistConfigModule, playlistConfig}
+import spotification.config.application.{PlaylistConfigEnv, playlistConfig}
 import spotification.log.application.{LogModule, info}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
@@ -20,15 +20,12 @@ import zio.duration.Duration
 package object application {
   type PlaylistServiceEnv = Has[PlaylistService]
 
-  type ReleaseRadarNoSinglesEnv = LogModule
-    with PlaylistServiceEnv
-    with PlaylistConfigModule
-    with SpotifyAuthorizationEnv
+  type ReleaseRadarNoSinglesEnv = LogModule with PlaylistServiceEnv with PlaylistConfigEnv with SpotifyAuthorizationEnv
 
   type MergePlaylistsEnv = Clock
     with LogModule
     with PlaylistServiceEnv
-    with PlaylistConfigModule
+    with PlaylistConfigEnv
     with SpotifyAuthorizationEnv
 
   def getPlaylistItems(req: GetPlaylistsItemsRequest): RIO[PlaylistServiceEnv, GetPlaylistsItemsResponse] =

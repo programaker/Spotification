@@ -3,7 +3,7 @@ package spotification
 import spotification.common.infra.concurrent.{ExecutionContextModule, executionContext}
 import spotification.common.infra.httpserver.{addCors, addLogger, httpApp, runHttpServer}
 import spotification.api._
-import spotification.config.application.{ServerConfigModule, serverConfig}
+import spotification.config.application.{ServerConfigEnv, serverConfig}
 import spotification.log.application.error
 import zio.clock.Clock
 import zio.interop.catz._
@@ -12,7 +12,7 @@ import zio._
 import scala.util.control.NonFatal
 
 object SpotificationHttpApp extends zio.App {
-  type HttpAppEnv = ServerConfigModule with ExecutionContextModule with PresentationEnv with Clock
+  type HttpAppEnv = ServerConfigEnv with ExecutionContextModule with PresentationEnv with Clock
   object HttpAppEnv {
     val live: TaskLayer[HttpAppEnv] =
       ServerConfigModule.live ++ ExecutionContextModule.live ++ PresentationEnv.live ++ Clock.live

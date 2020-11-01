@@ -5,13 +5,13 @@ import eu.timepit.refined.auto._
 import org.http4s.Uri
 import spotification.common.{NonBlankStringR, UriString}
 import spotification.common.application.{leftStringEitherToRIO, refineRIO}
-import spotification.config.application.{AuthorizationConfigModule, authorizationConfig}
+import spotification.config.application.{AuthorizationConfigEnv, authorizationConfig}
 import zio.{Has, RIO, ZIO}
 import zio.interop.catz._
 
 package object application {
   type AuthorizationServiceEnv = Has[AuthorizationService]
-  type SpotifyAuthorizationEnv = AuthorizationServiceEnv with AuthorizationConfigModule
+  type SpotifyAuthorizationEnv = AuthorizationServiceEnv with AuthorizationConfigEnv
 
   def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] =
     ZIO.accessM(_.get.requestToken(req))
@@ -27,7 +27,7 @@ package object application {
   def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] =
     for {
       config <- authorizationConfig
-      code   <- refineRIO[AuthorizationConfigModule, NonBlankStringR](rawCode)
+      code   <- refineRIO[AuthorizationConfigEnv, NonBlankStringR](rawCode)
       resp   <- requestToken(AccessTokenRequest.make(config, code))
     } yield resp
 

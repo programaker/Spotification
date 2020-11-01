@@ -2,7 +2,7 @@ package spotification.track
 
 import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
 import spotification.config.TrackConfig
-import spotification.config.application.TrackConfigModule
+import spotification.config.application.TrackConfigEnv
 import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
 import spotification.track.application.{ShareTrackEnv, TrackService, TrackServiceEnv}
 import zio.{TaskLayer, ZLayer}

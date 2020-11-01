@@ -12,10 +12,13 @@ import spotification.common.NonBlankStringR
 import spotification.authorization.RefreshToken
 import spotification.common.infra.json.implicits._
 import spotification.common.application.refineRIO
-import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
-import spotification.playlist.application.mergeplaylists.MergePlaylistsEnv
-import spotification.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
-import spotification.track.application.sharetrack.ShareTrackEnv
+import spotification.authorization.application.SpotifyAuthorizationEnv
+import spotification.authorization.infra.SpotifyAuthorizationLayer
+import spotification.playlist.application.MergePlaylistsEnv
+import spotification.playlist.application.ReleaseRadarNoSinglesEnv
+import spotification.playlist.infra.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer}
+import spotification.track.application.ShareTrackEnv
+import spotification.track.infra.ShareTrackLayer
 import zio.{RIO, ZIO, _}
 import zio.interop.catz._
 
@@ -26,7 +29,7 @@ package object api {
   type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
   object PresentationEnv {
     val live: TaskLayer[PresentationEnv] =
-      SpotifyAuthorizationEnv.SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesEnv.ReleaseRadarNoSinglesLayer ++ MergePlaylistsEnv.MergePlaylistsLayer ++ ShareTrackEnv.ShareTrackLayer
+      SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesLayer ++ MergePlaylistsLayer ++ ShareTrackLayer
   }
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =

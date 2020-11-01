@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.authorization
 
 import spotification.common._
 import spotification.config.AuthorizationConfig
@@ -16,7 +16,7 @@ object AuthorizeRequest {
     AuthorizeRequest(
       cfg.clientId,
       cfg.redirectUri,
-      AuthorizationResponseType.code,
+      AuthorizationResponseType.Code,
       state = None, //we'll not use it for now
       cfg.scopes,
       show_dialog = None //defaults to false, which is what we want

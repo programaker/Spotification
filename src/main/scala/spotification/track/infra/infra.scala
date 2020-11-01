@@ -3,7 +3,7 @@ package spotification.track
 import spotification.common.infra.httpclient.{H4sClient, HttpClientModule}
 import spotification.config.TrackConfig
 import spotification.config.application.TrackConfigModule
-import spotification.spotify.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
+import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
 import spotification.track.application.{ShareTrackEnv, TrackService, TrackServiceEnv}
 import zio.{TaskLayer, ZLayer}
 
@@ -17,5 +17,5 @@ package object infra {
   }
 
   val ShareTrackLayer: TaskLayer[ShareTrackEnv] =
-    TrackServiceLayer ++ SpotifyAuthorizationEnv.live
+    TrackServiceLayer ++ SpotifyAuthorizationEnv.SpotifyAuthorizationLayer
 }

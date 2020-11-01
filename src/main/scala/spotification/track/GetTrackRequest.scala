@@ -1,6 +1,6 @@
 package spotification.track
 
-import spotification.spotify.authorization.AccessToken
+import spotification.authorization.AccessToken
 
 final case class GetTrackRequest(
   trackId: TrackId,

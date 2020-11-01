@@ -9,8 +9,8 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.spotify.album.isAlbum
-import spotification.spotify.authorization.AccessToken
+import spotification.album.isAlbum
+import spotification.authorization.AccessToken
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri

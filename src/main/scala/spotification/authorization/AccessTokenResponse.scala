@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.authorization
 
 import spotification.common.PositiveInt
 

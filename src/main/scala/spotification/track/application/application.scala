@@ -1,10 +1,7 @@
 package spotification.track
 
-import spotification.spotify.authorization.RefreshToken
-import spotification.spotify.authorization.application.spotifyauthorizarion.{
-  SpotifyAuthorizationEnv,
-  requestAccessTokenProgram
-}
+import spotification.authorization.RefreshToken
+import spotification.authorization.application.spotifyauthorizarion.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
 import zio.{Has, RIO, ZIO}
 
 package object application {

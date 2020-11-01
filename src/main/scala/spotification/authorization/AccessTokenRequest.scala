@@ -1,4 +1,4 @@
-package spotification.spotify.authorization
+package spotification.authorization
 
 import spotification.common._
 import spotification.config.AuthorizationConfig
@@ -15,7 +15,7 @@ object AccessTokenRequest {
     AccessTokenRequest(
       cfg.clientId,
       cfg.clientSecret,
-      AccessTokenGrantType.authorizationCode,
+      AccessTokenGrantType.AuthorizationCode,
       code,
       cfg.redirectUri
     )

@@ -1,4 +1,4 @@
-package spotification.spotify
+package spotification
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
@@ -20,19 +20,19 @@ package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
   object AuthorizationResponseType {
-    val code: AuthorizationResponseType = "code"
+    val Code: AuthorizationResponseType = "code"
   }
 
   type AccessTokenGrantTypeR = Equal["authorization_code"]
   type AccessTokenGrantType = String Refined AccessTokenGrantTypeR
   object AccessTokenGrantType {
-    val authorizationCode: AccessTokenGrantType = "authorization_code"
+    val AuthorizationCode: AccessTokenGrantType = "authorization_code"
   }
 
   type RefreshTokenGrantTypeR = Equal["refresh_token"]
   type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeR
   object RefreshTokenGrantType {
-    val refreshToken: RefreshTokenGrantType = "refresh_token"
+    val RefreshToken: RefreshTokenGrantType = "refresh_token"
   }
 
   type TokenTypeR = Equal["Bearer"]
@@ -54,37 +54,37 @@ package object authorization {
 
   @newtype case class AccessToken(value: NonBlankString)
   object AccessToken {
-    implicit val accessTokenShow: Show[AccessToken] = implicitly[Show[NonBlankString]].coerce
+    implicit val AccessTokenShow: Show[AccessToken] = implicitly[Show[NonBlankString]].coerce
   }
 
   @newtype case class RefreshToken(value: NonBlankString)
   object RefreshToken {
-    implicit val refreshTokenShow: Show[RefreshToken] = implicitly[Show[NonBlankString]].coerce
+    implicit val RefreshTokenShow: Show[RefreshToken] = implicitly[Show[NonBlankString]].coerce
   }
 
   @newtype case class ClientId(value: HexString32)
   object ClientId {
-    implicit val clientIdShow: Show[ClientId] = implicitly[Show[HexString32]].coerce
+    implicit val ClientIdShow: Show[ClientId] = implicitly[Show[HexString32]].coerce
   }
 
   @newtype case class ClientSecret(value: HexString32)
   object ClientSecret {
-    implicit val clientSecretShow: Show[ClientSecret] = implicitly[Show[HexString32]].coerce
+    implicit val ClientSecretShow: Show[ClientSecret] = implicitly[Show[HexString32]].coerce
   }
 
   @newtype case class AuthorizeUri(value: UriString)
   object AuthorizeUri {
-    implicit val authorizeUriShow: Show[AuthorizeUri] = implicitly[Show[UriString]].coerce
+    implicit val AuthorizeUriShow: Show[AuthorizeUri] = implicitly[Show[UriString]].coerce
   }
 
   @newtype case class ApiTokenUri(value: UriString)
   object ApiTokenUri {
-    implicit val apiTokenUriShow: Show[ApiTokenUri] = implicitly[Show[UriString]].coerce
+    implicit val ApiTokenUriShow: Show[ApiTokenUri] = implicitly[Show[UriString]].coerce
   }
 
   @newtype case class RedirectUri(value: UriString)
   object RedirectUri {
-    implicit val redirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
+    implicit val RedirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
   }
 
   def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =

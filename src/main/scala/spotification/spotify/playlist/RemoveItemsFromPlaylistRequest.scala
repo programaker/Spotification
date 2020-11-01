@@ -1,6 +1,6 @@
 package spotification.spotify.playlist
 
-import spotification.spotify.authorization.AccessToken
+import spotification.authorization.AccessToken
 import spotification.track.TrackUri
 import eu.timepit.refined._
 

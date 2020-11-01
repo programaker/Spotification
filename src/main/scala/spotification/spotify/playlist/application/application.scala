@@ -7,11 +7,8 @@ import spotification.common.{CurrentUri, NextUri, UriString}
 import spotification.config.RetryConfig
 import spotification.config.application.{PlaylistConfigModule, playlistConfig}
 import spotification.log.application.{LogModule, info}
-import spotification.spotify.authorization.application.spotifyauthorizarion.{
-  SpotifyAuthorizationEnv,
-  requestAccessTokenProgram
-}
-import spotification.spotify.authorization.{AccessToken, RefreshToken}
+import spotification.authorization.application.spotifyauthorizarion.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
+import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.spotify.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.spotify.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri

@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 import io.estatico.newtype.ops._
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
-import spotification.spotify.authorization.{AccessToken, RefreshToken}
+import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.spotify.playlist.PlaylistId
 import spotification.common.{NonBlankString, SpotifyId}
 

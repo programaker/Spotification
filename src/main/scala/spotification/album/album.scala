@@ -1,4 +1,4 @@
-package spotification.spotify
+package spotification
 
 import cats.implicits._
 import eu.timepit.refined.api.Refined

@@ -20,6 +20,9 @@ package object application {
   def eitherToTask[L, R](either: Either[L, R])(f: L => Throwable): Task[R] =
     IO.fromEither(either).absorbWith(f)
 
-  def leftStringEitherToTask[R]: Either[String, R] => Task[R] =
-    eitherToTask(_)(new Exception(_))
+  def leftStringEitherToTask[R](either: Either[String, R]): Task[R] =
+    eitherToTask(either)(new Exception(_))
+
+  def leftStringEitherToRIO[R, B](either: Either[String, B]): RIO[R, B] =
+    RIO.fromFunctionM((_: R) => leftStringEitherToTask(either))
 }

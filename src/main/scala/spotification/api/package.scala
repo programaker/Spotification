@@ -9,10 +9,10 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Authorization
 import spotification.common.NonBlankStringR
-import spotification.spotify.authorization.RefreshToken
+import spotification.authorization.RefreshToken
 import spotification.common.infra.json.implicits._
 import spotification.common.application.refineRIO
-import spotification.spotify.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
+import spotification.authorization.application.spotifyauthorizarion.SpotifyAuthorizationEnv
 import spotification.spotify.playlist.application.mergeplaylists.MergePlaylistsEnv
 import spotification.spotify.playlist.application.releaseradarnosingles.ReleaseRadarNoSinglesEnv
 import spotification.track.application.sharetrack.ShareTrackEnv
@@ -26,7 +26,7 @@ package object api {
   type PresentationEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
   object PresentationEnv {
     val live: TaskLayer[PresentationEnv] =
-      SpotifyAuthorizationEnv.live ++ ReleaseRadarNoSinglesEnv.ReleaseRadarNoSinglesLayer ++ MergePlaylistsEnv.MergePlaylistsLayer ++ ShareTrackEnv.ShareTrackLayer
+      SpotifyAuthorizationEnv.SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesEnv.ReleaseRadarNoSinglesLayer ++ MergePlaylistsEnv.MergePlaylistsLayer ++ ShareTrackEnv.ShareTrackLayer
   }
 
   def allRoutes[R <: PresentationEnv]: Routes[RIO[R, *]] =

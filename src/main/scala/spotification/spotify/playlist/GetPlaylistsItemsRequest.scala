@@ -1,6 +1,6 @@
 package spotification.spotify.playlist
 
-import spotification.spotify.authorization.AccessToken
+import spotification.authorization.AccessToken
 import spotification.common.{NonNegativeInt, PositiveInt, UriString}
 import eu.timepit.refined.auto._
 

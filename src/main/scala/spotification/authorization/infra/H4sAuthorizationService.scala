@@ -1,4 +1,4 @@
-package spotification.spotify.authorization.infra
+package spotification.authorization.infra
 
 import cats.implicits._
 import eu.timepit.refined.auto._
@@ -7,10 +7,11 @@ import io.circe.jawn
 import org.http4s.Method.POST
 import org.http4s._
 import org.http4s.headers.Accept
+import spotification.common.{ParamMap, encode, makeQueryString}
 import spotification.common.infra.json.implicits._
 import spotification.common.infra.httpclient._
-import spotification.spotify.authorization._
-import spotification.spotify.authorization.application.AuthorizationService
+import spotification.authorization._
+import spotification.authorization.application.AuthorizationService
 import zio._
 import zio.interop.catz.monadErrorInstance
 

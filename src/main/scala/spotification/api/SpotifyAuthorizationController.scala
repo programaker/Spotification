@@ -8,7 +8,7 @@ import spotification.common.infra.json.implicits._
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import io.circe.refined._
-import spotification.spotify.authorization.application.spotifyauthorizarion.{
+import spotification.authorization.application.spotifyauthorizarion.{
   SpotifyAuthorizationEnv,
   authorizeCallbackErrorProgram,
   authorizeCallbackProgram,

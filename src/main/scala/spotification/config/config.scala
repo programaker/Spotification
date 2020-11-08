@@ -10,6 +10,9 @@ import spotification.core.config.service.{
   TrackConfigEnv
 }
 import zio.{Has, IO, Tag, TaskLayer, ZLayer}
+import eu.timepit.refined.pureconfig._
+import pureconfig.generic.auto._
+import spotification.config.implicits._
 
 package object config {
   val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigEnv] = makeLayer(_.get.authorization)

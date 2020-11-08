@@ -1,14 +1,15 @@
 package spotification.httpclient
 
 import eu.timepit.refined.auto._
+import io.circe.generic.auto._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.core.track.service.TrackService
 import spotification.core.track.{makeTrackUri, _}
 import spotification.core.util.leftStringEitherToTask
 import zio.Task
-import spotification.json.implicits._
 import zio.interop.catz.monadErrorInstance
+import io.circe.refined._
 
 final class H4sTrackService(trackApiUri: TrackApiUri, httpClient: H4sClient) extends TrackService {
   import H4sClient.Dsl._

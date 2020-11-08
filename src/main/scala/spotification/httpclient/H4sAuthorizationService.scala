@@ -1,6 +1,7 @@
 package spotification.httpclient
 
 import cats.implicits._
+import eu.timepit.refined.auto._
 import io.circe.generic.auto._
 import io.circe.jawn
 import org.http4s.Method.POST
@@ -8,16 +9,20 @@ import org.http4s._
 import org.http4s.headers.Accept
 import spotification.core.authorization._
 import spotification.core.authorization.service.AuthorizationService
+import spotification.core.{ParamMap, encodeUrl, makeQueryString}
 import zio._
 import zio.interop.catz.monadErrorInstance
+import spotification.json.implicits._
+import io.circe.refined._
 
 final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient) extends AuthorizationService {
+  import H4sClient.Dsl._
 
   override def requestToken(req: AccessTokenRequest): Task[AccessTokenResponse] = {
     val params: ParamMap = Map(
       "grant_type"   -> Some(req.grant_type),
       "code"         -> Some(req.code),
-      "redirect_uri" -> Some(encode(req.redirect_uri.show))
+      "redirect_uri" -> Some(encodeUrl(req.redirect_uri.show))
     )
 
     val headers = Map(

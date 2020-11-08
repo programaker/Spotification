@@ -1,6 +1,5 @@
 package spotification
 
-import cats.implicits._
 import spotification.concurrent.{ExecutionContextEnv, ExecutionContextLayer, executionContext}
 import spotification.httpserver.{addCors, addLogger, httpApp, runHttpServer}
 import spotification.api.{ApiEnv, ApiEnvLayer, allRoutes}

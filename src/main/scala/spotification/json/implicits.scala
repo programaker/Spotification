@@ -2,14 +2,14 @@ package spotification.json
 
 import cats.Applicative
 import cats.effect.Sync
-import io.circe.refined._
 import io.circe.{Decoder, Encoder}
+import io.circe.refined._
 import io.estatico.newtype.ops._
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
-import spotification.core.authorization.{AccessToken, RefreshToken}
-import spotification.core.playlist.PlaylistId
-import spotification.core.{NonBlankString, SpotifyId}
+import spotification.authorization.{AccessToken, RefreshToken}
+import spotification.common.{NonBlankString, SpotifyId}
+import spotification.playlist.PlaylistId
 
 object implicits {
   implicit def entityEncoderF[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =

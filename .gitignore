@@ -6,5 +6,5 @@
 .DS_Store
 .bsp
 target
-project/metals.sbt
+metals.sbt
 *.sc

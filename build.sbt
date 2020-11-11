@@ -1,4 +1,4 @@
-val http4sV = "0.21.8"
+val http4sV = "0.21.9"
 val circeV = "0.13.0"
 val specs2V = "4.10.5"
 val logbackV = "1.2.3"

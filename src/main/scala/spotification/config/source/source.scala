@@ -4,10 +4,10 @@ import pureconfig.ConfigSource
 import spotification.config.service.{
   AuthorizationConfigEnv,
   ClientConfigEnv,
+  ConcurrentConfigEnv,
   PlaylistConfigEnv,
   ServerConfigEnv,
-  TrackConfigEnv,
-  ConcurrentConfigEnv
+  TrackConfigEnv
 }
 import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 import pureconfig.generic.auto._

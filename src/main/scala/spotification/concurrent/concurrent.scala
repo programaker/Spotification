@@ -1,17 +1,28 @@
 package spotification
 
-import zio.{Has, RIO, ULayer, ZIO, ZLayer}
+import java.util.concurrent.Executors
 
 import scala.concurrent.ExecutionContext
-import java.util.concurrent.Executors
+
+import spotification.effect.accessRIO
+import zio.Has
+import zio.RIO
+import zio.ZLayer
+import zio.TaskLayer
+import spotification.config.ConcurrentConfig
+import spotification.config.source.ConcurrentConfigLayer
+import eu.timepit.refined.auto._
 
 package object concurrent {
   type ExecutionContextEnv = Has[ExecutionContext]
 
-  // TODO => Add config for the number of threads
-  val ExecutionContextLayer: ULayer[ExecutionContextEnv] =
-    ZLayer.succeed(ExecutionContext.fromExecutor(Executors.newFixedThreadPool(2)))
+  val ExecutionContextLayer: TaskLayer[ExecutionContextEnv] = {
+    val l1 = ZLayer.fromService[ConcurrentConfig, ExecutionContext] { config => 
+      ExecutionContext.fromExecutor(Executors.newFixedThreadPool(config.numberOfThreads))
+    }
 
-  def executionContext: RIO[ExecutionContextEnv, ExecutionContext] =
-    ZIO.access(_.get)
+    ConcurrentConfigLayer >>> l1
+  }
+
+  def executionContext: RIO[ExecutionContextEnv, ExecutionContext] = accessRIO
 }

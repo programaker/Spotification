@@ -1,6 +1,8 @@
 package spotification.config
 
-import zio.{Has, RIO, ZIO}
+import spotification.effect.accessRIO
+import zio.Has
+import zio.RIO
 
 package object service {
   type AuthorizationConfigEnv = Has[AuthorizationConfig]
@@ -8,19 +10,12 @@ package object service {
   type TrackConfigEnv = Has[TrackConfig]
   type ServerConfigEnv = Has[ServerConfig]
   type ClientConfigEnv = Has[ClientConfig]
+  type ConcurrentConfigEnv = Has[ConcurrentConfig]
 
-  def authorizationConfig: RIO[AuthorizationConfigEnv, AuthorizationConfig] =
-    ZIO.access(_.get)
-
-  def playlistConfig: RIO[PlaylistConfigEnv, PlaylistConfig] =
-    ZIO.access(_.get)
-
-  def trackConfig: RIO[TrackConfigEnv, TrackConfig] =
-    ZIO.access(_.get)
-
-  def serverConfig: RIO[ServerConfigEnv, ServerConfig] =
-    ZIO.access(_.get)
-
-  def clientConfig: RIO[ClientConfigEnv, ClientConfig] =
-    ZIO.access(_.get)
+  def authorizationConfig: RIO[AuthorizationConfigEnv, AuthorizationConfig] = accessRIO
+  def playlistConfig: RIO[PlaylistConfigEnv, PlaylistConfig] = accessRIO
+  def trackConfig: RIO[TrackConfigEnv, TrackConfig] = accessRIO
+  def serverConfig: RIO[ServerConfigEnv, ServerConfig] = accessRIO
+  def clientConfig: RIO[ClientConfigEnv, ClientConfig] = accessRIO
+  def concurrentConfig: RIO[ConcurrentConfigEnv, ConcurrentConfig] = accessRIO
 }

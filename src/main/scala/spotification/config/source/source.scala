@@ -6,7 +6,8 @@ import spotification.config.service.{
   ClientConfigEnv,
   PlaylistConfigEnv,
   ServerConfigEnv,
-  TrackConfigEnv
+  TrackConfigEnv,
+  ConcurrentConfigEnv
 }
 import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 import pureconfig.generic.auto._
@@ -19,6 +20,7 @@ package object source {
   val TrackConfigLayer: TaskLayer[TrackConfigEnv] = makeLayer(_.get.track)
   val ServerConfigLayer: TaskLayer[ServerConfigEnv] = makeLayer(_.get.server)
   val ClientConfigLayer: TaskLayer[ClientConfigEnv] = makeLayer(_.get.client)
+  val ConcurrentConfigLayer: TaskLayer[ConcurrentConfigEnv] = makeLayer(_.get.concurrent)
 
   private def makeLayer[A: Tag](f: Has[AppConfig] => A): TaskLayer[Has[A]] =
     appConfigLayer.map(f).map(Has(_))

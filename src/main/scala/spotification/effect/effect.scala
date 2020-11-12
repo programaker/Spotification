@@ -2,7 +2,7 @@ package spotification
 
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.refineV
-import zio.{IO, RIO, Task, ZIO}
+import zio.{IO, RIO, Task, ZIO, Tag, Has}
 
 package object effect {
   def refineZIO[R, P]: PartialRefineZIO[R, P] = new PartialRefineZIO[R, P]
@@ -25,4 +25,7 @@ package object effect {
 
   def leftStringEitherToRIO[R, B](either: Either[String, B]): RIO[R, B] =
     RIO.fromFunctionM((_: R) => leftStringEitherToTask(either))
+
+  def accessRIO[A: Tag]: RIO[Has[A], A] = 
+    ZIO.access(_.get)  
 }

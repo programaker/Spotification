@@ -12,7 +12,8 @@ final case class AppConfig(
   playlist: PlaylistConfig,
   track: TrackConfig,
   server: ServerConfig,
-  client: ClientConfig
+  client: ClientConfig,
+  concurrent: ConcurrentConfig
 )
 
 final case class AuthorizationConfig(
@@ -47,4 +48,8 @@ final case class ClientConfig(
 final case class RetryConfig(
   retryAfter: FiniteDuration,
   attempts: PositiveInt
+)
+
+final case class ConcurrentConfig(
+  numberOfThreads: PositiveInt
 )

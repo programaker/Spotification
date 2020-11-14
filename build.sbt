@@ -1,56 +1,60 @@
-val http4sV = "0.21.9"
-val circeV = "0.13.0"
-val specs2V = "4.10.5"
-val logbackV = "1.2.3"
-val betterMonadicForV = "0.3.1"
-val kindProjectorV = "0.10.3"
-val refinedV = "0.9.17"
-val zioV = "1.0.3"
-val zioInteropCatsV = "2.2.0.1"
-val pureConfigV = "0.14.0"
-val simulacrumV = "1.0.1"
-val newtypeV = "0.4.4"
-val odinV = "0.9.1"
+val SpotificationV = "3.2.12"
+val ScalaV = "2.13.3"
+val DockerImageV = "adoptopenjdk/openjdk15-openj9:x86_64-alpine-jre-15.0.1_9_openj9-0.23.0"
+
+val Http4sV = "0.21.9"
+val CirceV = "0.13.0"
+val Specs2V = "4.10.5"
+val LogbackV = "1.2.3"
+val BetterMonadicForV = "0.3.1"
+val KindProjectorV = "0.10.3"
+val RefinedV = "0.9.17"
+val ZioV = "1.0.3"
+val ZioInteropCatsV = "2.2.0.1"
+val PureConfigV = "0.14.0"
+val SimulacrumV = "1.0.1"
+val NewtypeV = "0.4.4"
+val OdinV = "0.9.1"
 
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
   name := "spotification",
-  version := "3.2.11",
-  scalaVersion := "2.13.3",
+  version := SpotificationV,
+  scalaVersion := ScalaV,
 
   libraryDependencies ++= Seq(
-    "org.http4s" %% "http4s-blaze-server" % http4sV,
-    "org.http4s" %% "http4s-blaze-client" % http4sV,
-    "org.http4s" %% "http4s-circe" % http4sV,
-    "org.http4s" %% "http4s-dsl" % http4sV,
+    "org.http4s" %% "http4s-blaze-server" % Http4sV,
+    "org.http4s" %% "http4s-blaze-client" % Http4sV,
+    "org.http4s" %% "http4s-circe" % Http4sV,
+    "org.http4s" %% "http4s-dsl" % Http4sV,
 
-    "io.circe" %% "circe-generic" % circeV,
-    "io.circe" %% "circe-refined" % circeV,
+    "io.circe" %% "circe-generic" % CirceV,
+    "io.circe" %% "circe-refined" % CirceV,
 
-    "ch.qos.logback" % "logback-classic" % logbackV,
+    "ch.qos.logback" % "logback-classic" % LogbackV,
 
-    "com.github.valskalla" %% "odin-core" % odinV,
-    "com.github.valskalla" %% "odin-zio" % odinV,
+    "com.github.valskalla" %% "odin-core" % OdinV,
+    "com.github.valskalla" %% "odin-zio" % OdinV,
 
-    "eu.timepit" %% "refined" % refinedV,
-    "eu.timepit" %% "refined-cats" % refinedV,
-    "eu.timepit" %% "refined-pureconfig" % refinedV,
+    "eu.timepit" %% "refined" % RefinedV,
+    "eu.timepit" %% "refined-cats" % RefinedV,
+    "eu.timepit" %% "refined-pureconfig" % RefinedV,
 
-    "io.estatico" %% "newtype" % newtypeV,
+    "io.estatico" %% "newtype" % NewtypeV,
 
-    "dev.zio" %% "zio" % zioV,
-    "dev.zio" %% "zio-interop-cats" % zioInteropCatsV,
+    "dev.zio" %% "zio" % ZioV,
+    "dev.zio" %% "zio-interop-cats" % ZioInteropCatsV,
 
-    "com.github.pureconfig" %% "pureconfig" % pureConfigV,
+    "com.github.pureconfig" %% "pureconfig" % PureConfigV,
 
-    "org.typelevel" %% "simulacrum" % simulacrumV,
+    "org.typelevel" %% "simulacrum" % SimulacrumV,
 
-    "org.specs2" %% "specs2-core" % specs2V % Test
+    "org.specs2" %% "specs2-core" % Specs2V % Test
   ),
 
   Seq(
-    "org.typelevel" %% "kind-projector" % kindProjectorV,
-    "com.olegpy" %% "better-monadic-for" % betterMonadicForV
+    "org.typelevel" %% "kind-projector" % KindProjectorV,
+    "com.olegpy" %% "better-monadic-for" % BetterMonadicForV
   ).map(addCompilerPlugin)
 )
 
@@ -98,5 +102,5 @@ ThisBuild / scalacOptions ++= Seq(
 
 mainClass in Compile := Some("spotification.SpotificationHttpApp")
 
-dockerBaseImage := "adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.8_10"
+dockerBaseImage := DockerImageV
 dockerExposedPorts += 8080

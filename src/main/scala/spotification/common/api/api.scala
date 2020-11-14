@@ -1,24 +1,24 @@
 package spotification.common
 
 import cats.Applicative
-import cats.implicits._
 import io.circe.generic.auto._
-import org.http4s.AuthScheme.Bearer
-import org.http4s.Credentials.Token
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.Authorization
 import org.http4s.{EntityDecoder, HttpRoutes, Request, Response}
 import spotification.authorization.RefreshToken
-import spotification.authorization.api.{SpotifyAuthorizationController, SpotifyAuthorizationLayer}
+import spotification.authorization.api.{
+  SpotifyAuthorizationLayer,
+  makeSpotifyAuthorizationRoutes,
+  requiredRefreshTokenFromRequest
+}
 import spotification.authorization.program.SpotifyAuthorizationEnv
-import spotification.effect.refineRIO
 import spotification.json.implicits._
-import spotification.playlist.api.{MergePlaylistsLayer, PlaylistsController, ReleaseRadarNoSinglesLayer}
+import spotification.monitoring.api.makeHealthCheckRoutes
+import spotification.playlist.api.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer, makePlaylistsRoutes}
 import spotification.playlist.program.{MergePlaylistsEnv, ReleaseRadarNoSinglesEnv}
-import spotification.track.api.{ShareTrackLayer, TracksController}
+import spotification.track.api.{ShareTrackLayer, makeTracksRoutes}
 import spotification.track.program.ShareTrackEnv
 import zio.interop.catz.monadErrorInstance
-import zio.{RIO, TaskLayer, ZIO}
+import zio.{RIO, TaskLayer}
 
 package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
@@ -30,10 +30,10 @@ package object api {
 
   def allRoutes[R <: ApiEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"                -> new HealthCheckController[R].routes,
-      "/authorization/spotify" -> new SpotifyAuthorizationController[R].routes,
-      "/playlists"             -> new PlaylistsController[R].routes,
-      "/tracks"                -> new TracksController[R].routes
+      "/health"                -> makeHealthCheckRoutes[R],
+      "/authorization/spotify" -> makeSpotifyAuthorizationRoutes[R],
+      "/playlists"             -> makePlaylistsRoutes[R],
+      "/tracks"                -> makeTracksRoutes[R]
     )
 
   def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {
@@ -53,22 +53,4 @@ package object api {
       a            <- rawReq.as[A]
       b            <- f(refreshToken, a)
     } yield b
-
-  def requiredRefreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, RefreshToken] =
-    refreshTokenFromRequest(req).flatMap {
-      case Some(refreshToken) => ZIO.succeed(refreshToken)
-      case None               => ZIO.fail(new Exception("Bearer refresh token absent from request"))
-    }
-
-  def refreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, Option[RefreshToken]] =
-    req.headers
-      .get(Authorization)
-      .map(_.credentials)
-      .flatMap {
-        case Token(Bearer, refreshTokenString) => Some(refreshTokenString)
-        case _                                 => None
-      }
-      .map(refineRIO[R, NonBlankStringR](_))
-      .sequence
-      .map(_.map(RefreshToken(_)))
 }

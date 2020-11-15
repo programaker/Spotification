@@ -7,7 +7,8 @@ import spotification.config.service.{
   ConcurrentConfigEnv,
   PlaylistConfigEnv,
   ServerConfigEnv,
-  TrackConfigEnv
+  TrackConfigEnv,
+  UserConfigEnv
 }
 import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 import pureconfig.generic.auto._
@@ -18,6 +19,7 @@ package object source {
   val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigEnv] = makeLayer(_.get.authorization)
   val PlaylistConfigLayer: TaskLayer[PlaylistConfigEnv] = makeLayer(_.get.playlist)
   val TrackConfigLayer: TaskLayer[TrackConfigEnv] = makeLayer(_.get.track)
+  val UserConfigLayer: TaskLayer[UserConfigEnv] = makeLayer(_.get.user)
   val ServerConfigLayer: TaskLayer[ServerConfigEnv] = makeLayer(_.get.server)
   val ClientConfigLayer: TaskLayer[ClientConfigEnv] = makeLayer(_.get.client)
   val ConcurrentConfigLayer: TaskLayer[ConcurrentConfigEnv] = makeLayer(_.get.concurrent)

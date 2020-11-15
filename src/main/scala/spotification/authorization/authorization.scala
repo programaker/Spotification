@@ -49,7 +49,11 @@ package object authorization {
       Equal["playlist-read-private"] Or
       Equal["playlist-modify-private"]
 
-  type ScopeR = PlaylistScopeR //we can add more scopes later
+  type UserScopeR =
+    Equal["user-read-private"] Or
+      Equal["user-read-email"]
+
+  type ScopeR = PlaylistScopeR Or UserScopeR
   type Scope = String Refined ScopeR
 
   @newtype case class AccessToken(value: NonBlankString)

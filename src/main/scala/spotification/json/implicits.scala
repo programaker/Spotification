@@ -10,6 +10,7 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.{NonBlankString, SpotifyId}
 import spotification.playlist.PlaylistId
+import spotification.user.UserId
 
 object implicits {
   implicit def entityEncoderF[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] =
@@ -32,4 +33,7 @@ object implicits {
 
   implicit val PlaylistIdDecoder: Decoder[PlaylistId] =
     implicitly[Decoder[SpotifyId]].map(_.coerce[PlaylistId])
+
+  implicit val UserIdDecoder: Decoder[UserId] =
+    implicitly[Decoder[SpotifyId]].map(_.coerce[UserId])
 }

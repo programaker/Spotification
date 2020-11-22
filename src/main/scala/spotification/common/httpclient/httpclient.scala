@@ -6,6 +6,7 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
 
+import eu.timepit.refined.auto._
 import cats.implicits._
 import io.circe.{Decoder, jawn}
 import org.http4s.{Request, Uri}
@@ -86,4 +87,9 @@ package object httpclient {
 
       client.send(request, BodyHandlers.ofString()).body()
     }
+
+  def uriStringToH4sUriEither(eitherUriString: Either[String, UriString]): Either[Throwable, Uri] =
+    eitherUriString
+      .leftMap(new Exception(_))
+      .flatMap(Uri.fromString(_))
 }

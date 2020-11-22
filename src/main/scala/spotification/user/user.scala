@@ -16,4 +16,9 @@ package object user {
   object MeApiUri {
     implicit val MeApiUriShow: Show[MeApiUri] = implicitly[Show[UriString]].coerce
   }
+
+  @newtype case class UserApiUri(value: UriString)
+  object UserApiUri {
+    implicit val UserApiUriShow: Show[UserApiUri] = implicitly[Show[UriString]].coerce
+  }
 }

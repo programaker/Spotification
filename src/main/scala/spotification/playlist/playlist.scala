@@ -1,8 +1,11 @@
 package spotification
 
+import java.time.MonthDay
+
 import cats.Show
 import cats.implicits._
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.collection.{MaxSize, MinSize}
@@ -11,10 +14,13 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.album.isAlbum
 import spotification.authorization.AccessToken
-import spotification.common.{SpotifyId, UriR, UriString}
+import spotification.common.{NonBlankString, SpotifyId, UriR, UriString}
 import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
+import spotification.user.{UserApiUri, UserId}
+
+import scala.util.Try
 
 package object playlist {
   @newtype case class PlaylistId(value: SpotifyId)
@@ -39,6 +45,9 @@ package object playlist {
   def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =
     refineV[UriR](show"$playlistApiUri/$playlistId/tracks")
 
+  def userPlaylistsUri(userApiUri: UserApiUri, userId: UserId): Either[String, UriString] =
+    refineV[UriR](show"$userApiUri/$userId/playlists")
+
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
     if (isAlbum(track.album.album_type)) Some(track.uri)
     else None
@@ -48,4 +57,8 @@ package object playlist {
       case fr: FirstRequest => fr.accessToken
       case nr: NextRequest  => nr.accessToken
     }
+
+  def makeAnniversaryPlaylistInfo(rawMonthDay: NonBlankString): Either[Throwable, AnniversaryPlaylistInfo] =
+    Try(MonthDay.parse(rawMonthDay, AnniversaryPlaylistInfo.CreateFormatter)).toEither
+      .map(AnniversaryPlaylistInfo.fromMonthDay)
 }

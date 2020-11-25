@@ -64,6 +64,9 @@ enablePlugins(
   AshScriptPlugin
 )
 
+ThisBuild / wartremoverErrors ++= Seq(
+  Wart.FinalCaseClass
+)
 ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Recursion,
   Wart.ImplicitParameter,

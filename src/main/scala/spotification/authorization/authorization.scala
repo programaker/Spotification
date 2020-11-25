@@ -51,7 +51,8 @@ package object authorization {
 
   type UserScopeR =
     Equal["user-read-private"] Or
-      Equal["user-read-email"]
+      Equal["user-read-email"] Or
+      Equal["user-follow-read"]
 
   type ScopeR = PlaylistScopeR Or UserScopeR
   type Scope = String Refined ScopeR

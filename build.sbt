@@ -65,7 +65,9 @@ enablePlugins(
 )
 
 ThisBuild / wartremoverErrors ++= Seq(
-  Wart.FinalCaseClass
+  Wart.FinalCaseClass,
+  Wart.Throw,
+  Wart.Return
 )
 ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Recursion,

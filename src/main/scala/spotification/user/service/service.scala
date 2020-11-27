@@ -5,6 +5,6 @@ import zio.{Has, RIO, ZIO}
 package object service {
   type UserServiceEnv = Has[UserService]
 
-  def getCurrentUserProfile(req: GetCurrentUserProfileRequest): RIO[UserServiceEnv, GetCurrentUserProfileResponse] =
-    ZIO.accessM(_.get.getCurrentUserProfile(req))
+  def getMyProfile(req: GetMyProfileRequest): RIO[UserServiceEnv, GetMyProfileResponse] =
+    ZIO.accessM(_.get.getMyProfile(req))
 }

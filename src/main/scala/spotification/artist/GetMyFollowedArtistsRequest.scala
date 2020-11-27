@@ -5,13 +5,13 @@ import spotification.follow.FollowType
 import eu.timepit.refined.auto._
 import spotification.common.UriString
 
-sealed abstract class GetCurrentUsersFollowedArtistsRequest extends Product with Serializable
-object GetCurrentUsersFollowedArtistsRequest {
+sealed abstract class GetMyFollowedArtistsRequest extends Product with Serializable
+object GetMyFollowedArtistsRequest {
   final case class FirstRequest(
     accessToken: AccessToken,
     `type`: FollowType,
     limit: Option[FollowedArtistsLimit]
-  ) extends GetCurrentUsersFollowedArtistsRequest
+  ) extends GetMyFollowedArtistsRequest
   object FirstRequest {
     def make(accessToken: AccessToken): FirstRequest =
       FirstRequest(
@@ -24,5 +24,5 @@ object GetCurrentUsersFollowedArtistsRequest {
   final case class NextRequest(
     accessToken: AccessToken,
     nextUri: UriString
-  ) extends GetCurrentUsersFollowedArtistsRequest
+  ) extends GetMyFollowedArtistsRequest
 }

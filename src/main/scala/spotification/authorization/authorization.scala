@@ -14,7 +14,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.common.{HexString32, NonBlankString, ParamMap, UriR, UriString, encodeUrl, makeQueryString}
+import spotification.common.{HexString32, NonBlankString, ParamMap, UriString, UriStringR, encodeUrl, makeQueryString}
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
@@ -121,6 +121,6 @@ package object authorization {
       .getOrElse(Right(params))
       .map(makeQueryString)
       .map(q => show"$authorizeUri?$q")
-      .flatMap(refineV[UriR](_))
+      .flatMap(refineV[UriStringR](_))
   }
 }

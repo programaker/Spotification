@@ -14,7 +14,7 @@ import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.album.isAlbum
 import spotification.authorization.AccessToken
-import spotification.common.{NonBlankString, SpotifyId, UriR, UriString}
+import spotification.common.{NonBlankString, SpotifyId, UriString, UriStringR}
 import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
@@ -43,10 +43,10 @@ package object playlist {
   }
 
   def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =
-    refineV[UriR](show"$playlistApiUri/$playlistId/tracks")
+    refineV[UriStringR](show"$playlistApiUri/$playlistId/tracks")
 
   def userPlaylistsUri(userApiUri: UserApiUri, userId: UserId): Either[String, UriString] =
-    refineV[UriR](show"$userApiUri/$userId/playlists")
+    refineV[UriStringR](show"$userApiUri/$userId/playlists")
 
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
     if (isAlbum(track.album.album_type)) Some(track.uri)

@@ -8,7 +8,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
-import spotification.common.{SpotifyId, SpotifyIdR, UriR, UriString}
+import spotification.common.{SpotifyId, SpotifyIdR, UriString, UriStringR}
 
 package object track {
   type TrackUriR = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]
@@ -32,7 +32,7 @@ package object track {
   }
 
   def makeTrackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[String, UriString] =
-    refineV[UriR](show"$trackApiUri/$trackId")
+    refineV[UriStringR](show"$trackApiUri/$trackId")
 
   def makeShareTrackString(resp: GetTrackResponse): String =
     show"🎶 '${resp.name}' by '${resp.artists.mkString_(", ")}' - ${resp.external_urls.spotify}"

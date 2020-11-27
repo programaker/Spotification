@@ -21,8 +21,8 @@ package object common {
   type HexString32R = StringLength[32] And HexStringSpec
   type HexString32 = String Refined HexString32R
 
-  type UriR = Uri
-  type UriString = String Refined UriR
+  type UriStringR = Uri
+  type UriString = String Refined UriStringR
   type CurrentUri = UriString
   type NextUri = UriString
 

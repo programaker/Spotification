@@ -5,17 +5,17 @@ import spotification.playlist.AddItemsToPlaylistRequest.Body
 import spotification.track.TrackUri
 
 final case class AddItemsToPlaylistRequest(
+  accessToken: AccessToken,
   playlistId: PlaylistId,
-  body: Body,
-  accessToken: AccessToken
+  body: Body
 )
 object AddItemsToPlaylistRequest {
   final case class Body(uris: PlaylistItemsToProcess[TrackUri])
 
   def make(
+    accessToken: AccessToken,
     playlistId: PlaylistId,
-    uris: PlaylistItemsToProcess[TrackUri],
-    accessToken: AccessToken
+    uris: PlaylistItemsToProcess[TrackUri]
   ): AddItemsToPlaylistRequest =
-    AddItemsToPlaylistRequest(playlistId, Body(uris), accessToken)
+    AddItemsToPlaylistRequest(accessToken, playlistId, Body(uris))
 }

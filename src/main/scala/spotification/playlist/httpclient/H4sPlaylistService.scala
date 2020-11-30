@@ -32,7 +32,7 @@ final class H4sPlaylistService(
     Task
       .fromEither(req match {
         case fr: FirstRequest        => getItemsUri(fr)
-        case NextRequest(nextUri, _) => Uri.fromString(nextUri)
+        case NextRequest(_, nextUri) => Uri.fromString(nextUri)
       })
       .flatMap(doRequest[GetPlaylistsItemsResponse](httpClient, _)(get))
   }

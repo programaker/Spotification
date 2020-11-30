@@ -3,13 +3,13 @@ package spotification.track
 import spotification.authorization.AccessToken
 
 final case class GetTrackRequest(
-  trackId: TrackId,
-  accessToken: AccessToken
+  accessToken: AccessToken,
+  trackId: TrackId
 )
 object GetTrackRequest {
-  def make(trackUri: TrackUri, accessToken: AccessToken): GetTrackRequest =
+  def make(accessToken: AccessToken, trackUri: TrackUri): GetTrackRequest =
     GetTrackRequest(
-      trackId = TrackId.fromUri(trackUri),
-      accessToken = accessToken
+      accessToken = accessToken,
+      trackId = TrackId.fromUri(trackUri)
     )
 }

@@ -37,7 +37,7 @@ package object program {
       playlistConfig <- playlistConfig
 
       limit = playlistConfig.getPlaylistItemsLimit
-      firstRequest = FirstRequest.make(_, limit, accessToken)
+      firstRequest = FirstRequest.make(accessToken, _, limit)
 
       _ <- info(show"Cleaning up release-radar-no-singles($releaseRadarNoSinglesId)")
       _ <- clearPlaylist(firstRequest(releaseRadarNoSinglesId))
@@ -61,7 +61,7 @@ package object program {
       playlistConfig <- playlistConfig
 
       limit = playlistConfig.getPlaylistItemsLimit
-      firstRequest = FirstRequest.make(_, limit, accessToken)
+      firstRequest = FirstRequest.make(accessToken, _, limit)
       retry = playlistConfig.mergePlaylistsRetry
 
       _ <- info(show"Cleaning up merged-playlist($mergedPlaylistId)")
@@ -112,7 +112,7 @@ package object program {
               case Some(nextUri) =>
                 val accessToken = accessTokenFromRequest(req)
                 val uri = chooseUri(resp.href, nextUri)
-                loop(NextRequest(uri, accessToken))
+                loop(NextRequest(accessToken, uri))
             }
 
             combinePageEffects(thisPage, nextPage)
@@ -165,7 +165,7 @@ package object program {
     destPlaylist: PlaylistId,
     accessToken: AccessToken
   ): RIO[PlaylistServiceEnv, Unit] =
-    addItemsToPlaylist(AddItemsToPlaylistRequest.make(destPlaylist, trackUris, accessToken)).map(_ => ())
+    addItemsToPlaylist(AddItemsToPlaylistRequest.make(accessToken, destPlaylist, trackUris)).map(_ => ())
 
   private def mergePlaylists(
     sources: List[PlaylistId],

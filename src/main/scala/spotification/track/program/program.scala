@@ -11,6 +11,6 @@ package object program {
   def makeShareTrackMessageProgram(refreshToken: RefreshToken, trackUri: TrackUri): RIO[ShareTrackEnv, String] =
     for {
       accessToken  <- requestAccessTokenProgram(refreshToken)
-      getTrackResp <- getTrack(GetTrackRequest.make(trackUri, accessToken))
+      getTrackResp <- getTrack(GetTrackRequest.make(accessToken, trackUri))
     } yield makeShareTrackString(getTrackResp)
 }

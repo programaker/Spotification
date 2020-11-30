@@ -7,18 +7,18 @@ import spotification.common.{NonNegativeInt, PositiveInt, UriString}
 sealed abstract class GetPlaylistsItemsRequest extends Product with Serializable
 object GetPlaylistsItemsRequest {
   final case class FirstRequest(
+    accessToken: AccessToken,
     playlistId: PlaylistId,
     limit: PositiveInt,
-    offset: NonNegativeInt,
-    accessToken: AccessToken
+    offset: NonNegativeInt
   ) extends GetPlaylistsItemsRequest
   object FirstRequest {
-    def make(playlistId: PlaylistId, limit: PositiveInt, accessToken: AccessToken): FirstRequest =
-      FirstRequest(playlistId, limit, offset = 0, accessToken)
+    def make(accessToken: AccessToken, playlistId: PlaylistId, limit: PositiveInt): FirstRequest =
+      FirstRequest(accessToken, playlistId, limit, offset = 0)
   }
 
   final case class NextRequest(
-    nextUri: UriString,
-    accessToken: AccessToken
+    accessToken: AccessToken,
+    nextUri: UriString
   ) extends GetPlaylistsItemsRequest
 }

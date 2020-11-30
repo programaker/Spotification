@@ -21,22 +21,19 @@ final class H4sArtistService(meApiUri: MeApiUri, httpClient: H4sClient) extends 
   import H4sClient.Dsl._
 
   override def getMyFollowedArtists(req: GetMyFollowedArtistsRequest): Task[GetMyFollowedArtistsResponse] = {
-    def addQueryParams(uri: Uri, req: FirstRequest): Uri =
-      uri
-        .withQueryParam("type", req.`type`.show)
-        .withOptionQueryParam("limit", req.limit.map(_.show))
-
     val (token, h4sUri) = req match {
-      case fr: FirstRequest =>
-        (fr.accessToken, eitherUriStringToH4s(makeMyFollowedArtistsUri(meApiUri)).map(addQueryParams(_, fr)))
+      case FirstRequest(accessToken, followType, limit) =>
+        val addQueryParams: Uri => Uri =
+          _.withQueryParam("type", followType.show)
+            .withOptionQueryParam("limit", limit.map(_.show))
+
+        (accessToken, eitherUriStringToH4s(makeMyFollowedArtistsUri(meApiUri)).map(addQueryParams))
 
       case NextRequest(accessToken, nextUri) =>
         (accessToken, Uri.fromString(nextUri))
     }
 
-    for {
-      uri  <- Task.fromEither(h4sUri)
-      resp <- doRequest[GetMyFollowedArtistsResponse](httpClient, uri)(GET(_: Uri, authorizationBearerHeader(token)))
-    } yield resp
+    val get = GET(_: Uri, authorizationBearerHeader(token))
+    Task.fromEither(h4sUri).flatMap(doRequest[GetMyFollowedArtistsResponse](httpClient, _)(get))
   }
 }

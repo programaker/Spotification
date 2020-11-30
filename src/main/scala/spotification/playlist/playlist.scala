@@ -13,9 +13,7 @@ import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops._
 import spotification.album.isAlbum
-import spotification.authorization.AccessToken
 import spotification.common.{NonBlankString, SpotifyId, UriString, UriStringR}
-import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import spotification.user.{UserApiUri, UserId}
@@ -51,12 +49,6 @@ package object playlist {
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
     if (isAlbum(track.album.album_type)) Some(track.uri)
     else None
-
-  def accessTokenFromRequest(req: GetPlaylistsItemsRequest): AccessToken =
-    req match {
-      case fr: FirstRequest => fr.accessToken
-      case nr: NextRequest  => nr.accessToken
-    }
 
   def makeAnniversaryPlaylistInfo(rawMonthDay: NonBlankString): Either[Throwable, AnniversaryPlaylistInfo] =
     Try(MonthDay.parse(rawMonthDay, AnniversaryPlaylistInfo.CreateFormatter)).toEither

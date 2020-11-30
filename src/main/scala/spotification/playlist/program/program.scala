@@ -110,7 +110,7 @@ package object program {
               case None =>
                 RIO.unit
               case Some(nextUri) =>
-                val accessToken = accessTokenFromRequest(req)
+                val GetPlaylistsItemsRequest.AccessToken(accessToken) = req
                 val uri = chooseUri(resp.href, nextUri)
                 loop(NextRequest(accessToken, uri))
             }

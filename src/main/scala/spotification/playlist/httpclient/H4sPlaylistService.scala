@@ -27,30 +27,23 @@ final class H4sPlaylistService(
   import H4sClient.Dsl._
 
   override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
-    val get = GET(_: Uri, authorizationBearerHeader(accessTokenFromRequest(req)))
+    val (token, h4sUri) = req match {
+      case fr: FirstRequest                  => (fr.accessToken, getItemsUri(fr))
+      case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
+    }
 
-    Task
-      .fromEither(req match {
-        case fr: FirstRequest        => getItemsUri(fr)
-        case NextRequest(_, nextUri) => Uri.fromString(nextUri)
-      })
-      .flatMap(doRequest[GetPlaylistsItemsResponse](httpClient, _)(get))
+    val get = GET(_: Uri, authorizationBearerHeader(token))
+    Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](httpClient, _)(get))
   }
 
   override def addItemsToPlaylist(req: AddItemsToPlaylistRequest): Task[PlaylistSnapshotResponse] = {
     val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(tracksUri(req.playlistId))
-      .flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(post))
+    Task.fromEither(tracksUri(req.playlistId)).flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(post))
   }
 
   override def removeItemsFromPlaylist(req: RemoveItemsFromPlaylistRequest): Task[PlaylistSnapshotResponse] = {
     val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(tracksUri(req.playlistId))
-      .flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(delete))
+    Task.fromEither(tracksUri(req.playlistId)).flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(delete))
   }
 
   override def createPlaylist(req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {

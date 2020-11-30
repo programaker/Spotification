@@ -7,6 +7,7 @@ import io.circe.refined._
 import io.estatico.newtype.ops._
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
+import spotification.artist.ArtistId
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.{NonBlankString, SpotifyId}
 import spotification.playlist.PlaylistId
@@ -36,4 +37,7 @@ object implicits {
 
   implicit val UserIdDecoder: Decoder[UserId] =
     implicitly[Decoder[SpotifyId]].map(_.coerce[UserId])
+
+  implicit val ArtistIdDecoder: Decoder[ArtistId] =
+    implicitly[Decoder[SpotifyId]].map(_.coerce[ArtistId])
 }

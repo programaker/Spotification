@@ -1,9 +1,8 @@
 package spotification.artist
 
 import spotification.authorization.AccessToken
-import spotification.follow.FollowType
-import eu.timepit.refined.auto._
 import spotification.common.UriString
+import spotification.follow.FollowType
 
 sealed abstract class GetMyFollowedArtistsRequest extends Product with Serializable
 object GetMyFollowedArtistsRequest {

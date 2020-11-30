@@ -15,7 +15,7 @@ import zio.interop.catz.monadErrorInstance
 import spotification.json.implicits._
 import io.circe.refined._
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, doRequest, uriStringToH4sUriEither}
+import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
 import spotification.user.UserApiUri
 
 final class H4sPlaylistService(
@@ -57,7 +57,7 @@ final class H4sPlaylistService(
     val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
 
     Task
-      .fromEither(uriStringToH4sUriEither(userPlaylistsUri(userApiUri, req.userId)))
+      .fromEither(eitherUriStringToH4s(userPlaylistsUri(userApiUri, req.userId)))
       .flatMap(doRequest[CreatePlaylistResponse](httpClient, _)(post))
   }
 
@@ -69,5 +69,5 @@ final class H4sPlaylistService(
     }
 
   private def tracksUri(playlistId: PlaylistId): Either[Throwable, Uri] =
-    uriStringToH4sUriEither(playlistTracksUri(playlistApiUri, playlistId))
+    eitherUriStringToH4s(playlistTracksUri(playlistApiUri, playlistId))
 }

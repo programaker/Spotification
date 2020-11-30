@@ -88,7 +88,7 @@ package object httpclient {
       client.send(request, BodyHandlers.ofString()).body()
     }
 
-  def uriStringToH4sUriEither(eitherUriString: Either[String, UriString]): Either[Throwable, Uri] =
+  def eitherUriStringToH4s(eitherUriString: Either[String, UriString]): Either[Throwable, Uri] =
     eitherUriString
       .leftMap(new Exception(_))
       .flatMap(Uri.fromString(_))

@@ -19,7 +19,7 @@ import spotification.me.{
   makeMyFollowedArtistsUri
 }
 import spotification.json.implicits._
-import spotification.me.GetMyFollowedArtistsRequest.RequestType.{FirstRequest, NextRequest}
+import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import zio.Task
 import zio.interop.catz.monadErrorInstance
 
@@ -31,16 +31,16 @@ final class H4sMeService(meApiUri: MeApiUri, httpClient: H4sClient) extends MeSe
       .fromEither(Uri.fromString(meApiUri.show))
       .flatMap(doRequest[GetMyProfileResponse](httpClient, _)(GET(_, authorizationBearerHeader(req.accessToken))))
 
-  override def getMyFollowedArtists(req: GetMyFollowedArtistsRequest): Task[GetMyFollowedArtistsResponse] = {
+  override def getMyFollowedArtists(req: GetMyFollowedArtistsRequest[_]): Task[GetMyFollowedArtistsResponse] = {
     val h4sUri = req.requestType match {
-      case FirstRequest(followType, limit) =>
+      case First(followType, limit) =>
         val addQueryParams: Uri => Uri =
           _.withQueryParam("type", followType.show)
             .withOptionQueryParam("limit", limit.map(_.show))
 
         eitherUriStringToH4s(makeMyFollowedArtistsUri(meApiUri)).map(addQueryParams)
 
-      case NextRequest(nextUri) =>
+      case Next(nextUri) =>
         Uri.fromString(nextUri)
     }
 

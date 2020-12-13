@@ -10,5 +10,5 @@ import zio.Task
 
 trait MeService {
   def getMyProfile(req: GetMyProfileRequest): Task[GetMyProfileResponse]
-  def getMyFollowedArtists(req: GetMyFollowedArtistsRequest): Task[GetMyFollowedArtistsResponse]
+  def getMyFollowedArtists(req: GetMyFollowedArtistsRequest[_]): Task[GetMyFollowedArtistsResponse]
 }

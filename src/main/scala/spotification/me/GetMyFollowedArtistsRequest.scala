@@ -3,25 +3,29 @@ package spotification.me
 import spotification.authorization.AccessToken
 import spotification.common.UriString
 import spotification.follow.FollowType
+import spotification.me.GetMyFollowedArtistsRequest.RequestType
+import spotification.me.GetMyFollowedArtistsRequest.RequestType.FirstRequest
 
-sealed abstract class GetMyFollowedArtistsRequest extends Product with Serializable
+final case class GetMyFollowedArtistsRequest(accessToken: AccessToken, requestType: RequestType)
 object GetMyFollowedArtistsRequest {
-  final case class FirstRequest(
-    accessToken: AccessToken,
-    `type`: FollowType,
-    limit: Option[MyFollowedArtistsLimit]
-  ) extends GetMyFollowedArtistsRequest
-  object FirstRequest {
-    def make(accessToken: AccessToken): FirstRequest =
+  def make(accessToken: AccessToken): GetMyFollowedArtistsRequest =
+    GetMyFollowedArtistsRequest(
+      accessToken,
       FirstRequest(
-        accessToken,
         `type` = FollowType.Artist,
         limit = Some(MyFollowedArtistsLimit.MaxValue)
       )
-  }
+    )
 
-  final case class NextRequest(
-    accessToken: AccessToken,
-    nextUri: UriString
-  ) extends GetMyFollowedArtistsRequest
+  sealed abstract class RequestType extends Product with Serializable
+  object RequestType {
+    final case class FirstRequest(
+      `type`: FollowType,
+      limit: Option[MyFollowedArtistsLimit]
+    ) extends RequestType
+
+    final case class NextRequest(
+      nextUri: UriString
+    ) extends RequestType
+  }
 }

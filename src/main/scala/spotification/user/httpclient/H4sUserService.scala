@@ -1,24 +1,27 @@
 package spotification.user.httpclient
 
-import cats.syntax.show._
-import io.circe.generic.auto.exportDecoder
-import org.http4s.Method.GET
+import io.circe.syntax.EncoderOps
+import io.circe.generic.auto._
+import org.http4s.Method.POST
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, doRequest}
-import spotification.user.{GetMyProfileRequest, GetMyProfileResponse, MeApiUri}
-import spotification.user.service.UserService
-import spotification.json.implicits.UserIdDecoder
+import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
+import spotification.playlist.userPlaylistsUri
+import spotification.user.{CreatePlaylistRequest, CreatePlaylistResponse, UserApiUri}
+import spotification.json.implicits._
 import zio.Task
+import spotification.user.service.UserService
 import zio.interop.catz.monadErrorInstance
+import io.circe.refined._
 
-final class H4sUserService(meApiUri: MeApiUri, httpClient: H4sClient) extends UserService {
+final class H4sUserService(userApiUri: UserApiUri, httpClient: H4sClient) extends UserService {
   import H4sClient.Dsl._
 
-  override def getMyProfile(req: GetMyProfileRequest): Task[GetMyProfileResponse] =
-    for {
-      h4sUri <- Task.fromEither(Uri.fromString(meApiUri.show))
+  override def createPlaylist(req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {
+    val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
 
-      resp <- doRequest[GetMyProfileResponse](httpClient, h4sUri)(GET(_, authorizationBearerHeader(req.accessToken)))
-    } yield resp
+    Task
+      .fromEither(eitherUriStringToH4s(userPlaylistsUri(userApiUri, req.userId)))
+      .flatMap(doRequest[CreatePlaylistResponse](httpClient, _)(post))
+  }
 }

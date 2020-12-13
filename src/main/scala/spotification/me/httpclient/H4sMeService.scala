@@ -1,24 +1,35 @@
-package spotification.artist.httpclient
+package spotification.me.httpclient
 
-import cats.implicits._
+import cats.syntax.show._
+import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.auto._
-import eu.timepit.refined.cats._
 import io.circe.generic.auto._
+import io.circe.refined._
 import org.http4s.Method.GET
 import org.http4s.Uri
-import spotification.artist.GetMyFollowedArtistsRequest.{FirstRequest, NextRequest}
-import spotification.artist.service.ArtistService
-import spotification.artist.{GetMyFollowedArtistsRequest, GetMyFollowedArtistsResponse, makeMyFollowedArtistsUri}
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
-import spotification.user.MeApiUri
+import spotification.me.GetMyFollowedArtistsRequest.{FirstRequest, NextRequest}
+import spotification.me.service.MeService
+import spotification.me.{
+  GetMyFollowedArtistsRequest,
+  GetMyFollowedArtistsResponse,
+  GetMyProfileRequest,
+  GetMyProfileResponse,
+  MeApiUri,
+  makeMyFollowedArtistsUri
+}
+import spotification.json.implicits._
 import zio.Task
 import zio.interop.catz.monadErrorInstance
-import spotification.json.implicits._
-import io.circe.refined._
 
-final class H4sArtistService(meApiUri: MeApiUri, httpClient: H4sClient) extends ArtistService {
+final class H4sMeService(meApiUri: MeApiUri, httpClient: H4sClient) extends MeService {
   import H4sClient.Dsl._
+
+  override def getMyProfile(req: GetMyProfileRequest): Task[GetMyProfileResponse] =
+    Task
+      .fromEither(Uri.fromString(meApiUri.show))
+      .flatMap(doRequest[GetMyProfileResponse](httpClient, _)(GET(_, authorizationBearerHeader(req.accessToken))))
 
   override def getMyFollowedArtists(req: GetMyFollowedArtistsRequest): Task[GetMyFollowedArtistsResponse] = {
     val (token, h4sUri) = req match {

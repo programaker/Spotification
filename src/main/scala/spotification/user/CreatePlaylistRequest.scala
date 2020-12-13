@@ -1,8 +1,8 @@
-package spotification.playlist
+package spotification.user
 
 import spotification.authorization.AccessToken
 import spotification.common.NonBlankString
-import spotification.user.UserId
+import spotification.playlist.AnniversaryPlaylistInfo
 
 final case class CreatePlaylistRequest(
   accessToken: AccessToken,

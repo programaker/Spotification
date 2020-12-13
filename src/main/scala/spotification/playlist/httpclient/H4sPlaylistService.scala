@@ -16,14 +16,8 @@ import spotification.json.implicits._
 import io.circe.refined._
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
-import spotification.user.UserApiUri
 
-final class H4sPlaylistService(
-  playlistApiUri: PlaylistApiUri,
-  userApiUri: UserApiUri,
-  httpClient: H4sClient
-) extends PlaylistService {
-
+final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistService {
   import H4sClient.Dsl._
 
   override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
@@ -44,14 +38,6 @@ final class H4sPlaylistService(
   override def removeItemsFromPlaylist(req: RemoveItemsFromPlaylistRequest): Task[PlaylistSnapshotResponse] = {
     val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
     Task.fromEither(tracksUri(req.playlistId)).flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(delete))
-  }
-
-  override def createPlaylist(req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {
-    val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(eitherUriStringToH4s(userPlaylistsUri(userApiUri, req.userId)))
-      .flatMap(doRequest[CreatePlaylistResponse](httpClient, _)(post))
   }
 
   private def getItemsUri(req: FirstRequest): Either[Throwable, Uri] =

@@ -2,9 +2,10 @@ package spotification.config
 
 import spotification.authorization._
 import spotification.common.{Host, PositiveInt}
+import spotification.me.MeApiUri
 import spotification.playlist.PlaylistApiUri
 import spotification.track.TrackApiUri
-import spotification.user.{MeApiUri, UserApiUri}
+import spotification.user.UserApiUri
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -12,6 +13,7 @@ final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
   track: TrackConfig,
+  me: MeConfig,
   user: UserConfig,
   server: ServerConfig,
   client: ClientConfig,
@@ -37,8 +39,11 @@ final case class TrackConfig(
   trackApiUri: TrackApiUri
 )
 
+final case class MeConfig(
+  meApiUri: MeApiUri
+)
+
 final case class UserConfig(
-  meApiUri: MeApiUri,
   userApiUri: UserApiUri
 )
 

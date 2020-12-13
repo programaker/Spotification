@@ -13,7 +13,4 @@ package object service {
 
   def removeItemsFromPlaylist(req: RemoveItemsFromPlaylistRequest): RIO[PlaylistServiceEnv, PlaylistSnapshotResponse] =
     ZIO.accessM(_.get.removeItemsFromPlaylist(req))
-
-  def createPlaylist(req: CreatePlaylistRequest): RIO[PlaylistServiceEnv, CreatePlaylistResponse] =
-    ZIO.accessM(_.get.createPlaylist(req))
 }

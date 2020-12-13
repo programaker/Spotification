@@ -1,4 +1,4 @@
-package spotification.artist
+package spotification.me
 
 import spotification.authorization.AccessToken
 import spotification.common.UriString
@@ -9,14 +9,14 @@ object GetMyFollowedArtistsRequest {
   final case class FirstRequest(
     accessToken: AccessToken,
     `type`: FollowType,
-    limit: Option[FollowedArtistsLimit]
+    limit: Option[MyFollowedArtistsLimit]
   ) extends GetMyFollowedArtistsRequest
   object FirstRequest {
     def make(accessToken: AccessToken): FirstRequest =
       FirstRequest(
         accessToken,
         `type` = FollowType.Artist,
-        limit = Some(FollowedArtistsLimit.MaxValue)
+        limit = Some(MyFollowedArtistsLimit.MaxValue)
       )
   }
 

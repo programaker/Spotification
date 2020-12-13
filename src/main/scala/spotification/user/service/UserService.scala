@@ -1,8 +1,8 @@
 package spotification.user.service
 
-import spotification.user.{GetMyProfileRequest, GetMyProfileResponse}
+import spotification.user.{CreatePlaylistRequest, CreatePlaylistResponse}
 import zio.Task
 
 trait UserService {
-  def getMyProfile(req: GetMyProfileRequest): Task[GetMyProfileResponse]
+  def createPlaylist(req: CreatePlaylistRequest): Task[CreatePlaylistResponse]
 }

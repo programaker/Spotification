@@ -3,9 +3,10 @@ package spotification.config
 import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import spotification.authorization.{RefreshToken, _}
+import spotification.me.MeApiUri
 import spotification.playlist.{PlaylistApiUri, PlaylistId}
 import spotification.track.TrackApiUri
-import spotification.user.{MeApiUri, UserApiUri}
+import spotification.user.UserApiUri
 
 object implicits {
   implicit val DirectoryConfigReader: ConfigReader[Directory] =

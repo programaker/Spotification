@@ -7,7 +7,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.cats._
 import org.http4s.Method.{DELETE, GET, POST}
 import org.http4s.Uri
-import spotification.playlist.GetPlaylistsItemsRequest.{FirstRequest, NextRequest}
+import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 import spotification.playlist._
 import spotification.playlist.service.PlaylistService
 import zio.Task
@@ -20,13 +20,20 @@ import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistService {
   import H4sClient.Dsl._
 
-  override def getPlaylistsItems(req: GetPlaylistsItemsRequest): Task[GetPlaylistsItemsResponse] = {
-    val (token, h4sUri) = req match {
-      case fr: FirstRequest                  => (fr.accessToken, getItemsUri(fr))
-      case NextRequest(accessToken, nextUri) => (accessToken, Uri.fromString(nextUri))
+  override def getPlaylistsItems(req: GetPlaylistsItemsRequest[_]): Task[GetPlaylistsItemsResponse] = {
+    val h4sUri = req.requestType match {
+      case First(playlistId, limit, offset) =>
+        tracksUri(playlistId).map {
+          _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
+            .withQueryParam("limit", limit.show)
+            .withQueryParam("offset", offset.show)
+        }
+
+      case Next(nextUri) =>
+        Uri.fromString(nextUri)
     }
 
-    val get = GET(_: Uri, authorizationBearerHeader(token))
+    val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
     Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](httpClient, _)(get))
   }
 
@@ -39,13 +46,6 @@ final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sCl
     val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
     Task.fromEither(tracksUri(req.playlistId)).flatMap(doRequest[PlaylistSnapshotResponse](httpClient, _)(delete))
   }
-
-  private def getItemsUri(req: FirstRequest): Either[Throwable, Uri] =
-    tracksUri(req.playlistId).map {
-      _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
-        .withQueryParam("limit", req.limit.show)
-        .withQueryParam("offset", req.offset.show)
-    }
 
   private def tracksUri(playlistId: PlaylistId): Either[Throwable, Uri] =
     eitherUriStringToH4s(playlistTracksUri(playlistApiUri, playlistId))

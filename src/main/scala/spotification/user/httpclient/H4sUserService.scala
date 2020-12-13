@@ -18,10 +18,8 @@ final class H4sUserService(userApiUri: UserApiUri, httpClient: H4sClient) extend
   import H4sClient.Dsl._
 
   override def createPlaylist(req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {
+    val h4sUri = eitherUriStringToH4s(userPlaylistsUri(userApiUri, req.userId))
     val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(eitherUriStringToH4s(userPlaylistsUri(userApiUri, req.userId)))
-      .flatMap(doRequest[CreatePlaylistResponse](httpClient, _)(post))
+    Task.fromEither(h4sUri).flatMap(doRequest[CreatePlaylistResponse](httpClient, _)(post))
   }
 }

@@ -29,7 +29,7 @@ package object source {
   private def makeLayer[A: Tag](f: AppConfig => A): TaskLayer[Has[A]] =
     appConfigLayer.map(_.get).map(f).map(Has(_))
 
-  private val appConfigLayer: TaskLayer[Has[AppConfig]] =
+  private lazy val appConfigLayer: TaskLayer[Has[AppConfig]] =
     ZLayer.fromEffect {
       IO.fromEither(ConfigSource.default.load[AppConfig])
         .mapError(_.prettyPrint())

@@ -61,7 +61,7 @@ package object httpclient {
    * The problem is this issue in Http4s https://github.com/http4s/http4s/issues/2445
    * The way they choose to encode uri's is not accepted by Spotify.
    *
-   * We have managed to found a workaround for the 1st step using Uri(path = "free-style String"),
+   * We have managed to found a workaround for the 1st step using Uri.unsafeFromString("free-style String"),
    * but no similar workaround existed for UrlForm.
    *
    * PS - I'm impressed about how simple the new Java HttpClient is!

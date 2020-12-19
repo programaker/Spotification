@@ -1,7 +1,6 @@
 package spotification.playlist.httpclient
 
-import cats.implicits._
-import io.circe.generic.auto._
+import cats.syntax.show._
 import io.circe.syntax._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.cats._
@@ -12,10 +11,15 @@ import spotification.playlist._
 import spotification.playlist.service.PlaylistService
 import zio.Task
 import zio.interop.catz.monadErrorInstance
-import spotification.json.implicits._
-import io.circe.refined._
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
+import spotification.common.json.implicits.{ErrorResponseDecoder, entityEncoderF}
+import spotification.playlist.json.implicits.{
+  AddItemsToPlaylistRequestBodyEncoder,
+  GetPlaylistsItemsResponseDecoder,
+  PlaylistSnapshotResponseDecoder,
+  RemoveItemsFromPlaylistRequestEncoder
+}
 
 final class H4sPlaylistService(playlistApiUri: PlaylistApiUri, httpClient: H4sClient) extends PlaylistService {
   import H4sClient.Dsl._

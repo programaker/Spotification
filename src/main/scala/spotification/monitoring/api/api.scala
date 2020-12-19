@@ -1,10 +1,9 @@
 package spotification.monitoring
 
-import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.common.api.GenericResponse
-import spotification.json.implicits._
+import spotification.common.GenericResponse
+import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 

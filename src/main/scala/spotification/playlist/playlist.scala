@@ -1,14 +1,14 @@
 package spotification
 
 import cats.Show
-import cats.implicits._
+import cats.syntax.show._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops._
+import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.album.isAlbum
 import spotification.common.{SpotifyId, UriString, UriStringR}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse

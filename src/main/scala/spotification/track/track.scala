@@ -7,7 +7,7 @@ import eu.timepit.refined.cats._
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops._
+import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.{SpotifyId, SpotifyIdR, UriString, UriStringR}
 
 package object track {

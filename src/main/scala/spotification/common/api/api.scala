@@ -1,7 +1,6 @@
 package spotification.common
 
 import cats.Applicative
-import io.circe.generic.auto._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes, Request, Response}
 import spotification.authorization.RefreshToken
@@ -11,7 +10,8 @@ import spotification.authorization.api.{
   requiredRefreshTokenFromRequest
 }
 import spotification.authorization.program.SpotifyAuthorizationEnv
-import spotification.json.implicits._
+import spotification.common.json.implicits.GenericResponseErrorEncoder
+import spotification.common.json.implicits.entityEncoderF
 import spotification.monitoring.api.makeHealthCheckRoutes
 import spotification.playlist.api.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer, makePlaylistsRoutes}
 import spotification.playlist.program.{MergePlaylistsEnv, ReleaseRadarNoSinglesEnv}

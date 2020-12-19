@@ -3,7 +3,7 @@ package spotification.playlist
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.SpotifyAuthorizationLayer
-import spotification.common.api.{GenericResponse, doRequest, handleGenericError}
+import spotification.common.api.{doRequest, handleGenericError}
 import spotification.config.source.PlaylistConfigLayer
 import spotification.log.impl.LogLayer
 import spotification.playlist.httpclient.PlaylistServiceLayer
@@ -15,9 +15,10 @@ import spotification.playlist.program.{
 }
 import zio.{RIO, TaskLayer}
 import zio.clock.Clock
-import zio.interop.catz._
-import spotification.json.implicits._
-import io.circe.generic.auto._
+import spotification.common.GenericResponse
+import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
+import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
+import zio.interop.catz.taskConcurrentInstance
 
 package object api {
   type MakePlaylistsRoutsEnv = ReleaseRadarNoSinglesEnv with MergePlaylistsEnv

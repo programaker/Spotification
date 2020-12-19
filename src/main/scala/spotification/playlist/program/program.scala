@@ -1,14 +1,14 @@
 package spotification.playlist
 
-import cats.implicits._
 import cats.data.NonEmptyList
+import cats.implicits._
 import eu.timepit.refined.auto._
-import spotification.config.RetryConfig
-import spotification.effect.refineRIO
-import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.authorization.program.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
+import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.{CurrentUri, NextUri, UriString}
+import spotification.config.RetryConfig
 import spotification.config.service.{PlaylistConfigEnv, playlistConfig}
+import spotification.effect.refineRIO
 import spotification.log.service.{LogEnv, info}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.First
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
@@ -19,9 +19,9 @@ import spotification.playlist.service.{
   removeItemsFromPlaylist
 }
 import spotification.track.TrackUri
-import zio.{RIO, Schedule, ZIO}
 import zio.clock.Clock
 import zio.duration.Duration
+import zio.{RIO, Schedule, ZIO}
 
 package object program {
   type ReleaseRadarNoSinglesEnv = LogEnv with PlaylistServiceEnv with PlaylistConfigEnv with SpotifyAuthorizationEnv
@@ -132,8 +132,8 @@ package object program {
     trackUris: NonEmptyList[TrackUri],
     destPlaylist: PlaylistId,
     accessToken: AccessToken
-  ): RIO[PlaylistServiceEnv, Unit] =
-    ZIO.foreachPar_ {
+  ): RIO[PlaylistServiceEnv, Unit] = {
+    val iterable =
       trackUris.toList
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
@@ -141,13 +141,15 @@ package object program {
         .map(refineRIO[PlaylistServiceEnv, PlaylistItemsToProcessR](_))
         .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
         .to(Iterable)
-    }(identity)
+
+    ZIO.foreachPar_(iterable)(identity)
+  }
 
   private def deleteTracks(
     items: NonEmptyList[TrackResponse],
     req: GetPlaylistsItemsRequest[First]
-  ): RIO[PlaylistServiceEnv, Unit] =
-    ZIO.foreachPar_(
+  ): RIO[PlaylistServiceEnv, Unit] = {
+    val iterable =
       items.toList
         .to(LazyList)
         .map(_.uri)
@@ -157,7 +159,9 @@ package object program {
         .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.requestType.playlistId, req.accessToken)))
         .map(_.flatMap(removeItemsFromPlaylist))
         .to(Iterable)
-    )(identity)
+
+    ZIO.foreachPar_(iterable)(identity)
+  }
 
   private def importTrackChunk(
     trackUris: PlaylistItemsToProcess[TrackUri],

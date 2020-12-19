@@ -1,19 +1,18 @@
 package spotification.authorization.httpclient
 
-import cats.implicits._
+import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.circe.generic.auto._
-import io.circe.refined._
 import io.circe.jawn
 import org.http4s.Method.POST
-import org.http4s._
 import org.http4s.headers.Accept
+import org.http4s.{MediaType, Uri, UrlForm}
 import spotification.authorization._
+import spotification.authorization.json.implicits.{AccessTokenResponseDecoder, RefreshTokenResponseDecoder}
 import spotification.authorization.service.AuthorizationService
-import spotification.common.{ParamMap, encodeUrl, makeQueryString}
 import spotification.common.httpclient.{H4sClient, doRequest, jPost}
-import spotification.json.implicits._
-import zio._
+import spotification.common.json.implicits.ErrorResponseDecoder
+import spotification.common.{ParamMap, encodeUrl, makeQueryString}
+import zio.Task
 import zio.interop.catz.monadErrorInstance
 
 final class H4sAuthorizationService(apiTokenUri: ApiTokenUri, httpClient: H4sClient) extends AuthorizationService {

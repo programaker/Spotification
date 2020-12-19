@@ -5,9 +5,9 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
-
 import eu.timepit.refined.auto._
-import cats.implicits._
+import cats.syntax.either._
+import cats.syntax.show._
 import io.circe.{Decoder, jawn}
 import org.http4s.{Request, Uri}
 import org.http4s.client.Client
@@ -17,7 +17,7 @@ import org.http4s.client.middleware.Logger
 import spotification.concurrent.ExecutionContextLayer
 import spotification.config.ClientConfig
 import spotification.config.source.ClientConfigLayer
-import zio.interop.catz._
+import zio.interop.catz.{catsIOResourceSyntax, taskConcurrentInstance, taskEffectInstance}
 import zio.{Has, RManaged, Task, TaskLayer, URIO, ZIO, ZLayer}
 
 import scala.concurrent.ExecutionContext
@@ -91,5 +91,5 @@ package object httpclient {
   def eitherUriStringToH4s(eitherUriString: Either[String, UriString]): Either[Throwable, Uri] =
     eitherUriString
       .leftMap(new Exception(_))
-      .flatMap(Uri.fromString(_))
+      .flatMap((s: UriString) => Uri.fromString(s))
 }

@@ -3,12 +3,11 @@ package spotification.me.httpclient
 import cats.syntax.show._
 import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.auto._
-import io.circe.generic.auto._
-import io.circe.refined._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, doRequest, eitherUriStringToH4s}
+import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.me.service.MeService
 import spotification.me.{
   GetMyFollowedArtistsRequest,
@@ -18,7 +17,8 @@ import spotification.me.{
   MeApiUri,
   makeMyFollowedArtistsUri
 }
-import spotification.json.implicits._
+import spotification.me.json.implicits.GetMyProfileResponseDecoder
+import spotification.me.json.implicits.GetMyFollowedArtistsResponseDecoder
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import zio.Task
 import zio.interop.catz.monadErrorInstance

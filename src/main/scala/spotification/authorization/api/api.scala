@@ -1,28 +1,27 @@
 package spotification.authorization
 
 import cats.implicits.toTraverseOps
+import eu.timepit.refined.auto._
+import org.http4s.AuthScheme.Bearer
+import org.http4s.Credentials.Token
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{Authorization, Location}
 import org.http4s.{HttpRoutes, Request, Uri}
 import spotification.authorization.httpclient.AuthorizationServiceLayer
+import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
 import spotification.authorization.program.{
   SpotifyAuthorizationEnv,
   authorizeCallbackErrorProgram,
   authorizeCallbackProgram,
   makeAuthorizeUriProgram
 }
-import spotification.common.api.handleGenericError
-import spotification.config.source.AuthorizationConfigLayer
-import zio.{RIO, TaskLayer, ZIO}
-import spotification.json.implicits._
-import zio.interop.catz.{deferInstance, monadErrorInstance}
-import io.circe.generic.auto._
-import eu.timepit.refined.auto._
-import org.http4s.AuthScheme.Bearer
-import org.http4s.Credentials.Token
 import spotification.common.NonBlankStringR
+import spotification.common.api.handleGenericError
+import spotification.common.json.implicits.entityEncoderF
+import spotification.config.source.AuthorizationConfigLayer
 import spotification.effect.refineRIO
-import io.circe.refined._
+import zio.interop.catz.{deferInstance, monadErrorInstance}
+import zio.{RIO, TaskLayer, ZIO}
 
 package object api {
   val SpotifyAuthorizationLayer: TaskLayer[SpotifyAuthorizationEnv] =

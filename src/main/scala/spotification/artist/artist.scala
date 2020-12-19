@@ -3,7 +3,7 @@ package spotification
 import cats.Show
 import eu.timepit.refined.cats.refTypeShow
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops._
+import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.SpotifyId
 
 package object artist {

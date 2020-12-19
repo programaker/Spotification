@@ -1,10 +1,9 @@
 package spotification
 
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.Base64
-
 import cats.Show
-import cats.implicits._
+import cats.syntax.foldable._
+import cats.syntax.show._
+import cats.syntax.traverse._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
@@ -13,8 +12,11 @@ import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops._
-import spotification.common.{HexString32, NonBlankString, ParamMap, UriString, UriStringR, encodeUrl, makeQueryString}
+import io.estatico.newtype.ops.toCoercibleIdOps
+import spotification.common._
+
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Base64
 
 package object authorization {
   type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now

@@ -1,8 +1,8 @@
 package spotification.authorization
 
-import cats.implicits._
+import cats.syntax.show._
 import eu.timepit.refined.auto._
-import eu.timepit.refined.cats._
+import eu.timepit.refined.cats.refTypeShow
 import org.http4s.AuthScheme.{Basic, Bearer}
 import org.http4s.Credentials.Token
 import org.http4s.Uri

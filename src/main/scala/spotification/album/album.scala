@@ -1,6 +1,6 @@
 package spotification
 
-import cats.implicits._
+import cats.syntax.eq._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.generic.Equal

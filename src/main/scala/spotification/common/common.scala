@@ -3,7 +3,7 @@ package spotification
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 
-import cats.implicits._
+import cats.syntax.show._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.{And, Not}
 import eu.timepit.refined.collection.{MaxSize, MinSize}

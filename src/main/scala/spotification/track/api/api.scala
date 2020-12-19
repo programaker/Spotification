@@ -5,10 +5,10 @@ import spotification.track.httpclient.TrackServiceLayer
 import zio.TaskLayer
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import io.circe.generic.auto._
-import spotification.common.api.{GenericResponse, handleGenericError}
+import spotification.common.GenericResponse
+import spotification.common.api.handleGenericError
+import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import spotification.track.program.{ShareTrackEnv, makeShareTrackMessageProgram}
-import spotification.json.implicits._
 import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 

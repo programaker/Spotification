@@ -1,10 +1,9 @@
 package spotification.track
 
-import zio.{Has, RIO, ZIO}
+import zio.{Has, RIO, Task, ZIO}
 
 package object service {
-  type TrackServiceEnv = Has[TrackService]
-
-  def getTrack(req: GetTrackRequest): RIO[TrackServiceEnv, GetTrackResponse] =
-    ZIO.accessM(_.get.getTrack(req))
+  type GetTrackService = GetTrackRequest => Task[GetTrackResponse]
+  type GetTrackServiceEnv = Has[GetTrackService]
+  def getTrack(req: GetTrackRequest): RIO[GetTrackServiceEnv, GetTrackResponse] = ZIO.accessM(_.get.apply(req))
 }

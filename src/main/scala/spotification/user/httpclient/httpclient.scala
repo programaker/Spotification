@@ -26,7 +26,7 @@ package object httpclient {
     Task.fromEither(h4sUri).flatMap(doRequest[CreatePlaylistResponse](ctx.httpClient, _)(post))
   }
 
-  final private case class Context(userApiUri: UserApiUri, httpClient: H4sClient)
+  private final case class Context(userApiUri: UserApiUri, httpClient: H4sClient)
   private object Context {
     val layer: TaskLayer[Has[Context]] =
       (UserConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[UserConfig, H4sClient, Context] {

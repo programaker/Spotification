@@ -78,18 +78,19 @@ package object program {
   ): RIO[R, Unit] =
     paginatePlaylist(req)(f)((_, nextUri) => nextUri)(_ &> _)
 
-  /** Uses GetPlaylistsItemsRequest to fetch items from a playlist with pagination.
+  /**
+   * Uses GetPlaylistsItemsRequest to fetch items from a playlist with pagination.
    * This function has a strange signature, but the trade-off is "unparalleled type-inference"
    *
-    * @param req The initial request
+   * @param req The initial request
    * @param processTracks A function to process the tracks in a page
    *
-    * @param chooseUri A function to choose whether to go to the next page
+   * @param chooseUri A function to choose whether to go to the next page
    * or stay in the current (useful to delete tracks for instance)
    *
-    * @param combinePageEffects A function to combine the result of processing
+   * @param combinePageEffects A function to combine the result of processing
    * the current page with the result of the next page request (useful to choose if parallel or not)
-   * */
+   */
   private def paginatePlaylist[R <: PlaylistServiceEnv](
     req: GetPlaylistsItemsRequest[First]
   )(

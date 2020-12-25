@@ -18,14 +18,13 @@ package object api {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 
-    HttpRoutes.of[RIO[R, *]] {
-      case rawReq @ GET -> Root / TrackUriVar(trackUri) / "share-message" =>
-        requiredRefreshTokenFromRequest(rawReq)
-          .flatMap(makeShareTrackMessageProgram(_, trackUri))
-          .foldM(
-            handleGenericError(dsl, _),
-            message => Ok(GenericResponse.Success(message))
-          )
+    HttpRoutes.of[RIO[R, *]] { case rawReq @ GET -> Root / TrackUriVar(trackUri) / "share-message" =>
+      requiredRefreshTokenFromRequest(rawReq)
+        .flatMap(makeShareTrackMessageProgram(_, trackUri))
+        .foldM(
+          handleGenericError(dsl, _),
+          message => Ok(GenericResponse.Success(message))
+        )
     }
   }
 }

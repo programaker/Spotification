@@ -1,13 +1,15 @@
 package spotification.authorization
 
-import zio.{Has, RIO, ZIO}
+import zio.{Has, RIO, Task, ZIO}
 
 package object service {
-  type AuthorizationServiceEnv = Has[AuthorizationService]
+  type RequestTokenService = AccessTokenRequest => Task[AccessTokenResponse]
+  type RequestTokenServiceEnv = Has[RequestTokenService]
+  def requestToken(req: AccessTokenRequest): RIO[RequestTokenServiceEnv, AccessTokenResponse] =
+    ZIO.accessM(_.get.apply(req))
 
-  def requestToken(req: AccessTokenRequest): RIO[AuthorizationServiceEnv, AccessTokenResponse] =
-    ZIO.accessM(_.get.requestToken(req))
-
-  def refreshToken(req: RefreshTokenRequest): RIO[AuthorizationServiceEnv, RefreshTokenResponse] =
-    ZIO.accessM(_.get.refreshToken(req))
+  type RefreshTokenService = RefreshTokenRequest => Task[RefreshTokenResponse]
+  type RefreshTokenServiceEnv = Has[RefreshTokenService]
+  def refreshToken(req: RefreshTokenRequest): RIO[RefreshTokenServiceEnv, RefreshTokenResponse] =
+    ZIO.accessM(_.get.apply(req))
 }

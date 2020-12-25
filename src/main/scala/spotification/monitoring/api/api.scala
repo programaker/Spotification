@@ -12,8 +12,8 @@ package object api {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 
-    HttpRoutes.of[RIO[R, *]] {
-      case GET -> Root => Ok(GenericResponse.Success("I'm doing well, thanks for asking ^_^"))
+    HttpRoutes.of[RIO[R, *]] { case GET -> Root =>
+      Ok(GenericResponse.Success("I'm doing well, thanks for asking ^_^"))
     }
   }
 }

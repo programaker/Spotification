@@ -55,7 +55,7 @@ package object httpclient {
     Task.fromEither(h4sUri).flatMap(doRequest[GetMyFollowedArtistsResponse](ctx.httpClient, _)(get))
   }
 
-  final private case class Context(meApiUri: MeApiUri, httpClient: H4sClient)
+  private final case class Context(meApiUri: MeApiUri, httpClient: H4sClient)
   private lazy val ContextLayer: TaskLayer[Has[Context]] =
     (MeConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[MeConfig, H4sClient, Context] { (meConfig, httpClient) =>
       Context(meConfig.meApiUri, httpClient)

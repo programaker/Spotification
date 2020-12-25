@@ -30,7 +30,7 @@ package object httpclient {
     } yield resp
   }
 
-  final private case class Context(trackApiUri: TrackApiUri, httpClient: H4sClient)
+  private final case class Context(trackApiUri: TrackApiUri, httpClient: H4sClient)
   private lazy val ContextLayer: TaskLayer[Has[Context]] =
     (TrackConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[TrackConfig, H4sClient, Context] {
       (config, httpClient) =>

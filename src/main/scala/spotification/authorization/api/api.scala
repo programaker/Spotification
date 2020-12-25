@@ -7,7 +7,7 @@ import org.http4s.Credentials.Token
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{Authorization, Location}
 import org.http4s.{HttpRoutes, Request, Uri}
-import spotification.authorization.httpclient.AuthorizationServiceLayer
+import spotification.authorization.httpclient.{RefreshTokenServiceLayer, RequestTokenServiceLayer}
 import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
 import spotification.authorization.program.{
   SpotifyAuthorizationEnv,
@@ -25,7 +25,7 @@ import zio.{RIO, TaskLayer, ZIO}
 
 package object api {
   val SpotifyAuthorizationLayer: TaskLayer[SpotifyAuthorizationEnv] =
-    AuthorizationServiceLayer ++ AuthorizationConfigLayer
+    AuthorizationConfigLayer ++ RequestTokenServiceLayer ++ RefreshTokenServiceLayer
 
   private val Callback: String = "callback"
 

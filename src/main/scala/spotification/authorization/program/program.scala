@@ -1,30 +1,32 @@
 package spotification.authorization
 
-import spotification.authorization.service.{AuthorizationServiceEnv, refreshToken, requestToken}
+import spotification.authorization.service.{RefreshTokenServiceEnv, RequestTokenServiceEnv, refreshToken, requestToken}
 import spotification.common.{NonBlankStringR, UriString}
 import spotification.config.service.{AuthorizationConfigEnv, authorizationConfig}
-import spotification.effect.{leftStringEitherToRIO, refineRIO}
-import zio.RIO
+import spotification.effect.{leftStringEitherToRIO, refineRIO, refineTask}
+import zio.{RIO, Task}
 
 package object program {
-  type SpotifyAuthorizationEnv = AuthorizationServiceEnv with AuthorizationConfigEnv
+  type SpotifyAuthorizationEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
 
-  def authorizeCallbackProgram(rawCode: String): RIO[SpotifyAuthorizationEnv, AccessTokenResponse] =
+  type AuthorizeCallbackProgramEnv = AuthorizationConfigEnv with RequestTokenServiceEnv
+  def authorizeCallbackProgram(rawCode: String): RIO[AuthorizeCallbackProgramEnv, AccessTokenResponse] =
     for {
       config <- authorizationConfig
       code   <- refineRIO[AuthorizationConfigEnv, NonBlankStringR](rawCode)
       resp   <- requestToken(AccessTokenRequest.make(config, code))
     } yield resp
 
-  def authorizeCallbackErrorProgram(error: String): RIO[SpotifyAuthorizationEnv, AuthorizeErrorResponse] =
-    refineRIO[SpotifyAuthorizationEnv, NonBlankStringR](error).map(AuthorizeErrorResponse)
+  def authorizeCallbackErrorProgram(error: String): Task[AuthorizeErrorResponse] =
+    refineTask[NonBlankStringR](error).map(AuthorizeErrorResponse)
 
-  def makeAuthorizeUriProgram: RIO[SpotifyAuthorizationEnv, UriString] =
+  def makeAuthorizeUriProgram: RIO[AuthorizationConfigEnv, UriString] =
     authorizationConfig
       .map(config => makeAuthorizeUri(config.authorizeUri, AuthorizeRequest.make(config)))
       .flatMap(leftStringEitherToRIO)
 
-  def requestAccessTokenProgram(token: RefreshToken): RIO[SpotifyAuthorizationEnv, AccessToken] =
+  type RequestAccessTokenProgramEnv = AuthorizationConfigEnv with RefreshTokenServiceEnv
+  def requestAccessTokenProgram(token: RefreshToken): RIO[RequestAccessTokenProgramEnv, AccessToken] =
     for {
       config <- authorizationConfig
 

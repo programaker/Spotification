@@ -2,19 +2,20 @@ package spotification.track
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.authorization.api.{SpotifyAuthorizationLayer, requiredRefreshTokenFromRequest}
+import spotification.authorization.api.{RequestAccessTokenProgramLayer, requiredRefreshTokenFromRequest}
 import spotification.common.GenericResponse
 import spotification.common.api.handleGenericError
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import spotification.track.httpclient.GetTrackServiceLayer
-import spotification.track.program.{ShareTrackEnv, makeShareTrackMessageProgram}
-import zio.{RIO, TaskLayer}
+import spotification.track.program.{MakeShareTrackMessageProgramEnv, makeShareTrackMessageProgram}
 import zio.interop.catz.{deferInstance, monadErrorInstance}
+import zio.{RIO, TaskLayer}
 
 package object api {
-  val ShareTrackLayer: TaskLayer[ShareTrackEnv] = GetTrackServiceLayer ++ SpotifyAuthorizationLayer
+  type TracksApiEnv = MakeShareTrackMessageProgramEnv
+  val TracksApiLayer: TaskLayer[TracksApiEnv] = RequestAccessTokenProgramLayer ++ GetTrackServiceLayer
 
-  def makeTracksRoutes[R <: ShareTrackEnv]: HttpRoutes[RIO[R, *]] = {
+  def tracksApi[R <: TracksApiEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

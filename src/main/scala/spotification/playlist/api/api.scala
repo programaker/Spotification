@@ -25,15 +25,8 @@ import zio.interop.catz.taskConcurrentInstance
 import zio.{RIO, TaskLayer}
 
 package object api {
-  val ReleaseRadarNoSinglesLayer: TaskLayer[ReleaseRadarNoSinglesProgramEnv] =
-    RequestAccessTokenProgramLayer ++
-      PlaylistConfigLayer ++
-      LogLayer ++
-      GetPlaylistsItemsServiceLayer ++
-      RemoveItemsFromPlaylistServiceLayer ++
-      AddItemsToPlaylistServiceLayer
-
-  val MergePlaylistsLayer: TaskLayer[MergePlaylistsProgramEnv] =
+  type PlaylistsApiEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
+  val PlaylistsApiLayer: TaskLayer[PlaylistsApiEnv] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -42,8 +35,7 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  type MakePlaylistsRoutsEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
-  def makePlaylistsRoutes[R <: MakePlaylistsRoutsEnv]: HttpRoutes[RIO[R, *]] = {
+  def playlistsApi[R <: PlaylistsApiEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

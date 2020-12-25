@@ -9,13 +9,7 @@ import org.http4s.headers.{Authorization, Location}
 import org.http4s.{HttpRoutes, Request, Uri}
 import spotification.authorization.httpclient.{RefreshTokenServiceLayer, RequestTokenServiceLayer}
 import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
-import spotification.authorization.program.{
-  RequestAccessTokenProgramEnv,
-  SpotifyAuthorizationEnv,
-  authorizeCallbackErrorProgram,
-  authorizeCallbackProgram,
-  makeAuthorizeUriProgram
-}
+import spotification.authorization.program._
 import spotification.common.NonBlankStringR
 import spotification.common.api.handleGenericError
 import spotification.common.json.implicits.entityEncoderF
@@ -28,12 +22,13 @@ package object api {
   val RequestAccessTokenProgramLayer: TaskLayer[RequestAccessTokenProgramEnv] =
     AuthorizationConfigLayer ++ RefreshTokenServiceLayer
 
-  val SpotifyAuthorizationLayer: TaskLayer[SpotifyAuthorizationEnv] =
+  type SpotifyAuthorizationApiEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
+  val SpotifyAuthorizationApiLayer: TaskLayer[SpotifyAuthorizationApiEnv] =
     AuthorizationConfigLayer ++ RequestTokenServiceLayer ++ RefreshTokenServiceLayer
 
   private val Callback: String = "callback"
 
-  def makeSpotifyAuthorizationRoutes[R <: SpotifyAuthorizationEnv]: HttpRoutes[RIO[R, *]] = {
+  def spotifyAuthorizationApi[R <: SpotifyAuthorizationApiEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

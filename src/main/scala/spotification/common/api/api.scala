@@ -5,18 +5,16 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes, Request, Response}
 import spotification.authorization.RefreshToken
 import spotification.authorization.api.{
-  SpotifyAuthorizationLayer,
-  makeSpotifyAuthorizationRoutes,
-  requiredRefreshTokenFromRequest
+  SpotifyAuthorizationApiEnv,
+  SpotifyAuthorizationApiLayer,
+  requiredRefreshTokenFromRequest,
+  spotifyAuthorizationApi
 }
-import spotification.authorization.program.SpotifyAuthorizationEnv
-import spotification.common.json.implicits.GenericResponseErrorEncoder
-import spotification.common.json.implicits.entityEncoderF
-import spotification.monitoring.api.makeHealthCheckRoutes
-import spotification.playlist.api.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer, makePlaylistsRoutes}
-import spotification.playlist.program.{MergePlaylistsProgramEnv, ReleaseRadarNoSinglesProgramEnv}
-import spotification.track.api.{ShareTrackLayer, makeTracksRoutes}
-import spotification.track.program.ShareTrackEnv
+import spotification.common.json.implicits.{GenericResponseErrorEncoder, entityEncoderF}
+import spotification.monitoring.api.healthCheckApi
+import spotification.playlist.api.{PlaylistsApiEnv, PlaylistsApiLayer, playlistsApi}
+import spotification.track.api.{TracksApiLayer, tracksApi}
+import spotification.track.program.MakeShareTrackMessageProgramEnv
 import zio.interop.catz.monadErrorInstance
 import zio.{RIO, TaskLayer}
 
@@ -24,19 +22,17 @@ package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 
-  type ApiEnv = SpotifyAuthorizationEnv
-    with ReleaseRadarNoSinglesProgramEnv
-    with MergePlaylistsProgramEnv
-    with ShareTrackEnv
+  type ApiEnv =
+    SpotifyAuthorizationApiEnv with PlaylistsApiEnv with MakeShareTrackMessageProgramEnv
   val ApiLayer: TaskLayer[ApiEnv] =
-    SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesLayer ++ MergePlaylistsLayer ++ ShareTrackLayer
+    SpotifyAuthorizationApiLayer ++ PlaylistsApiLayer ++ TracksApiLayer
 
   def allRoutes[R <: ApiEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"                -> makeHealthCheckRoutes[R],
-      "/authorization/spotify" -> makeSpotifyAuthorizationRoutes[R],
-      "/playlists"             -> makePlaylistsRoutes[R],
-      "/tracks"                -> makeTracksRoutes[R]
+      "/health"                -> healthCheckApi[R],
+      "/authorization/spotify" -> spotifyAuthorizationApi[R],
+      "/playlists"             -> playlistsApi[R],
+      "/tracks"                -> tracksApi[R]
     )
 
   def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {

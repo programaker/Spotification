@@ -14,7 +14,7 @@ import spotification.common.json.implicits.GenericResponseErrorEncoder
 import spotification.common.json.implicits.entityEncoderF
 import spotification.monitoring.api.makeHealthCheckRoutes
 import spotification.playlist.api.{MergePlaylistsLayer, ReleaseRadarNoSinglesLayer, makePlaylistsRoutes}
-import spotification.playlist.program.{MergePlaylistsEnv, ReleaseRadarNoSinglesEnv}
+import spotification.playlist.program.{MergePlaylistsProgramEnv, ReleaseRadarNoSinglesProgramEnv}
 import spotification.track.api.{ShareTrackLayer, makeTracksRoutes}
 import spotification.track.program.ShareTrackEnv
 import zio.interop.catz.monadErrorInstance
@@ -24,7 +24,10 @@ package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 
-  type ApiEnv = SpotifyAuthorizationEnv with ReleaseRadarNoSinglesEnv with MergePlaylistsEnv with ShareTrackEnv
+  type ApiEnv = SpotifyAuthorizationEnv
+    with ReleaseRadarNoSinglesProgramEnv
+    with MergePlaylistsProgramEnv
+    with ShareTrackEnv
   val ApiLayer: TaskLayer[ApiEnv] =
     SpotifyAuthorizationLayer ++ ReleaseRadarNoSinglesLayer ++ MergePlaylistsLayer ++ ShareTrackLayer
 

@@ -3,7 +3,7 @@ package spotification.playlist
 import cats.data.NonEmptyList
 import cats.implicits._
 import eu.timepit.refined.auto._
-import spotification.authorization.program.{SpotifyAuthorizationEnv, requestAccessTokenProgram}
+import spotification.authorization.program.{RequestAccessTokenProgramEnv, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.{CurrentUri, NextUri, UriString}
 import spotification.config.RetryConfig
@@ -12,26 +12,25 @@ import spotification.effect.refineRIO
 import spotification.log.service.{LogEnv, info}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.First
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
-import spotification.playlist.service.{
-  PlaylistServiceEnv,
-  addItemsToPlaylist,
-  getPlaylistItems,
-  removeItemsFromPlaylist
-}
+import spotification.playlist.service._
 import spotification.track.TrackUri
 import zio.clock.Clock
 import zio.duration.Duration
 import zio.{RIO, Schedule, ZIO}
 
 package object program {
-  type ReleaseRadarNoSinglesEnv = LogEnv with PlaylistServiceEnv with PlaylistConfigEnv with SpotifyAuthorizationEnv
-  type MergePlaylistsEnv = Clock with LogEnv with PlaylistServiceEnv with PlaylistConfigEnv with SpotifyAuthorizationEnv
-
+  type ReleaseRadarNoSinglesProgramEnv =
+    RequestAccessTokenProgramEnv
+      with PlaylistConfigEnv
+      with LogEnv
+      with GetPlaylistItemsServiceEnv
+      with RemoveItemsFromPlaylistServiceEnv
+      with AddItemsToPlaylistServiceEnv
   def releaseRadarNoSinglesProgram(
     refreshToken: RefreshToken,
     releaseRadarId: PlaylistId,
     releaseRadarNoSinglesId: PlaylistId
-  ): RIO[ReleaseRadarNoSinglesEnv, Unit] =
+  ): RIO[ReleaseRadarNoSinglesProgramEnv, Unit] =
     for {
       accessToken    <- requestAccessTokenProgram(refreshToken)
       playlistConfig <- playlistConfig
@@ -51,11 +50,19 @@ package object program {
       _ <- info("Done!")
     } yield ()
 
+  type MergePlaylistsProgramEnv =
+    RequestAccessTokenProgramEnv
+      with PlaylistConfigEnv
+      with LogEnv
+      with GetPlaylistItemsServiceEnv
+      with RemoveItemsFromPlaylistServiceEnv
+      with AddItemsToPlaylistServiceEnv
+      with Clock
   def mergePlaylistsProgram(
     refreshToken: RefreshToken,
     mergedPlaylistId: PlaylistId,
     playlistsToMerge: List[PlaylistId]
-  ): RIO[MergePlaylistsEnv, Unit] =
+  ): RIO[MergePlaylistsProgramEnv, Unit] =
     for {
       accessToken    <- requestAccessTokenProgram(refreshToken)
       playlistConfig <- playlistConfig
@@ -73,7 +80,7 @@ package object program {
       _ <- info("Done!")
     } yield ()
 
-  private def paginatePlaylistPar[R <: PlaylistServiceEnv](req: GetPlaylistsItemsRequest[First])(
+  private def paginatePlaylistPar[R <: GetPlaylistItemsServiceEnv](req: GetPlaylistsItemsRequest[First])(
     f: NonEmptyList[TrackResponse] => RIO[R, Unit]
   ): RIO[R, Unit] =
     paginatePlaylist(req)(f)((_, nextUri) => nextUri)(_ &> _)
@@ -91,7 +98,7 @@ package object program {
    * @param combinePageEffects A function to combine the result of processing
    * the current page with the result of the next page request (useful to choose if parallel or not)
    */
-  private def paginatePlaylist[R <: PlaylistServiceEnv](
+  private def paginatePlaylist[R <: GetPlaylistItemsServiceEnv](
     req: GetPlaylistsItemsRequest[First]
   )(
     processTracks: NonEmptyList[TrackResponse] => RIO[R, Unit]
@@ -123,40 +130,41 @@ package object program {
     loop(req)
   }
 
-  private def clearPlaylist(req: GetPlaylistsItemsRequest[First]): RIO[PlaylistServiceEnv, Unit] =
+  private type ClearPlaylistEnv = GetPlaylistItemsServiceEnv with RemoveItemsFromPlaylistServiceEnv
+  private def clearPlaylist[R <: ClearPlaylistEnv](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] =
     // `(currentUri, _) => currentUri`:
     // since we are deleting tracks,
     // we should always stay in the first page
     paginatePlaylist(req)(deleteTracks(_, req))((currentUri, _) => currentUri)(_ *> _)
 
-  private def importTracks(
+  private def importTracks[R <: AddItemsToPlaylistServiceEnv](
     trackUris: NonEmptyList[TrackUri],
     destPlaylist: PlaylistId,
     accessToken: AccessToken
-  ): RIO[PlaylistServiceEnv, Unit] = {
+  ): RIO[R, Unit] = {
     val iterable =
       trackUris.toList
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
-        .map(refineRIO[PlaylistServiceEnv, PlaylistItemsToProcessR](_))
+        .map(refineRIO[AddItemsToPlaylistServiceEnv, PlaylistItemsToProcessR](_))
         .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
         .to(Iterable)
 
     ZIO.foreachPar_(iterable)(identity)
   }
 
-  private def deleteTracks(
+  private def deleteTracks[R <: RemoveItemsFromPlaylistServiceEnv](
     items: NonEmptyList[TrackResponse],
     req: GetPlaylistsItemsRequest[First]
-  ): RIO[PlaylistServiceEnv, Unit] = {
+  ): RIO[R, Unit] = {
     val iterable =
       items.toList
         .to(LazyList)
         .map(_.uri)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
-        .map(refineRIO[PlaylistServiceEnv, PlaylistItemsToProcessR](_))
+        .map(refineRIO[RemoveItemsFromPlaylistServiceEnv, PlaylistItemsToProcessR](_))
         .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.requestType.playlistId, req.accessToken)))
         .map(_.flatMap(removeItemsFromPlaylist))
         .to(Iterable)
@@ -164,19 +172,20 @@ package object program {
     ZIO.foreachPar_(iterable)(identity)
   }
 
-  private def importTrackChunk(
+  private def importTrackChunk[R <: AddItemsToPlaylistServiceEnv](
     trackUris: PlaylistItemsToProcess[TrackUri],
     destPlaylist: PlaylistId,
     accessToken: AccessToken
-  ): RIO[PlaylistServiceEnv, Unit] =
+  ): RIO[R, Unit] =
     addItemsToPlaylist(AddItemsToPlaylistRequest.make(accessToken, destPlaylist, trackUris)).map(_ => ())
 
-  private def mergePlaylists(
+  private type MergePlaylistsEnv = ImportPlaylistEnv with LogEnv
+  private def mergePlaylists[R <: MergePlaylistsEnv](
     sources: List[PlaylistId],
     dest: PlaylistId,
     mkReq: PlaylistId => GetPlaylistsItemsRequest[First],
     retry: RetryConfig
-  ): RIO[MergePlaylistsEnv, Unit] =
+  ): RIO[R, Unit] =
     NonEmptyList
       .fromList(sources)
       .map { playlists =>
@@ -188,11 +197,12 @@ package object program {
       }
       .getOrElse(RIO.unit)
 
-  private def importPlaylist(
+  private type ImportPlaylistEnv = GetPlaylistItemsServiceEnv with AddItemsToPlaylistServiceEnv with Clock
+  private def importPlaylist[R <: ImportPlaylistEnv](
     source: GetPlaylistsItemsRequest[First],
     dest: PlaylistId,
     retry: RetryConfig
-  ): RIO[MergePlaylistsEnv, Unit] =
+  ): RIO[R, Unit] =
     paginatePlaylistPar(source) { tracks =>
       importTracks(tracks.map(_.uri), dest, source.accessToken)
     }.retry(Schedule.exponential(Duration.fromScala(retry.retryAfter)) && Schedule.recurs(retry.attempts))

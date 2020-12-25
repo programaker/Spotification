@@ -10,6 +10,7 @@ import org.http4s.{HttpRoutes, Request, Uri}
 import spotification.authorization.httpclient.{RefreshTokenServiceLayer, RequestTokenServiceLayer}
 import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
 import spotification.authorization.program.{
+  RequestAccessTokenProgramEnv,
   SpotifyAuthorizationEnv,
   authorizeCallbackErrorProgram,
   authorizeCallbackProgram,
@@ -24,6 +25,9 @@ import zio.interop.catz.{deferInstance, monadErrorInstance}
 import zio.{RIO, TaskLayer, ZIO}
 
 package object api {
+  val RequestAccessTokenProgramLayer: TaskLayer[RequestAccessTokenProgramEnv] =
+    AuthorizationConfigLayer ++ RefreshTokenServiceLayer
+
   val SpotifyAuthorizationLayer: TaskLayer[SpotifyAuthorizationEnv] =
     AuthorizationConfigLayer ++ RequestTokenServiceLayer ++ RefreshTokenServiceLayer
 

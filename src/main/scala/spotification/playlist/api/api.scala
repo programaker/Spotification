@@ -2,40 +2,47 @@ package spotification.playlist
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import spotification.authorization.api.SpotifyAuthorizationLayer
+import spotification.authorization.api.RequestAccessTokenProgramLayer
+import spotification.common.GenericResponse
 import spotification.common.api.{doRequest, handleGenericError}
+import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
 import spotification.config.source.PlaylistConfigLayer
 import spotification.log.impl.LogLayer
-import spotification.playlist.httpclient.PlaylistServiceLayer
+import spotification.playlist.httpclient.{
+  AddItemsToPlaylistServiceLayer,
+  GetPlaylistsItemsServiceLayer,
+  RemoveItemsFromPlaylistServiceLayer
+}
+import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
 import spotification.playlist.program.{
-  MergePlaylistsEnv,
-  ReleaseRadarNoSinglesEnv,
+  MergePlaylistsProgramEnv,
+  ReleaseRadarNoSinglesProgramEnv,
   mergePlaylistsProgram,
   releaseRadarNoSinglesProgram
 }
-import zio.{RIO, TaskLayer}
 import zio.clock.Clock
-import spotification.common.GenericResponse
-import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
-import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
 import zio.interop.catz.taskConcurrentInstance
+import zio.{RIO, TaskLayer}
 
 package object api {
-  type MakePlaylistsRoutsEnv = ReleaseRadarNoSinglesEnv with MergePlaylistsEnv
-
-  val ReleaseRadarNoSinglesLayer: TaskLayer[ReleaseRadarNoSinglesEnv] =
-    LogLayer ++
-      PlaylistServiceLayer ++
+  val ReleaseRadarNoSinglesLayer: TaskLayer[ReleaseRadarNoSinglesProgramEnv] =
+    RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
-      SpotifyAuthorizationLayer
-
-  val MergePlaylistsLayer: TaskLayer[MergePlaylistsEnv] =
-    Clock.live ++
       LogLayer ++
-      PlaylistServiceLayer ++
-      PlaylistConfigLayer ++
-      SpotifyAuthorizationLayer
+      GetPlaylistsItemsServiceLayer ++
+      RemoveItemsFromPlaylistServiceLayer ++
+      AddItemsToPlaylistServiceLayer
 
+  val MergePlaylistsLayer: TaskLayer[MergePlaylistsProgramEnv] =
+    RequestAccessTokenProgramLayer ++
+      PlaylistConfigLayer ++
+      LogLayer ++
+      GetPlaylistsItemsServiceLayer ++
+      RemoveItemsFromPlaylistServiceLayer ++
+      AddItemsToPlaylistServiceLayer ++
+      Clock.live
+
+  type MakePlaylistsRoutsEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
   def makePlaylistsRoutes[R <: MakePlaylistsRoutsEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._

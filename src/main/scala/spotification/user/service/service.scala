@@ -1,10 +1,10 @@
 package spotification.user
 
-import zio.{Has, RIO, ZIO}
+import zio.{Has, RIO, Task, ZIO}
 
 package object service {
-  type UserServiceEnv = Has[UserService]
-
-  def createPlaylist(req: CreatePlaylistRequest): RIO[UserServiceEnv, CreatePlaylistResponse] =
-    ZIO.accessM(_.get.createPlaylist(req))
+  type CreatePlaylistService = CreatePlaylistRequest => Task[CreatePlaylistResponse]
+  type CreatePlaylistServiceEnv = Has[CreatePlaylistService]
+  def createPlaylist(req: CreatePlaylistRequest): RIO[CreatePlaylistServiceEnv, CreatePlaylistResponse] =
+    ZIO.accessM(_.get.apply(req))
 }

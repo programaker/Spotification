@@ -6,20 +6,26 @@ import zio.RIO
 
 package object service {
   type AuthorizationConfigEnv = Has[AuthorizationConfig]
-  type PlaylistConfigEnv = Has[PlaylistConfig]
-  type TrackConfigEnv = Has[TrackConfig]
-  type MeConfigEnv = Has[MeConfig]
-  type UserConfigEnv = Has[UserConfig]
-  type ServerConfigEnv = Has[ServerConfig]
-  type ClientConfigEnv = Has[ClientConfig]
-  type ConcurrentConfigEnv = Has[ConcurrentConfig]
-
   def authorizationConfig: RIO[AuthorizationConfigEnv, AuthorizationConfig] = accessRIO
+
+  type PlaylistConfigEnv = Has[PlaylistConfig]
   def playlistConfig: RIO[PlaylistConfigEnv, PlaylistConfig] = accessRIO
+
+  type TrackConfigEnv = Has[TrackConfig]
   def trackConfig: RIO[TrackConfigEnv, TrackConfig] = accessRIO
+
+  type MeConfigEnv = Has[MeConfig]
   def meConfig: RIO[MeConfigEnv, MeConfig] = accessRIO
+
+  type UserConfigEnv = Has[UserConfig]
   def userConfig: RIO[UserConfigEnv, UserConfig] = accessRIO
+
+  type ServerConfigEnv = Has[ServerConfig]
   def serverConfig: RIO[ServerConfigEnv, ServerConfig] = accessRIO
+
+  type ClientConfigEnv = Has[ClientConfig]
   def clientConfig: RIO[ClientConfigEnv, ClientConfig] = accessRIO
+
+  type ConcurrentConfigEnv = Has[ConcurrentConfig]
   def concurrentConfig: RIO[ConcurrentConfigEnv, ConcurrentConfig] = accessRIO
 }

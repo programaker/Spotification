@@ -1,13 +1,17 @@
 package spotification.me
 
-import zio.{Has, RIO, ZIO}
+import zio.{Has, RIO, Task, ZIO}
 
 package object service {
-  type MeServiceEnv = Has[MeService]
+  type GetMyProfileService = GetMyProfileRequest => Task[GetMyProfileResponse]
+  type GetMyProfileServiceEnv = Has[GetMyProfileService]
+  def getMyProfile(req: GetMyProfileRequest): RIO[GetMyProfileServiceEnv, GetMyProfileResponse] =
+    ZIO.accessM(_.get.apply(req))
 
-  def getMyProfile(req: GetMyProfileRequest): RIO[MeServiceEnv, GetMyProfileResponse] =
-    ZIO.accessM(_.get.getMyProfile(req))
-
-  def getMyFollowedArtists(req: GetMyFollowedArtistsRequest[_]): RIO[MeServiceEnv, GetMyFollowedArtistsResponse] =
-    ZIO.accessM(_.get.getMyFollowedArtists(req))
+  type GetMyFollowedArtistsService = GetMyFollowedArtistsRequest[_] => Task[GetMyFollowedArtistsResponse]
+  type GetMyFollowedArtistsServiceEnv = Has[GetMyFollowedArtistsService]
+  def getMyFollowedArtists(
+    req: GetMyFollowedArtistsRequest[_]
+  ): RIO[GetMyFollowedArtistsServiceEnv, GetMyFollowedArtistsResponse] =
+    ZIO.accessM(_.get.apply(req))
 }

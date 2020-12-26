@@ -19,8 +19,6 @@ import zio.duration.Duration
 import zio.{RIO, Schedule, ZIO}
 
 package object program {
-  type PlaylistsEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
-
   type ReleaseRadarNoSinglesProgramEnv =
     RequestAccessTokenProgramEnv
       with PlaylistConfigEnv
@@ -28,6 +26,18 @@ package object program {
       with GetPlaylistItemsServiceEnv
       with RemoveItemsFromPlaylistServiceEnv
       with AddItemsToPlaylistServiceEnv
+
+  type MergePlaylistsProgramEnv =
+    RequestAccessTokenProgramEnv
+      with PlaylistConfigEnv
+      with LogEnv
+      with GetPlaylistItemsServiceEnv
+      with RemoveItemsFromPlaylistServiceEnv
+      with AddItemsToPlaylistServiceEnv
+      with Clock
+
+  type PlaylistProgramsEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
+
   def releaseRadarNoSinglesProgram(
     refreshToken: RefreshToken,
     releaseRadarId: PlaylistId,
@@ -52,14 +62,6 @@ package object program {
       _ <- info("Done!")
     } yield ()
 
-  type MergePlaylistsProgramEnv =
-    RequestAccessTokenProgramEnv
-      with PlaylistConfigEnv
-      with LogEnv
-      with GetPlaylistItemsServiceEnv
-      with RemoveItemsFromPlaylistServiceEnv
-      with AddItemsToPlaylistServiceEnv
-      with Clock
   def mergePlaylistsProgram(
     refreshToken: RefreshToken,
     mergedPlaylistId: PlaylistId,

@@ -29,7 +29,7 @@ package object httpserver {
       .compile
       .drain
 
-  def httpApp[F[_]: Monad](routes: Routes[F]): HttpApp[F] =
+  def makeHttpApp[F[_]: Monad](routes: Routes[F]): HttpApp[F] =
     Router(routes: _*).orNotFound
 
   def addLogger[F[_]: Concurrent](httpApp: HttpApp[F]): HttpApp[F] =

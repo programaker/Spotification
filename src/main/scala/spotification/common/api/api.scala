@@ -5,19 +5,17 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes, Request, Response}
 import spotification.authorization.RefreshToken
 import spotification.authorization.api.{
-  SpotifyAuthorizationLayer,
-  requiredRefreshTokenFromRequest,
-  spotifyAuthorizationApi
+  AuthorizationProgramsLayer,
+  makeAuthorizationApi,
+  requiredRefreshTokenFromRequest
 }
-import spotification.authorization.program.SpotifyAuthorizationEnv
 import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.{GenericResponseErrorEncoder, entityEncoderF}
+import spotification.common.program.AllProgramsEnv
 import spotification.config.service.{AuthorizationConfigEnv, PlaylistConfigEnv, TrackConfigEnv}
-import spotification.monitoring.api.healthCheckApi
-import spotification.playlist.api.{PlaylistsLayer, playlistsApi}
-import spotification.playlist.program.PlaylistsEnv
-import spotification.track.api.{TracksLayer, tracksApi}
-import spotification.track.program.TracksEnv
+import spotification.monitoring.api.makeHealthCheckApi
+import spotification.playlist.api.{PlaylistsLayer, makePlaylistsApi}
+import spotification.track.api.{TracksLayer, makeTracksApi}
 import zio.interop.catz.monadErrorInstance
 import zio.{RIO, RLayer}
 
@@ -25,17 +23,16 @@ package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 
-  type ApiEnv =
-    SpotifyAuthorizationEnv with PlaylistsEnv with TracksEnv
-  val ApiLayer: RLayer[HttpClientEnv with AuthorizationConfigEnv with PlaylistConfigEnv with TrackConfigEnv, ApiEnv] =
-    SpotifyAuthorizationLayer ++ PlaylistsLayer ++ TracksLayer
+  val AllProgramsLayer
+    : RLayer[HttpClientEnv with AuthorizationConfigEnv with PlaylistConfigEnv with TrackConfigEnv, AllProgramsEnv] =
+    AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
-  def allRoutes[R <: ApiEnv]: Routes[RIO[R, *]] =
+  def makeAllApis[R <: AllProgramsEnv]: Routes[RIO[R, *]] =
     Seq(
-      "/health"                -> healthCheckApi[R],
-      "/authorization/spotify" -> spotifyAuthorizationApi[R],
-      "/playlists"             -> playlistsApi[R],
-      "/tracks"                -> tracksApi[R]
+      "/health"                -> makeHealthCheckApi[R],
+      "/authorization/spotify" -> makeAuthorizationApi[R],
+      "/playlists"             -> makePlaylistsApi[R],
+      "/tracks"                -> makeTracksApi[R]
     )
 
   def handleGenericError[F[_]: Applicative](dsl: Http4sDsl[F], e: Throwable): F[Response[F]] = {

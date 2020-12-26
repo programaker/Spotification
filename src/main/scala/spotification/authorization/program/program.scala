@@ -7,9 +7,10 @@ import spotification.effect.{leftStringEitherToRIO, refineRIO, refineTask}
 import zio.{RIO, Task}
 
 package object program {
-  type SpotifyAuthorizationEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
-
   type AuthorizeCallbackProgramEnv = AuthorizationConfigEnv with RequestTokenServiceEnv
+  type RequestAccessTokenProgramEnv = AuthorizationConfigEnv with RefreshTokenServiceEnv
+  type AuthorizationProgramsEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
+
   def authorizeCallbackProgram(rawCode: String): RIO[AuthorizeCallbackProgramEnv, AccessTokenResponse] =
     for {
       config <- authorizationConfig
@@ -25,7 +26,6 @@ package object program {
       .map(config => makeAuthorizeUri(config.authorizeUri, AuthorizeRequest.make(config)))
       .flatMap(leftStringEitherToRIO)
 
-  type RequestAccessTokenProgramEnv = AuthorizationConfigEnv with RefreshTokenServiceEnv
   def requestAccessTokenProgram(token: RefreshToken): RIO[RequestAccessTokenProgramEnv, AccessToken] =
     for {
       config <- authorizationConfig

@@ -9,7 +9,7 @@ import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import spotification.config.service.{AuthorizationConfigEnv, TrackConfigEnv}
 import spotification.track.httpclient.GetTrackServiceLayer
-import spotification.track.program.{MakeShareTrackMessageProgramEnv, TracksEnv, makeShareTrackMessageProgram}
+import spotification.track.program.{MakeShareTrackMessageProgramEnv, TrackProgramsEnv, makeShareTrackMessageProgram}
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import zio.{RIO, RLayer}
 
@@ -18,10 +18,10 @@ package object api {
     : RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, MakeShareTrackMessageProgramEnv] =
     RequestAccessTokenProgramLayer ++ GetTrackServiceLayer
 
-  val TracksLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, TracksEnv] =
+  val TracksLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, TrackProgramsEnv] =
     MakeShareTrackMessageProgramLayer
 
-  def tracksApi[R <: TracksEnv]: HttpRoutes[RIO[R, *]] = {
+  def makeTracksApi[R <: TrackProgramsEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

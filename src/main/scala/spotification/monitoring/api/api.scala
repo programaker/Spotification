@@ -8,7 +8,7 @@ import zio.RIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 
 package object api {
-  def healthCheckApi[R]: HttpRoutes[RIO[R, *]] = {
+  def makeHealthCheckApi[R]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

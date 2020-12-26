@@ -41,10 +41,10 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  val PlaylistsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistsEnv] =
+  val PlaylistsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistProgramsEnv] =
     ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer
 
-  def playlistsApi[R <: PlaylistsEnv]: HttpRoutes[RIO[R, *]] = {
+  def makePlaylistsApi[R <: PlaylistProgramsEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

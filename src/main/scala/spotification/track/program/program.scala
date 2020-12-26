@@ -6,8 +6,8 @@ import spotification.track.service.{GetTrackServiceEnv, getTrack}
 import zio.RIO
 
 package object program {
-  type TracksEnv = MakeShareTrackMessageProgramEnv
   type MakeShareTrackMessageProgramEnv = RequestAccessTokenProgramEnv with GetTrackServiceEnv
+  type TrackProgramsEnv = MakeShareTrackMessageProgramEnv
 
   def makeShareTrackMessageProgram(
     refreshToken: RefreshToken,

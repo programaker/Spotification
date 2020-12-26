@@ -27,10 +27,12 @@ package object api {
   val RequestAccessTokenProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, RequestAccessTokenProgramEnv] =
     AuthorizationConfigLayer ++ RefreshTokenServiceLayer
 
-  val SpotifyAuthorizationLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, SpotifyAuthorizationEnv] =
+  val AuthorizationProgramsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, AuthorizationProgramsEnv] =
     AuthorizeCallbackProgramLayer ++ RequestAccessTokenProgramLayer
 
-  def spotifyAuthorizationApi[R <: SpotifyAuthorizationEnv]: HttpRoutes[RIO[R, *]] = {
+  def makeAuthorizationApi[R <: AuthorizationProgramsEnv]: HttpRoutes[RIO[R, *]] = {
+    val Callback: String = "callback"
+
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 
@@ -66,6 +68,4 @@ package object api {
       .map(refineRIO[R, NonBlankStringR](_))
       .sequence
       .map(_.map(RefreshToken(_)))
-
-  private val Callback: String = "callback"
 }

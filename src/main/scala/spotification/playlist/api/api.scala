@@ -5,7 +5,9 @@ import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.RequestAccessTokenProgramLayer
 import spotification.common.GenericResponse
 import spotification.common.api.{doRequest, handleGenericError}
+import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
+import spotification.config.service.{AuthorizationConfigEnv, PlaylistConfigEnv}
 import spotification.config.source.PlaylistConfigLayer
 import spotification.log.impl.LogLayer
 import spotification.playlist.httpclient.{
@@ -22,11 +24,11 @@ import spotification.playlist.program.{
 }
 import zio.clock.Clock
 import zio.interop.catz.taskConcurrentInstance
-import zio.{RIO, TaskLayer}
+import zio.{RIO, RLayer}
 
 package object api {
   type PlaylistsApiEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
-  val PlaylistsApiLayer: TaskLayer[PlaylistsApiEnv] =
+  val PlaylistsApiLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistsApiEnv] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++

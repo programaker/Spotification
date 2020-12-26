@@ -5,15 +5,18 @@ import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.{RequestAccessTokenProgramLayer, requiredRefreshTokenFromRequest}
 import spotification.common.GenericResponse
 import spotification.common.api.handleGenericError
+import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
+import spotification.config.service.{AuthorizationConfigEnv, TrackConfigEnv}
 import spotification.track.httpclient.GetTrackServiceLayer
 import spotification.track.program.{MakeShareTrackMessageProgramEnv, makeShareTrackMessageProgram}
 import zio.interop.catz.{deferInstance, monadErrorInstance}
-import zio.{RIO, TaskLayer}
+import zio.{RIO, RLayer}
 
 package object api {
   type TracksApiEnv = MakeShareTrackMessageProgramEnv
-  val TracksApiLayer: TaskLayer[TracksApiEnv] = RequestAccessTokenProgramLayer ++ GetTrackServiceLayer
+  val TracksApiLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, TracksApiEnv] =
+    RequestAccessTokenProgramLayer ++ GetTrackServiceLayer
 
   def tracksApi[R <: TracksApiEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

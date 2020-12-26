@@ -15,14 +15,14 @@ import spotification.authorization.service.{
   RequestTokenService,
   RequestTokenServiceEnv
 }
-import spotification.common.httpclient.{H4sClient, HttpClientLayer, doRequest, jPost}
+import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, jPost}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.common.{ParamMap, encodeUrl, makeQueryString}
 import spotification.config.AuthorizationConfig
-import spotification.config.source.AuthorizationConfigLayer
+import spotification.config.service.AuthorizationConfigEnv
 import spotification.effect.leftStringEitherToTask
 import zio.interop.catz.monadErrorInstance
-import zio.{Has, Task, TaskLayer, ZLayer}
+import zio.{Has, Task, URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
@@ -30,10 +30,10 @@ package object httpclient {
   type H4sAuthorization = org.http4s.headers.Authorization
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
-  val RequestTokenServiceLayer: TaskLayer[RequestTokenServiceEnv] =
+  val RequestTokenServiceLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, RequestTokenServiceEnv] =
     ContextLayer >>> ZLayer.fromService[Context, RequestTokenService](ctx => requestToken(ctx, _))
 
-  val RefreshTokenServiceLayer: TaskLayer[RefreshTokenServiceEnv] =
+  val RefreshTokenServiceLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, RefreshTokenServiceEnv] =
     ContextLayer >>> ZLayer.fromService[Context, RefreshTokenService](ctx => refreshToken(ctx, _))
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
@@ -84,9 +84,8 @@ package object httpclient {
   }
 
   private final case class Context(apiTokenUri: ApiTokenUri, httpClient: H4sClient)
-  private lazy val ContextLayer: TaskLayer[Has[Context]] =
-    (AuthorizationConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[AuthorizationConfig, H4sClient, Context] {
-      (config, httpClient) =>
-        Context(config.apiTokenUri, httpClient)
+  private lazy val ContextLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, Has[Context]] =
+    ZLayer.fromServices[AuthorizationConfig, H4sClient, Context] { (config, httpClient) =>
+      Context(config.apiTokenUri, httpClient)
     }
 }

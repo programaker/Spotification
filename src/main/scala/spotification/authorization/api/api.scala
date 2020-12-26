@@ -12,18 +12,20 @@ import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, A
 import spotification.authorization.program._
 import spotification.common.NonBlankStringR
 import spotification.common.api.handleGenericError
+import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.entityEncoderF
+import spotification.config.service.AuthorizationConfigEnv
 import spotification.config.source.AuthorizationConfigLayer
 import spotification.effect.refineRIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
-import zio.{RIO, TaskLayer, ZIO}
+import zio.{RIO, RLayer, ZIO}
 
 package object api {
-  val RequestAccessTokenProgramLayer: TaskLayer[RequestAccessTokenProgramEnv] =
+  val RequestAccessTokenProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, RequestAccessTokenProgramEnv] =
     AuthorizationConfigLayer ++ RefreshTokenServiceLayer
 
   type SpotifyAuthorizationApiEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
-  val SpotifyAuthorizationApiLayer: TaskLayer[SpotifyAuthorizationApiEnv] =
+  val SpotifyAuthorizationApiLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, SpotifyAuthorizationApiEnv] =
     AuthorizationConfigLayer ++ RequestTokenServiceLayer ++ RefreshTokenServiceLayer
 
   private val Callback: String = "callback"

@@ -6,10 +6,10 @@ import eu.timepit.refined.cats._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientLayer, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.MeConfig
-import spotification.config.source.MeConfigLayer
+import spotification.config.service.MeConfigEnv
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import spotification.me.json.implicits.{GetMyFollowedArtistsResponseDecoder, GetMyProfileResponseDecoder}
 import spotification.me.service.{
@@ -18,16 +18,16 @@ import spotification.me.service.{
   GetMyProfileService,
   GetMyProfileServiceEnv
 }
-import zio.interop.catz.monadErrorInstance
 import zio._
+import zio.interop.catz.monadErrorInstance
 
 package object httpclient {
   import H4sClient.Dsl._
 
-  val GetMyProfileServiceLayer: TaskLayer[GetMyProfileServiceEnv] =
+  val GetMyProfileServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyProfileServiceEnv] =
     ContextLayer >>> ZLayer.fromService[Context, GetMyProfileService](ctx => getMyProfile(ctx, _))
 
-  val GetMyFollowedArtistsServiceLayer: TaskLayer[GetMyFollowedArtistsServiceEnv] =
+  val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyFollowedArtistsServiceEnv] =
     ContextLayer >>> ZLayer.fromService[Context, GetMyFollowedArtistsService](ctx => getMyFollowedArtists(ctx, _))
 
   private def getMyProfile(ctx: Context, req: GetMyProfileRequest): Task[GetMyProfileResponse] =
@@ -56,8 +56,8 @@ package object httpclient {
   }
 
   private final case class Context(meApiUri: MeApiUri, httpClient: H4sClient)
-  private lazy val ContextLayer: TaskLayer[Has[Context]] =
-    (MeConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[MeConfig, H4sClient, Context] { (meConfig, httpClient) =>
+  private lazy val ContextLayer: URLayer[MeConfigEnv with HttpClientEnv, Has[Context]] =
+    ZLayer.fromServices[MeConfig, H4sClient, Context] { (meConfig, httpClient) =>
       Context(meConfig.meApiUri, httpClient)
     }
 }

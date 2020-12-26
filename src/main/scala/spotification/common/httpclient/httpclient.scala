@@ -1,25 +1,25 @@
 package spotification.common
 
+import cats.syntax.either._
+import cats.syntax.show._
+import eu.timepit.refined.auto._
+import io.circe.{Decoder, jawn}
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.client.dsl.Http4sClientDsl
+import org.http4s.client.middleware.Logger
+import org.http4s.{Request, Uri}
+import spotification.concurrent.ExecutionContextEnv
+import spotification.config.ClientConfig
+import spotification.config.service.ClientConfigEnv
+import zio._
+import zio.interop.catz.{catsIOResourceSyntax, taskConcurrentInstance, taskEffectInstance}
+
 import java.net.URI
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
-import eu.timepit.refined.auto._
-import cats.syntax.either._
-import cats.syntax.show._
-import io.circe.{Decoder, jawn}
-import org.http4s.{Request, Uri}
-import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
-import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.client.middleware.Logger
-import spotification.concurrent.ExecutionContextLayer
-import spotification.config.ClientConfig
-import spotification.config.source.ClientConfigLayer
-import zio.interop.catz.{catsIOResourceSyntax, taskConcurrentInstance, taskEffectInstance}
-import zio.{Has, RManaged, Task, TaskLayer, URIO, ZIO, ZLayer}
-
 import scala.concurrent.ExecutionContext
 
 package object httpclient {
@@ -29,18 +29,16 @@ package object httpclient {
   }
 
   type HttpClientEnv = Has[H4sClient]
-  val HttpClientLayer: TaskLayer[HttpClientEnv] = {
-    val makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, Client[Task]]] =
+  val HttpClientLayer: RLayer[ExecutionContextEnv with ClientConfigEnv, HttpClientEnv] = {
+    def makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, H4sClient]] =
       ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 
-    def addLogger(config: ClientConfig): Client[Task] => Client[Task] =
+    def addLogger(config: ClientConfig): H4sClient => H4sClient =
       Logger(config.logHeaders, config.logBody)(_)
 
-    val l = ZLayer.fromServicesManaged[ExecutionContext, ClientConfig, Any, Throwable, H4sClient] { (ex, config) =>
+    ZLayer.fromServicesManaged[ExecutionContext, ClientConfig, Any, Throwable, H4sClient] { (ex, config) =>
       makeHttpClient.toManaged_.flatten.map(addLogger(config)).provide(ex)
     }
-
-    (ExecutionContextLayer ++ ClientConfigLayer) >>> l
   }
 
   def doRequest[A: Decoder](httpClient: H4sClient, uri: Uri)(

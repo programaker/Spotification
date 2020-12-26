@@ -1,10 +1,11 @@
 package spotification
 
 import spotification.common.api.{ApiEnv, ApiLayer, allRoutes}
-import spotification.httpserver.{addCors, addLogger, httpApp, runHttpServer}
+import spotification.common.httpclient.HttpClientLayer
 import spotification.concurrent.{ExecutionContextEnv, ExecutionContextLayer, executionContext}
 import spotification.config.service.{ServerConfigEnv, serverConfig}
-import spotification.config.source.ServerConfigLayer
+import spotification.config.source._
+import spotification.httpserver.{addCors, addLogger, httpApp, runHttpServer}
 import spotification.log.service.error
 import zio._
 import zio.clock.Clock
@@ -15,7 +16,16 @@ import scala.util.control.NonFatal
 object SpotificationHttpApp extends zio.App {
   type HttpAppEnv = ServerConfigEnv with ExecutionContextEnv with ApiEnv with Clock
   val HttpAppLayer: TaskLayer[HttpAppEnv] =
-    ServerConfigLayer ++ ExecutionContextLayer ++ ApiLayer ++ Clock.live
+    ServerConfigLayer >+>
+      ConcurrentConfigLayer >+>
+      ExecutionContextLayer >+>
+      ClientConfigLayer >+>
+      HttpClientLayer >+>
+      AuthorizationConfigLayer >+>
+      PlaylistConfigLayer >+>
+      TrackConfigLayer >+>
+      ApiLayer >+>
+      Clock.live
 
   def runHttpApp: RIO[HttpAppEnv, Unit] =
     ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>

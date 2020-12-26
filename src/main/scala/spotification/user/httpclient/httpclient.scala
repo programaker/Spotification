@@ -4,20 +4,20 @@ import io.circe.syntax.EncoderOps
 import org.http4s.Method.POST
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientLayer, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.{ErrorResponseDecoder, entityEncoderF}
 import spotification.config.UserConfig
-import spotification.config.source.UserConfigLayer
+import spotification.config.service.UserConfigEnv
 import spotification.playlist.userPlaylistsUri
 import spotification.user.json.implicits.{CreatePlaylistRequestBodyEncoder, CreatePlaylistResponseDecoder}
 import spotification.user.service.{CreatePlaylistService, CreatePlaylistServiceEnv}
-import zio.{Has, Task, TaskLayer, ZLayer}
 import zio.interop.catz.monadErrorInstance
+import zio.{Has, Task, URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
 
-  val CreatePlaylistServiceLayer: TaskLayer[CreatePlaylistServiceEnv] =
+  val CreatePlaylistServiceLayer: URLayer[UserConfigEnv with HttpClientEnv, CreatePlaylistServiceEnv] =
     Context.layer >>> ZLayer.fromService[Context, CreatePlaylistService](ctx => createPlaylist(ctx, _))
 
   private def createPlaylist(ctx: Context, req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {
@@ -28,10 +28,9 @@ package object httpclient {
 
   private final case class Context(userApiUri: UserApiUri, httpClient: H4sClient)
   private object Context {
-    val layer: TaskLayer[Has[Context]] =
-      (UserConfigLayer ++ HttpClientLayer) >>> ZLayer.fromServices[UserConfig, H4sClient, Context] {
-        (userConfig, httpClient) =>
-          Context(userConfig.userApiUri, httpClient)
+    val layer: URLayer[UserConfigEnv with HttpClientEnv, Has[Context]] =
+      ZLayer.fromServices[UserConfig, H4sClient, Context] { (userConfig, httpClient) =>
+        Context(userConfig.userApiUri, httpClient)
       }
   }
 }

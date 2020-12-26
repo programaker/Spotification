@@ -10,13 +10,15 @@ import spotification.authorization.api.{
   requiredRefreshTokenFromRequest,
   spotifyAuthorizationApi
 }
+import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.{GenericResponseErrorEncoder, entityEncoderF}
+import spotification.config.service.{AuthorizationConfigEnv, PlaylistConfigEnv, TrackConfigEnv}
 import spotification.monitoring.api.healthCheckApi
 import spotification.playlist.api.{PlaylistsApiEnv, PlaylistsApiLayer, playlistsApi}
 import spotification.track.api.{TracksApiLayer, tracksApi}
 import spotification.track.program.MakeShareTrackMessageProgramEnv
 import zio.interop.catz.monadErrorInstance
-import zio.{RIO, TaskLayer}
+import zio.{RIO, RLayer}
 
 package object api {
   type RoutesMapping[F[_]] = (String, HttpRoutes[F])
@@ -24,7 +26,7 @@ package object api {
 
   type ApiEnv =
     SpotifyAuthorizationApiEnv with PlaylistsApiEnv with MakeShareTrackMessageProgramEnv
-  val ApiLayer: TaskLayer[ApiEnv] =
+  val ApiLayer: RLayer[HttpClientEnv with AuthorizationConfigEnv with PlaylistConfigEnv with TrackConfigEnv, ApiEnv] =
     SpotifyAuthorizationApiLayer ++ PlaylistsApiLayer ++ TracksApiLayer
 
   def allRoutes[R <: ApiEnv]: Routes[RIO[R, *]] =

@@ -16,19 +16,23 @@ import spotification.playlist.httpclient.{
   RemoveItemsFromPlaylistServiceLayer
 }
 import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
-import spotification.playlist.program.{
-  MergePlaylistsProgramEnv,
-  ReleaseRadarNoSinglesProgramEnv,
-  mergePlaylistsProgram,
-  releaseRadarNoSinglesProgram
-}
+import spotification.playlist.program._
 import zio.clock.Clock
 import zio.interop.catz.taskConcurrentInstance
 import zio.{RIO, RLayer}
 
 package object api {
-  type PlaylistsApiEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
-  val PlaylistsApiLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistsApiEnv] =
+  val ReleaseRadarNoSinglesProgramLayer
+    : RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, ReleaseRadarNoSinglesProgramEnv] =
+    RequestAccessTokenProgramLayer ++
+      PlaylistConfigLayer ++
+      LogLayer ++
+      GetPlaylistsItemsServiceLayer ++
+      RemoveItemsFromPlaylistServiceLayer ++
+      AddItemsToPlaylistServiceLayer
+
+  val MergePlaylistsProgramLayer
+    : RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, MergePlaylistsProgramEnv] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -37,7 +41,10 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  def playlistsApi[R <: PlaylistsApiEnv]: HttpRoutes[RIO[R, *]] = {
+  val PlaylistsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistsEnv] =
+    ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer
+
+  def playlistsApi[R <: PlaylistsEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

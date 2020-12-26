@@ -19,6 +19,8 @@ import zio.duration.Duration
 import zio.{RIO, Schedule, ZIO}
 
 package object program {
+  type PlaylistsEnv = ReleaseRadarNoSinglesProgramEnv with MergePlaylistsProgramEnv
+
   type ReleaseRadarNoSinglesProgramEnv =
     RequestAccessTokenProgramEnv
       with PlaylistConfigEnv

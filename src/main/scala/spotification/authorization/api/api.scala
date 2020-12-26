@@ -21,16 +21,16 @@ import zio.interop.catz.{deferInstance, monadErrorInstance}
 import zio.{RIO, RLayer, ZIO}
 
 package object api {
+  val AuthorizeCallbackProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, AuthorizeCallbackProgramEnv] =
+    AuthorizationConfigLayer ++ RequestTokenServiceLayer
+
   val RequestAccessTokenProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, RequestAccessTokenProgramEnv] =
     AuthorizationConfigLayer ++ RefreshTokenServiceLayer
 
-  type SpotifyAuthorizationApiEnv = AuthorizeCallbackProgramEnv with RequestAccessTokenProgramEnv
-  val SpotifyAuthorizationApiLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, SpotifyAuthorizationApiEnv] =
-    AuthorizationConfigLayer ++ RequestTokenServiceLayer ++ RefreshTokenServiceLayer
+  val SpotifyAuthorizationLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, SpotifyAuthorizationEnv] =
+    AuthorizeCallbackProgramLayer ++ RequestAccessTokenProgramLayer
 
-  private val Callback: String = "callback"
-
-  def spotifyAuthorizationApi[R <: SpotifyAuthorizationApiEnv]: HttpRoutes[RIO[R, *]] = {
+  def spotifyAuthorizationApi[R <: SpotifyAuthorizationEnv]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 
@@ -66,4 +66,6 @@ package object api {
       .map(refineRIO[R, NonBlankStringR](_))
       .sequence
       .map(_.map(RefreshToken(_)))
+
+  private val Callback: String = "callback"
 }

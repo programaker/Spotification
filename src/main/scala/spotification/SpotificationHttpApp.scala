@@ -14,6 +14,12 @@ import zio.interop.catz._
 import scala.util.control.NonFatal
 
 object SpotificationHttpApp extends zio.App {
+  override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] =
+    runHttpApp
+      .catchSome { case NonFatal(e) => error(">>> Error <<<", e) }
+      .provideCustomLayer(HttpAppLayer)
+      .exitCode
+
   type HttpAppEnv = ServerConfigEnv with ExecutionContextEnv with ApiEnv with Clock
   val HttpAppLayer: TaskLayer[HttpAppEnv] =
     ServerConfigLayer >+>
@@ -26,8 +32,7 @@ object SpotificationHttpApp extends zio.App {
       TrackConfigLayer >+>
       ApiLayer >+>
       Clock.live
-
-  def runHttpApp: RIO[HttpAppEnv, Unit] =
+  private def runHttpApp: RIO[HttpAppEnv, Unit] =
     ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>
       for {
         config <- serverConfig
@@ -39,10 +44,4 @@ object SpotificationHttpApp extends zio.App {
         _ <- runHttpServer[RIO[HttpAppEnv, *]](config, app, ex)
       } yield ()
     }
-
-  override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] =
-    runHttpApp
-      .catchSome { case NonFatal(e) => error(">>> Error <<<", e) }
-      .provideCustomLayer(HttpAppLayer)
-      .exitCode
 }

@@ -98,10 +98,10 @@ package object authorization {
     rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
 
   def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
-    refineV[ScopeStringR](scopes.mkString_(" "))
+    joinRefinedStrings(scopes, " ")
 
   def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
-    joinScopes(scopes).map(s => params + ("scope" -> Some(encodeUrl(s))))
+    joinScopes(scopes).map(addRefinedStringParam("scope", params, _))
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
     base64(show"$clientId:$clientSecret")

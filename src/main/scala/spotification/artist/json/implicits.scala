@@ -7,6 +7,5 @@ import spotification.artist.ArtistId
 import spotification.common.SpotifyId
 
 object implicits {
-  implicit val ArtistIdDecoder: Decoder[ArtistId] =
-    implicitly[Decoder[SpotifyId]].map(_.coerce[ArtistId])
+  implicit val ArtistIdDecoder: Decoder[ArtistId] = implicitly[Decoder[SpotifyId]].map(_.coerce[ArtistId])
 }

@@ -1,13 +1,18 @@
 package spotification
 
+import cats.Foldable
+
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
-
 import cats.syntax.show._
-import eu.timepit.refined.api.Refined
+import cats.syntax.foldable._
+import eu.timepit.refined.auto._
+import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.boolean.{And, Not}
+import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.{NonNegative, Positive}
+import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 
 package object common {
@@ -47,6 +52,8 @@ package object common {
 
   type ParamMap = Map[String, Option[String]]
 
+  type RefinedString[P] = String Refined P
+
   // HTTP4s Uri should be able to encode query params, but in my tests
   // URIs are not properly encoded:
   //
@@ -62,4 +69,15 @@ package object common {
       case (_, None)    => ""
       case (k, Some(v)) => show"$k=$v"
     } mkString "&"
+
+  def joinRefinedStrings[F[_]: Foldable, P1, P2](
+    strings: F[RefinedString[P1]],
+    separator: String
+  )(implicit
+    v: Validate[String, P2]
+  ): Either[String, RefinedString[P2]] =
+    refineV[P2](strings.mkString_(separator))
+
+  def addRefinedStringParam[P](paramName: String, params: ParamMap, string: RefinedString[P]): ParamMap =
+    params + (paramName -> Some(encodeUrl(string)))
 }

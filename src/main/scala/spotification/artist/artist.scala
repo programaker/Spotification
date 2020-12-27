@@ -1,14 +1,45 @@
 package spotification
 
 import cats.Show
+import cats.syntax.foldable._
+import eu.timepit.refined.auto._
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.cats.refTypeShow
+import eu.timepit.refined.generic.Equal
+import eu.timepit.refined.numeric.Interval
+import eu.timepit.refined.refineV
+import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops.toCoercibleIdOps
-import spotification.common.SpotifyId
+import spotification.common.{ParamMap, SpotifyId, addRefinedStringParam, encodeUrl, joinRefinedStrings}
 
 package object artist {
+  type IncludeAlbumGroupR =
+    Equal["album"] Or
+      Equal["single"] Or
+      Equal["appears_on"] Or
+      Equal["compilation"]
+  type IncludeAlbumGroup = String Refined IncludeAlbumGroupR
+
+  type IncludeAlbumGroupsStringR = MatchesRegex["""^[a-z]([a-z_])+(\,([a-z_])+)*[a-z]$"""]
+  type IncludeAlbumGroupsString = String Refined IncludeAlbumGroupsStringR
+
+  type ArtistAlbumsToProcessMax = 50
+  type ArtistAlbumsLimitR = Interval.Closed[1, ArtistAlbumsToProcessMax]
+  type ArtistAlbumsLimit = Int Refined ArtistAlbumsLimitR
+  object ArtistAlbumsLimit {
+    val MaxValue: ArtistAlbumsLimit = 50
+  }
+
   @newtype case class ArtistId(value: SpotifyId)
   object ArtistId {
     implicit val ArtistIdShow: Show[ArtistId] = implicitly[Show[SpotifyId]].coerce
   }
+
+  def joinIncludeAlbumGroups(groups: List[IncludeAlbumGroup]): Either[String, IncludeAlbumGroupsString] =
+    joinRefinedStrings(groups, ",")
+
+  def addIncludeAlbumGroupsParam(params: ParamMap, groups: List[IncludeAlbumGroup]): Either[String, ParamMap] =
+    joinIncludeAlbumGroups(groups).map(addRefinedStringParam("include_groups", params, _))
 }

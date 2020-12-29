@@ -31,10 +31,10 @@ package object httpclient {
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
   val RequestTokenServiceLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, RequestTokenServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, RequestTokenService](ctx => requestToken(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => requestToken(ctx, _))
 
   val RefreshTokenServiceLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, RefreshTokenServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, RefreshTokenService](ctx => refreshToken(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => refreshToken(ctx, _))
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =
     H4sAuthorization(Token(Basic, base64Credentials(clientId, clientSecret)))

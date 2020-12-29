@@ -18,7 +18,7 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val CreatePlaylistServiceLayer: URLayer[UserConfigEnv with HttpClientEnv, CreatePlaylistServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, CreatePlaylistService](ctx => createPlaylist(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => createPlaylist(ctx, _))
 
   private def createPlaylist(ctx: Context, req: CreatePlaylistRequest): Task[CreatePlaylistResponse] = {
     val h4sUri = eitherUriStringToH4s(userPlaylistsUri(ctx.userApiUri, req.userId))

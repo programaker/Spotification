@@ -25,10 +25,10 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val GetMyProfileServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyProfileServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, GetMyProfileService](ctx => getMyProfile(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => getMyProfile(ctx, _))
 
   val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyFollowedArtistsServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, GetMyFollowedArtistsService](ctx => getMyFollowedArtists(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => getMyFollowedArtists(ctx, _))
 
   private def getMyProfile(ctx: Context, req: GetMyProfileRequest): Task[GetMyProfileResponse] =
     Task

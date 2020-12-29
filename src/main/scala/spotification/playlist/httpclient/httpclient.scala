@@ -26,14 +26,14 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val GetPlaylistsItemsServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, GetPlaylistItemsServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, GetPlaylistItemsService](ctx => getPlaylistsItems(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => getPlaylistsItems(ctx, _))
 
   val AddItemsToPlaylistServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, AddItemsToPlaylistServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, AddItemsToPlaylistService](ctx => addItemsToPlaylist(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => addItemsToPlaylist(ctx, _))
 
   val RemoveItemsFromPlaylistServiceLayer
     : URLayer[PlaylistConfigEnv with HttpClientEnv, RemoveItemsFromPlaylistServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, RemoveItemsFromPlaylistService](ctx => removeItemsFromPlaylist(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => removeItemsFromPlaylist(ctx, _))
 
   private def getPlaylistsItems(ctx: Context, req: GetPlaylistsItemsRequest[_]): Task[GetPlaylistsItemsResponse] = {
     val h4sUri = req.requestType match {

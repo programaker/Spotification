@@ -18,7 +18,7 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val GetTrackServiceLayer: URLayer[TrackConfigEnv with HttpClientEnv, GetTrackServiceEnv] =
-    ContextLayer >>> ZLayer.fromService[Context, GetTrackService](ctx => getTrack(ctx, _))
+    ContextLayer >>> ZLayer.fromService(ctx => getTrack(ctx, _))
 
   private def getTrack(ctx: Context, req: GetTrackRequest): Task[GetTrackResponse] = {
     val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))

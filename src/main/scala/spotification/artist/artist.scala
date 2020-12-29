@@ -1,9 +1,9 @@
 package spotification
 
 import cats.Show
-import cats.syntax.foldable._
-import eu.timepit.refined.auto._
+import cats.syntax.show._
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.generic.Equal
@@ -12,7 +12,7 @@ import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops.toCoercibleIdOps
-import spotification.common.{ParamMap, SpotifyId, addRefinedStringParam, encodeUrl, joinRefinedStrings}
+import spotification.common.{ParamMap, SpotifyId, UriString, UriStringR, addRefinedStringParam, joinRefinedStrings}
 
 package object artist {
   type IncludeAlbumGroupR =
@@ -37,9 +37,17 @@ package object artist {
     implicit val ArtistIdShow: Show[ArtistId] = implicitly[Show[SpotifyId]].coerce
   }
 
+  @newtype case class ArtistApiUri(value: UriString)
+  object ArtistApiUri {
+    implicit val ArtistApiUriShow: Show[ArtistApiUri] = implicitly[Show[UriString]].coerce
+  }
+
   def joinIncludeAlbumGroups(groups: List[IncludeAlbumGroup]): Either[String, IncludeAlbumGroupsString] =
     joinRefinedStrings(groups, ",")
 
   def addIncludeAlbumGroupsParam(params: ParamMap, groups: List[IncludeAlbumGroup]): Either[String, ParamMap] =
     joinIncludeAlbumGroups(groups).map(addRefinedStringParam("include_groups", params, _))
+
+  def artistsAlbumsUri(artistApiUri: ArtistApiUri, artistId: ArtistId): Either[String, UriString] =
+    refineV[UriStringR](show"$artistApiUri/$artistId/albums")
 }

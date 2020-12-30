@@ -4,7 +4,7 @@ import eu.timepit.refined.auto._
 import spotification.artist.GetArtistsAlbumsRequest.RequestType
 import spotification.artist.GetArtistsAlbumsRequest.RequestType.First
 import spotification.authorization.AccessToken
-import spotification.common.{PositiveInt, UriString}
+import spotification.common.{NonNegativeInt, UriString}
 
 final case class GetArtistsAlbumsRequest[T <: RequestType](accessToken: AccessToken, requestType: RequestType)
 object GetArtistsAlbumsRequest {
@@ -14,7 +14,7 @@ object GetArtistsAlbumsRequest {
       artistId: ArtistId,
       include_groups: List[IncludeAlbumGroup],
       limit: ArtistAlbumsLimit,
-      offset: PositiveInt
+      offset: NonNegativeInt
     ) extends RequestType
 
     final case class Next(

@@ -9,12 +9,7 @@ import org.http4s.Method.POST
 import org.http4s.headers.Accept
 import org.http4s.{MediaType, Uri, UrlForm}
 import spotification.authorization.json.implicits.{AccessTokenResponseDecoder, RefreshTokenResponseDecoder}
-import spotification.authorization.service.{
-  RefreshTokenService,
-  RefreshTokenServiceEnv,
-  RequestTokenService,
-  RequestTokenServiceEnv
-}
+import spotification.authorization.service.{RefreshTokenServiceEnv, RequestTokenServiceEnv}
 import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, jPost}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.common.{ParamMap, encodeUrl, makeQueryString}

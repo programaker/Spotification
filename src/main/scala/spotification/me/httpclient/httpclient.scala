@@ -12,12 +12,7 @@ import spotification.config.MeConfig
 import spotification.config.service.MeConfigEnv
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import spotification.me.json.implicits.{GetMyFollowedArtistsResponseDecoder, GetMyProfileResponseDecoder}
-import spotification.me.service.{
-  GetMyFollowedArtistsService,
-  GetMyFollowedArtistsServiceEnv,
-  GetMyProfileService,
-  GetMyProfileServiceEnv
-}
+import spotification.me.service.{GetMyFollowedArtistsServiceEnv, GetMyProfileServiceEnv}
 import zio._
 import zio.interop.catz.monadErrorInstance
 

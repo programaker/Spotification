@@ -10,7 +10,7 @@ import spotification.config.UserConfig
 import spotification.config.service.UserConfigEnv
 import spotification.playlist.userPlaylistsUri
 import spotification.user.json.implicits.{CreatePlaylistRequestBodyEncoder, CreatePlaylistResponseDecoder}
-import spotification.user.service.{CreatePlaylistService, CreatePlaylistServiceEnv}
+import spotification.user.service.CreatePlaylistServiceEnv
 import zio.interop.catz.monadErrorInstance
 import zio.{Has, Task, URLayer, ZLayer}
 

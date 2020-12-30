@@ -10,7 +10,7 @@ import spotification.config.TrackConfig
 import spotification.config.service.TrackConfigEnv
 import spotification.effect.leftStringEitherToTask
 import spotification.track.json.implicits.GetTrackResponseDecoder
-import spotification.track.service.{GetTrackService, GetTrackServiceEnv}
+import spotification.track.service.GetTrackServiceEnv
 import zio.interop.catz.monadErrorInstance
 import zio.{Has, Task, URLayer, ZLayer}
 

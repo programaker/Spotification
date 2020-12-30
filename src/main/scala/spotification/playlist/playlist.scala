@@ -22,7 +22,7 @@ package object playlist {
   type PlaylistItemsToProcessR = MinSize[1] And MaxSize[PlaylistItemsToProcessMax]
   type PlaylistItemsToProcess[A] = Vector[A] Refined PlaylistItemsToProcessR
   object PlaylistItemsToProcess {
-    val MaxSize: PlaylistItemsToProcessMax = 100
+    val MaxSize: PlaylistItemsToProcessMax = valueOf[PlaylistItemsToProcessMax]
   }
 
   @newtype case class PlaylistId(value: SpotifyId)

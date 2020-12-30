@@ -20,7 +20,8 @@ package object me {
   type MyFollowedArtistsLimitR = Interval.Closed[1, MyFollowedArtistsToProcessMax]
   type MyFollowedArtistsLimit = Int Refined MyFollowedArtistsLimitR
   object MyFollowedArtistsLimit {
-    val MaxValue: MyFollowedArtistsLimit = 50
+    val MaxValue: MyFollowedArtistsLimit =
+      refineV[MyFollowedArtistsLimitR].unsafeFrom(valueOf[MyFollowedArtistsToProcessMax])
   }
 
   def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[String, UriString] =

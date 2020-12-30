@@ -3,6 +3,7 @@ package spotification.config
 import eu.timepit.refined.pureconfig._
 import pureconfig.ConfigReader
 import pureconfig.generic.semiauto.deriveReader
+import spotification.album.AlbumApiUri
 import spotification.artist.ArtistApiUri
 import spotification.authorization._
 import spotification.me.MeApiUri
@@ -24,12 +25,14 @@ object implicits {
   implicit val MeApiUriConfigReader: ConfigReader[MeApiUri] = deriveNewtypeReader(MeApiUri.apply)
   implicit val UserApiUriConfigReader: ConfigReader[UserApiUri] = deriveNewtypeReader(UserApiUri.apply)
   implicit val ArtistApiUriConfigReader: ConfigReader[ArtistApiUri] = deriveNewtypeReader(ArtistApiUri.apply)
+  implicit val AlbumApiUriConfigReader: ConfigReader[AlbumApiUri] = deriveNewtypeReader(AlbumApiUri.apply)
   implicit val RefreshTokenConfigReader: ConfigReader[RefreshToken] = deriveNewtypeReader(RefreshToken.apply)
 
   implicit val RetryConfigReader: ConfigReader[RetryConfig] = deriveReader
   implicit val AuthorizationConfigReader: ConfigReader[AuthorizationConfig] = deriveReader
   implicit val PlaylistConfigReader: ConfigReader[PlaylistConfig] = deriveReader
   implicit val ArtistConfigReader: ConfigReader[ArtistConfig] = deriveReader
+  implicit val AlbumConfigReader: ConfigReader[AlbumConfig] = deriveReader
   implicit val TrackConfigReader: ConfigReader[TrackConfig] = deriveReader
   implicit val MeConfigReader: ConfigReader[MeConfig] = deriveReader
   implicit val UserConfigReader: ConfigReader[UserConfig] = deriveReader

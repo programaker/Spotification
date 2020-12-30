@@ -40,7 +40,7 @@ package object artist {
   type ArtistAlbumsLimitR = Interval.Closed[1, ArtistAlbumsToProcessMax]
   type ArtistAlbumsLimit = Int Refined ArtistAlbumsLimitR
   object ArtistAlbumsLimit {
-    val MaxValue: ArtistAlbumsLimit = 50
+    val MaxValue: ArtistAlbumsLimit = refineV[ArtistAlbumsLimitR].unsafeFrom(valueOf[ArtistAlbumsToProcessMax])
   }
 
   @newtype case class ArtistId(value: SpotifyId)

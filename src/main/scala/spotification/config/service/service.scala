@@ -8,6 +8,7 @@ package object service {
   type AuthorizationConfigEnv = Has[AuthorizationConfig]
   type PlaylistConfigEnv = Has[PlaylistConfig]
   type ArtistConfigEnv = Has[ArtistConfig]
+  type AlbumConfigEnv = Has[AlbumConfig]
   type TrackConfigEnv = Has[TrackConfig]
   type MeConfigEnv = Has[MeConfig]
   type UserConfigEnv = Has[UserConfig]
@@ -18,6 +19,7 @@ package object service {
   def authorizationConfig: RIO[AuthorizationConfigEnv, AuthorizationConfig] = accessRIO
   def playlistConfig: RIO[PlaylistConfigEnv, PlaylistConfig] = accessRIO
   def artistConfig: RIO[ArtistConfigEnv, ArtistConfig] = accessRIO
+  def albumConfig: RIO[AlbumConfigEnv, AlbumConfig] = accessRIO
   def trackConfig: RIO[TrackConfigEnv, TrackConfig] = accessRIO
   def meConfig: RIO[MeConfigEnv, MeConfig] = accessRIO
   def userConfig: RIO[UserConfigEnv, UserConfig] = accessRIO

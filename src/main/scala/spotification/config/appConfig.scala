@@ -1,5 +1,6 @@
 package spotification.config
 
+import spotification.album.AlbumApiUri
 import spotification.artist.ArtistApiUri
 import spotification.authorization._
 import spotification.common.{Host, PositiveInt}
@@ -14,6 +15,7 @@ final case class AppConfig(
   authorization: AuthorizationConfig,
   playlist: PlaylistConfig,
   artist: ArtistConfig,
+  album: AlbumConfig,
   track: TrackConfig,
   me: MeConfig,
   user: UserConfig,
@@ -39,6 +41,10 @@ final case class PlaylistConfig(
 
 final case class ArtistConfig(
   artistApiUri: ArtistApiUri
+)
+
+final case class AlbumConfig(
+  albumApiUri: AlbumApiUri
 )
 
 final case class TrackConfig(

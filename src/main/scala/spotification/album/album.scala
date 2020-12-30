@@ -17,7 +17,7 @@ package object album {
   type AlbumType = String Refined AlbumTypeR
 
   type ReleaseDateStringR = MatchesRegex["""^\d{4}(-\d{2})?(-\d{2})?$"""]
-  type ReleaseDateString = String Refined ReleaseDatePrecisionR
+  type ReleaseDateString = String Refined ReleaseDateStringR
 
   type ReleaseDatePrecisionR = Equal["year"] Or Equal["month"] Or Equal["day"]
   type ReleaseDatePrecision = String Refined ReleaseDatePrecisionR
@@ -28,4 +28,5 @@ package object album {
   }
 
   def isAlbum(albumType: AlbumType): Boolean = albumType === "album"
+  def isReleaseDatePrecisionDay(precision: ReleaseDatePrecision): Boolean = precision === "day"
 }

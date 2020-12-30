@@ -1,6 +1,6 @@
 package spotification
 
-import cats.Foldable
+import cats.{Foldable, Show}
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
@@ -14,6 +14,9 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.{NonNegative, Positive}
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
+
+import java.time.MonthDay
+import java.time.format.DateTimeFormatter
 
 package object common {
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
@@ -52,7 +55,19 @@ package object common {
 
   type ParamMap = Map[String, Option[String]]
 
-  type RefinedString[P] = String Refined P
+  type DayMonthStringR = ValidMonthDay["dd-MM"]
+  type DayMonthString = String Refined DayMonthStringR
+  object DayMonthString {
+    val `dd-MM`: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM")
+    val `dd/MM`: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
+    implicit val DayMonthShow: Show[MonthDay] = _.format(`dd/MM`)
+  }
+
+  type YearMonthDayStringR = ValidDate["yyyy-MM-dd"]
+  type YearMonthDayString = String Refined YearMonthDayStringR
+  object YearMonthDayString {
+    val `yyyy-MM-dd`: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  }
 
   // HTTP4s Uri should be able to encode query params, but in my tests
   // URIs are not properly encoded:
@@ -71,13 +86,15 @@ package object common {
     } mkString "&"
 
   def joinRefinedStrings[F[_]: Foldable, P1, P2](
-    strings: F[RefinedString[P1]],
+    strings: F[Refined[String, P1]],
     separator: String
   )(implicit
     v: Validate[String, P2]
-  ): Either[String, RefinedString[P2]] =
+  ): Either[String, Refined[String, P2]] =
     refineV[P2](strings.mkString_(separator))
 
-  def addRefinedStringParam[P](paramName: String, params: ParamMap, string: RefinedString[P]): ParamMap =
+  def addRefinedStringParam[P](paramName: String, params: ParamMap, string: Refined[String, P]): ParamMap =
     params + (paramName -> Some(encodeUrl(string)))
+
+  def makeMonthDay(s: DayMonthString): MonthDay = MonthDay.parse(s, DayMonthString.`dd-MM`)
 }

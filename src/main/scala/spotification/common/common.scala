@@ -15,7 +15,7 @@ import eu.timepit.refined.numeric.{NonNegative, Positive}
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
 
-import java.time.MonthDay
+import java.time.{LocalDate, MonthDay}
 import java.time.format.DateTimeFormatter
 
 package object common {
@@ -96,5 +96,9 @@ package object common {
   def addRefinedStringParam[P](paramName: String, params: ParamMap, string: Refined[String, P]): ParamMap =
     params + (paramName -> Some(encodeUrl(string)))
 
-  def makeMonthDay(s: DayMonthString): MonthDay = MonthDay.parse(s, DayMonthString.`dd-MM`)
+  def monthDayFromDayMonthString(s: DayMonthString): MonthDay =
+    MonthDay.parse(s, DayMonthString.`dd-MM`)
+
+  def monthDayFromYearMonthDayString(s: YearMonthDayString): MonthDay =
+    MonthDay.from(LocalDate.parse(s, YearMonthDayString.`yyyy-MM-dd`))
 }

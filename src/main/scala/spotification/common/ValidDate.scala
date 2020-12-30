@@ -1,5 +1,6 @@
 package spotification.common
 
+import cats.syntax.show._
 import eu.timepit.refined.api.Validate
 
 import java.time.LocalDate
@@ -17,7 +18,7 @@ object ValidDate {
 
     Validate.fromPredicate(
       s => Try(LocalDate.parse(s, ofPattern(format))).isSuccess,
-      s => s"$s has format $format",
+      s => show"$s has format $format",
       ValidDate()
     )
   }

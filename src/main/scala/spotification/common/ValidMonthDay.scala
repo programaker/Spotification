@@ -1,5 +1,6 @@
 package spotification.common
 
+import cats.syntax.show._
 import eu.timepit.refined.api.Validate
 
 import java.time.MonthDay
@@ -17,7 +18,7 @@ object ValidMonthDay {
 
     Validate.fromPredicate(
       s => Try(MonthDay.parse(s, ofPattern(format))).isSuccess,
-      s => s"$s has format $format",
+      s => show"$s has format $format",
       ValidMonthDay()
     )
   }

@@ -1,14 +1,15 @@
 package spotification
 
 import cats.Show
+import cats.syntax.eq._
 import cats.syntax.show._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.And
-import eu.timepit.refined.cats.refTypeShow
+import eu.timepit.refined.cats._
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
-import spotification.album.isAlbum
+import spotification.album.AlbumType
 import spotification.common.{SpotifyId, UriString, UriStringR}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
@@ -41,6 +42,6 @@ package object playlist {
     refineV[UriStringR](show"$userApiUri/$userId/playlists")
 
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
-    if (isAlbum(track.album.album_type)) Some(track.uri)
+    if (track.album.album_type === AlbumType.Album) Some(track.uri)
     else None
 }

@@ -2,6 +2,7 @@ package spotification.config
 
 import pureconfig.ConfigSource
 import spotification.config.service.{
+  ArtistConfigEnv,
   AuthorizationConfigEnv,
   ClientConfigEnv,
   ConcurrentConfigEnv,
@@ -17,6 +18,7 @@ import spotification.config.implicits.AppConfigReader
 package object source {
   val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigEnv] = makeLayer(_.authorization)
   val PlaylistConfigLayer: TaskLayer[PlaylistConfigEnv] = makeLayer(_.playlist)
+  val ArtistConfigLayer: TaskLayer[ArtistConfigEnv] = makeLayer(_.artist)
   val TrackConfigLayer: TaskLayer[TrackConfigEnv] = makeLayer(_.track)
   val MeConfigLayer: TaskLayer[MeConfigEnv] = makeLayer(_.me)
   val UserConfigLayer: TaskLayer[UserConfigEnv] = makeLayer(_.user)

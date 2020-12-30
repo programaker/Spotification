@@ -20,6 +20,7 @@ import io.estatico.newtype.macros.newtype
 import java.time.{LocalDate, MonthDay => JMonthDay}
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ofPattern
+import java.time.temporal.TemporalAccessor
 
 package object common {
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
@@ -81,6 +82,9 @@ package object common {
 
     def fromYearMonthDayString(s: YearMonthDayString): MonthDay =
       MonthDay(JMonthDay.from(LocalDate.parse(s, YearMonthDayString.DashFormatter)))
+
+    def from(temporal: TemporalAccessor): MonthDay =
+      MonthDay(JMonthDay.from(temporal))
   }
 
   // HTTP4s Uri should be able to encode query params, but in my tests

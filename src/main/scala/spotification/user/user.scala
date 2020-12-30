@@ -4,7 +4,7 @@ import cats.Show
 import eu.timepit.refined.cats.refTypeShow
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops.toCoercibleIdOps
-import spotification.common.{DayMonthString, SpotifyId, UriString, monthDayFromDayMonthString}
+import spotification.common.{DayMonthString, MonthDay, SpotifyId, UriString}
 
 package object user {
   @newtype case class UserId(value: SpotifyId)
@@ -18,5 +18,5 @@ package object user {
   }
 
   def makeAnniversaryPlaylistInfo(dayMonth: DayMonthString): AnniversaryPlaylistInfo =
-    AnniversaryPlaylistInfo.fromMonthDay(monthDayFromDayMonthString(dayMonth))
+    AnniversaryPlaylistInfo.fromMonthDay(MonthDay.fromDayMonthString(dayMonth))
 }

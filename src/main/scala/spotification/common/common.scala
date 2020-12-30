@@ -1,10 +1,11 @@
 package spotification
 
-import cats.{Foldable, Show}
+import cats.{Eq, Foldable, Show}
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 import cats.syntax.show._
+import cats.syntax.eq._
 import cats.syntax.foldable._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.api.{Refined, Validate}
@@ -14,9 +15,11 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.numeric.{NonNegative, Positive}
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.{HexStringSpec, IPv4, MatchesRegex, Trimmed, Uri}
+import io.estatico.newtype.macros.newtype
 
-import java.time.{LocalDate, MonthDay}
+import java.time.{LocalDate, MonthDay => JMonthDay}
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ofPattern
 
 package object common {
   type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
@@ -58,15 +61,26 @@ package object common {
   type DayMonthStringR = ValidMonthDay["dd-MM"]
   type DayMonthString = String Refined DayMonthStringR
   object DayMonthString {
-    val `dd-MM`: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM")
-    val `dd/MM`: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
-    implicit val DayMonthShow: Show[MonthDay] = _.format(`dd/MM`)
+    val DashFormatter: DateTimeFormatter = ofPattern("dd-MM")
+    val SlashFormatter: DateTimeFormatter = ofPattern("dd/MM")
   }
 
   type YearMonthDayStringR = ValidDate["yyyy-MM-dd"]
   type YearMonthDayString = String Refined YearMonthDayStringR
   object YearMonthDayString {
-    val `yyyy-MM-dd`: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val DashFormatter: DateTimeFormatter = ofPattern("yyyy-MM-dd")
+  }
+
+  @newtype case class MonthDay(value: JMonthDay)
+  object MonthDay {
+    implicit val MonthDayShow: Show[MonthDay] = _.value.format(DayMonthString.SlashFormatter)
+    implicit val MonthDayEq: Eq[MonthDay] = (md1, md2) => md1.value.compareTo(md2.value) === 0
+
+    def fromDayMonthString(s: DayMonthString): MonthDay =
+      MonthDay(JMonthDay.parse(s, DayMonthString.DashFormatter))
+
+    def fromYearMonthDayString(s: YearMonthDayString): MonthDay =
+      MonthDay(JMonthDay.from(LocalDate.parse(s, YearMonthDayString.DashFormatter)))
   }
 
   // HTTP4s Uri should be able to encode query params, but in my tests
@@ -95,10 +109,4 @@ package object common {
 
   def addRefinedStringParam[P](paramName: String, params: ParamMap, string: Refined[String, P]): ParamMap =
     params + (paramName -> Some(encodeUrl(string)))
-
-  def monthDayFromDayMonthString(s: DayMonthString): MonthDay =
-    MonthDay.parse(s, DayMonthString.`dd-MM`)
-
-  def monthDayFromYearMonthDayString(s: YearMonthDayString): MonthDay =
-    MonthDay.from(LocalDate.parse(s, YearMonthDayString.`yyyy-MM-dd`))
 }

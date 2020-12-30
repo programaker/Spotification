@@ -2,17 +2,17 @@ package spotification.user
 
 import cats.syntax.show._
 import eu.timepit.refined._
-import eu.timepit.refined.auto._
-import spotification.common.{NonBlankString, NonBlankStringR}
-import spotification.common.DayMonthString.DayMonthShow
-
-import java.time.MonthDay
+import spotification.common.{MonthDay, NonBlankString, NonBlankStringR}
 
 final case class AnniversaryPlaylistInfo(name: NonBlankString, description: Option[NonBlankString])
 object AnniversaryPlaylistInfo {
-  def fromMonthDay(md: MonthDay): AnniversaryPlaylistInfo =
+  def fromMonthDay(md: MonthDay): AnniversaryPlaylistInfo = {
+    val name = show"$md Album Anniversaries"
+    val description = show"Songs from albums released on $md by the bands you follow"
+
     AnniversaryPlaylistInfo(
-      name = refineV[NonBlankStringR].unsafeFrom(show"$md Album Anniversaries"),
-      description = Some("Songs from albums released on that date by the bands I follow")
+      refineV[NonBlankStringR].unsafeFrom(name),
+      Some(refineV[NonBlankStringR].unsafeFrom(description))
     )
+  }
 }

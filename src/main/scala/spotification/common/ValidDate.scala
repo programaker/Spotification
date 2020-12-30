@@ -4,6 +4,7 @@ import eu.timepit.refined.api.Validate
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
+import scala.util.Try
 
 /**
  * Predicate that checks if a `String` is a parsable `Date`
@@ -11,6 +12,13 @@ import java.time.format.DateTimeFormatter.ofPattern
  */
 final case class ValidDate[S <: String]()
 object ValidDate {
-  implicit def validDateValidate[S <: String: ValueOf]: Validate.Plain[String, ValidDate[S]] =
-    Validate.fromPartial(LocalDate.parse(_, ofPattern(valueOf[S])), "ValidDate", ValidDate())
+  implicit def validDateValidate[S <: String: ValueOf]: Validate.Plain[String, ValidDate[S]] = {
+    val format = valueOf[S]
+
+    Validate.fromPredicate(
+      s => Try(LocalDate.parse(s, ofPattern(format))).isSuccess,
+      s => s"$s has format $format",
+      ValidDate()
+    )
+  }
 }

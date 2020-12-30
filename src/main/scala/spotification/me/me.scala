@@ -3,18 +3,17 @@ package spotification
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Interval
-import eu.timepit.refined.refineV
 import eu.timepit.refined.auto._
 import eu.timepit.refined.cats.refTypeShow
+import eu.timepit.refined.numeric.Interval
+import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.{UriString, UriStringR}
 
 package object me {
   @newtype case class MeApiUri(value: UriString)
   object MeApiUri {
-    implicit val MeApiUriShow: Show[MeApiUri] = implicitly[Show[UriString]].coerce
+    implicit val MeApiUriShow: Show[MeApiUri] = deriving
   }
 
   type MyFollowedArtistsToProcessMax = 50

@@ -11,7 +11,6 @@ import eu.timepit.refined.numeric.Interval
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.{ParamMap, SpotifyId, UriString, UriStringR, addRefinedStringParam, joinRefinedStrings}
 
 package object artist {
@@ -34,12 +33,12 @@ package object artist {
 
   @newtype case class ArtistId(value: SpotifyId)
   object ArtistId {
-    implicit val ArtistIdShow: Show[ArtistId] = implicitly[Show[SpotifyId]].coerce
+    implicit val ArtistIdShow: Show[ArtistId] = deriving
   }
 
   @newtype case class ArtistApiUri(value: UriString)
   object ArtistApiUri {
-    implicit val ArtistApiUriShow: Show[ArtistApiUri] = implicitly[Show[UriString]].coerce
+    implicit val ArtistApiUriShow: Show[ArtistApiUri] = deriving
   }
 
   def joinIncludeAlbumGroups(groups: List[IncludeAlbumGroup]): Either[String, IncludeAlbumGroupsString] =

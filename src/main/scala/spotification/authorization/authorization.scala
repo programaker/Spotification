@@ -1,7 +1,6 @@
 package spotification
 
 import cats.Show
-import cats.syntax.foldable._
 import cats.syntax.show._
 import cats.syntax.traverse._
 import eu.timepit.refined.api.Refined
@@ -12,7 +11,6 @@ import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common._
 
 import java.nio.charset.StandardCharsets.UTF_8
@@ -61,37 +59,37 @@ package object authorization {
 
   @newtype case class AccessToken(value: NonBlankString)
   object AccessToken {
-    implicit val AccessTokenShow: Show[AccessToken] = implicitly[Show[NonBlankString]].coerce
+    implicit val AccessTokenShow: Show[AccessToken] = deriving
   }
 
   @newtype case class RefreshToken(value: NonBlankString)
   object RefreshToken {
-    implicit val RefreshTokenShow: Show[RefreshToken] = implicitly[Show[NonBlankString]].coerce
+    implicit val RefreshTokenShow: Show[RefreshToken] = deriving
   }
 
   @newtype case class ClientId(value: HexString32)
   object ClientId {
-    implicit val ClientIdShow: Show[ClientId] = implicitly[Show[HexString32]].coerce
+    implicit val ClientIdShow: Show[ClientId] = deriving
   }
 
   @newtype case class ClientSecret(value: HexString32)
   object ClientSecret {
-    implicit val ClientSecretShow: Show[ClientSecret] = implicitly[Show[HexString32]].coerce
+    implicit val ClientSecretShow: Show[ClientSecret] = deriving
   }
 
   @newtype case class AuthorizeUri(value: UriString)
   object AuthorizeUri {
-    implicit val AuthorizeUriShow: Show[AuthorizeUri] = implicitly[Show[UriString]].coerce
+    implicit val AuthorizeUriShow: Show[AuthorizeUri] = deriving
   }
 
   @newtype case class ApiTokenUri(value: UriString)
   object ApiTokenUri {
-    implicit val ApiTokenUriShow: Show[ApiTokenUri] = implicitly[Show[UriString]].coerce
+    implicit val ApiTokenUriShow: Show[ApiTokenUri] = deriving
   }
 
   @newtype case class RedirectUri(value: UriString)
   object RedirectUri {
-    implicit val RedirectUriShow: Show[RedirectUri] = implicitly[Show[UriString]].coerce
+    implicit val RedirectUriShow: Show[RedirectUri] = deriving
   }
 
   def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =

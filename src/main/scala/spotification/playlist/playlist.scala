@@ -8,7 +8,6 @@ import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.album.isAlbum
 import spotification.common.{SpotifyId, UriString, UriStringR}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
@@ -27,12 +26,12 @@ package object playlist {
 
   @newtype case class PlaylistId(value: SpotifyId)
   object PlaylistId {
-    implicit val PlaylistIdShow: Show[PlaylistId] = implicitly[Show[SpotifyId]].coerce
+    implicit val PlaylistIdShow: Show[PlaylistId] = deriving
   }
 
   @newtype case class PlaylistApiUri(value: UriString)
   object PlaylistApiUri {
-    implicit val PlaylistApiUriShow: Show[PlaylistApiUri] = implicitly[Show[UriString]].coerce
+    implicit val PlaylistApiUriShow: Show[PlaylistApiUri] = deriving
   }
 
   def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =

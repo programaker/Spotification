@@ -2,14 +2,13 @@ package spotification
 
 import cats.Show
 import cats.syntax.eq._
-import eu.timepit.refined.cats._
-import eu.timepit.refined.auto._
 import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
+import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.SpotifyId
 
 package object album {
@@ -24,7 +23,7 @@ package object album {
 
   @newtype case class AlbumId(value: SpotifyId)
   object AlbumId {
-    implicit val AlbumIdShow: Show[AlbumId] = implicitly[Show[SpotifyId]].coerce
+    implicit val AlbumIdShow: Show[AlbumId] = deriving
   }
 
   def isAlbum(albumType: AlbumType): Boolean = albumType === "album"

@@ -28,9 +28,11 @@ package object album {
     val Day: ReleaseDatePrecision = "day"
   }
 
-  type AlbumTrackSampleLimit = 1
+  type AlbumTrackSampleLimitValue = 1
+  type AlbumTrackSampleLimitR = Equal[AlbumTrackSampleLimitValue]
+  type AlbumTrackSampleLimit = Int Refined AlbumTrackSampleLimitR
   object AlbumTrackSampleLimit {
-    val Value: AlbumTrackSampleLimit = valueOf[AlbumTrackSampleLimit]
+    val Value: AlbumTrackSampleLimit = refineV[AlbumTrackSampleLimitR].unsafeFrom(valueOf[AlbumTrackSampleLimitValue])
   }
 
   @newtype case class AlbumId(value: SpotifyId)

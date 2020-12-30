@@ -20,7 +20,7 @@ object GetAlbumSampleTrackRequest {
     GetAlbumSampleTrackRequest(
       accessToken,
       albumId,
-      limit = 1, //only one track
-      offset = 1 //2nd track as sample
+      limit = AlbumTrackSampleLimit.Value,
+      offset = 1
     )
 }

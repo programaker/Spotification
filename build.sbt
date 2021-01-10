@@ -2,13 +2,13 @@ val SpotificationV = "3.2.14"
 val ScalaV = "2.13.4"
 val DockerImageV = "adoptopenjdk/openjdk15-openj9:x86_64-alpine-jre-15.0.1_9_openj9-0.23.0"
 
-val Http4sV = "0.21.14"
+val Http4sV = "0.21.15"
 val CirceV = "0.13.0"
 val Specs2V = "4.10.5"
 val LogbackV = "1.2.3"
 val BetterMonadicForV = "0.3.1"
 val KindProjectorV = "0.10.3"
-val RefinedV = "0.9.19"
+val RefinedV = "0.9.20"
 val ZioV = "1.0.3"
 val ZioInteropCatsV = "2.2.0.1"
 val PureConfigV = "0.14.0"
@@ -75,7 +75,10 @@ ThisBuild / wartremoverWarnings ++= Warts.allBut(
   Wart.Any,
   Wart.Nothing,
   Wart.ImplicitConversion,
-  Wart.Overloading
+  Wart.Overloading,
+  Wart.JavaSerializable,
+  Wart.Serializable,
+  Wart.Product
 )
 
 // disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2+

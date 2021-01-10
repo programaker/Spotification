@@ -8,7 +8,7 @@ import spotification.common.{NonNegativeInt, UriString}
 
 final case class GetArtistsAlbumsRequest[T <: RequestType](accessToken: AccessToken, requestType: RequestType)
 object GetArtistsAlbumsRequest {
-  sealed abstract class RequestType extends Product with Serializable
+  sealed trait RequestType
   object RequestType {
     final case class First(
       artistId: ArtistId,

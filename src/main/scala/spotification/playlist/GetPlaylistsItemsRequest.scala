@@ -18,7 +18,7 @@ object GetPlaylistsItemsRequest {
   def next(accessToken: AccessToken, nextUri: UriString): GetPlaylistsItemsRequest[Next] =
     GetPlaylistsItemsRequest(accessToken, Next(nextUri))
 
-  sealed abstract class RequestType extends Product with Serializable
+  sealed trait RequestType
   object RequestType {
     final case class First(
       playlistId: PlaylistId,

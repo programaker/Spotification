@@ -14,7 +14,7 @@ object GetMyFollowedArtistsRequest {
   def next(accessToken: AccessToken, nextUri: UriString): GetMyFollowedArtistsRequest[Next] =
     GetMyFollowedArtistsRequest(accessToken, Next(nextUri))
 
-  sealed abstract class RequestType extends Product with Serializable
+  sealed trait RequestType
   object RequestType {
     final case class First(
       `type`: FollowType,

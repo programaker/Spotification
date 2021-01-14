@@ -6,17 +6,17 @@ import eu.timepit.refined.cats._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.MeConfig
-import spotification.config.service.MeConfigEnv
+import spotification.config.service.MeConfigR
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import spotification.me.json.implicits.{GetMyFollowedArtistsResponseDecoder, GetMyProfileResponseDecoder}
 import spotification.me.service.{
   GetMyFollowedArtistsService,
-  GetMyFollowedArtistsServiceEnv,
+  GetMyFollowedArtistsServiceR,
   GetMyProfileService,
-  GetMyProfileServiceEnv
+  GetMyProfileServiceR
 }
 import zio._
 import zio.interop.catz.monadErrorInstance
@@ -24,14 +24,14 @@ import zio.interop.catz.monadErrorInstance
 package object httpclient {
   import H4sClient.Dsl._
 
-  val GetMyProfileServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyProfileServiceEnv] =
+  val GetMyProfileServiceLayer: URLayer[MeConfigR with HttpClientR, GetMyProfileServiceR] =
     ZLayer.fromServices[MeConfig, H4sClient, GetMyProfileService] { (config, http) => req =>
       Task
         .fromEither(Uri.fromString(config.meApiUri.show))
         .flatMap(doRequest[GetMyProfileResponse](http, _)(GET(_, authorizationBearerHeader(req.accessToken))))
     }
 
-  val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyFollowedArtistsServiceEnv] =
+  val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigR with HttpClientR, GetMyFollowedArtistsServiceR] =
     ZLayer.fromServices[MeConfig, H4sClient, GetMyFollowedArtistsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
         case First(followType, limit) =>

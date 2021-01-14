@@ -9,10 +9,10 @@ import spotification.authorization.api.{
   makeAuthorizationApi,
   requiredRefreshTokenFromRequest
 }
-import spotification.common.httpclient.HttpClientEnv
+import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseErrorEncoder, entityEncoderF}
-import spotification.common.program.AllProgramsEnv
-import spotification.config.service.{AuthorizationConfigEnv, PlaylistConfigEnv, TrackConfigEnv}
+import spotification.common.program.AllProgramsR
+import spotification.config.service.{AuthorizationConfigR, PlaylistConfigR, TrackConfigR}
 import spotification.monitoring.api.makeHealthCheckApi
 import spotification.playlist.api.{PlaylistsLayer, makePlaylistsApi}
 import spotification.track.api.{TracksLayer, makeTracksApi}
@@ -24,10 +24,10 @@ package object api {
   type Routes[F[_]] = Seq[RoutesMapping[F]]
 
   val AllProgramsLayer
-    : RLayer[HttpClientEnv with AuthorizationConfigEnv with PlaylistConfigEnv with TrackConfigEnv, AllProgramsEnv] =
+    : RLayer[HttpClientR with AuthorizationConfigR with PlaylistConfigR with TrackConfigR, AllProgramsR] =
     AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
-  def makeAllApis[R <: AllProgramsEnv]: Routes[RIO[R, *]] =
+  def makeAllApis[R <: AllProgramsR]: Routes[RIO[R, *]] =
     Seq(
       "/health"                -> makeHealthCheckApi[R],
       "/authorization/spotify" -> makeAuthorizationApi[R],

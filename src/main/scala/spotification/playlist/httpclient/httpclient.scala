@@ -7,10 +7,10 @@ import io.circe.syntax.EncoderOps
 import org.http4s.Method.{DELETE, GET, POST}
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.{ErrorResponseDecoder, entityEncoderF}
 import spotification.config.PlaylistConfig
-import spotification.config.service.PlaylistConfigEnv
+import spotification.config.service.PlaylistConfigR
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 import spotification.playlist.json.implicits.{
   AddItemsToPlaylistRequestBodyEncoder,
@@ -25,7 +25,7 @@ import zio.interop.catz.monadErrorInstance
 package object httpclient {
   import H4sClient.Dsl._
 
-  val GetPlaylistsItemsServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, GetPlaylistItemsServiceEnv] =
+  val GetPlaylistsItemsServiceLayer: URLayer[PlaylistConfigR with HttpClientR, GetPlaylistItemsServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, GetPlaylistItemsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
         case First(playlistId, limit, offset) =>
@@ -43,7 +43,7 @@ package object httpclient {
       Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](http, _)(get))
     }
 
-  val AddItemsToPlaylistServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, AddItemsToPlaylistServiceEnv] =
+  val AddItemsToPlaylistServiceLayer: URLayer[PlaylistConfigR with HttpClientR, AddItemsToPlaylistServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, AddItemsToPlaylistService] { (config, http) => req =>
       val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
 
@@ -52,8 +52,7 @@ package object httpclient {
         .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(post))
     }
 
-  val RemoveItemsFromPlaylistServiceLayer
-    : URLayer[PlaylistConfigEnv with HttpClientEnv, RemoveItemsFromPlaylistServiceEnv] =
+  val RemoveItemsFromPlaylistServiceLayer: URLayer[PlaylistConfigR with HttpClientR, RemoveItemsFromPlaylistServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, RemoveItemsFromPlaylistService] { (config, http) => req =>
       val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
 

@@ -4,16 +4,16 @@ import zio.{Has, RIO, Task, ZIO}
 
 package object service {
   type GetMyProfileService = GetMyProfileRequest => Task[GetMyProfileResponse]
-  type GetMyProfileServiceEnv = Has[GetMyProfileService]
+  type GetMyProfileServiceR = Has[GetMyProfileService]
 
   type GetMyFollowedArtistsService = GetMyFollowedArtistsRequest[_] => Task[GetMyFollowedArtistsResponse]
-  type GetMyFollowedArtistsServiceEnv = Has[GetMyFollowedArtistsService]
+  type GetMyFollowedArtistsServiceR = Has[GetMyFollowedArtistsService]
 
-  def getMyProfile(req: GetMyProfileRequest): RIO[GetMyProfileServiceEnv, GetMyProfileResponse] =
+  def getMyProfile(req: GetMyProfileRequest): RIO[GetMyProfileServiceR, GetMyProfileResponse] =
     ZIO.accessM(_.get.apply(req))
 
   def getMyFollowedArtists(
     req: GetMyFollowedArtistsRequest[_]
-  ): RIO[GetMyFollowedArtistsServiceEnv, GetMyFollowedArtistsResponse] =
+  ): RIO[GetMyFollowedArtistsServiceR, GetMyFollowedArtistsResponse] =
     ZIO.accessM(_.get.apply(req))
 }

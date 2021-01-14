@@ -2,31 +2,31 @@ package spotification.config
 
 import pureconfig.ConfigSource
 import spotification.config.service.{
-  AlbumConfigEnv,
-  ArtistConfigEnv,
-  AuthorizationConfigEnv,
-  ClientConfigEnv,
-  ConcurrentConfigEnv,
-  MeConfigEnv,
-  PlaylistConfigEnv,
-  ServerConfigEnv,
-  TrackConfigEnv,
-  UserConfigEnv
+  AlbumConfigR,
+  ArtistConfigR,
+  AuthorizationConfigR,
+  ClientConfigR,
+  ConcurrentConfigR,
+  MeConfigR,
+  PlaylistConfigR,
+  ServerConfigR,
+  TrackConfigR,
+  UserConfigR
 }
 import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 import spotification.config.implicits.AppConfigReader
 
 package object source {
-  val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigEnv] = makeLayer(_.authorization)
-  val PlaylistConfigLayer: TaskLayer[PlaylistConfigEnv] = makeLayer(_.playlist)
-  val ArtistConfigLayer: TaskLayer[ArtistConfigEnv] = makeLayer(_.artist)
-  val AlbumConfigLayer: TaskLayer[AlbumConfigEnv] = makeLayer(_.album)
-  val TrackConfigLayer: TaskLayer[TrackConfigEnv] = makeLayer(_.track)
-  val MeConfigLayer: TaskLayer[MeConfigEnv] = makeLayer(_.me)
-  val UserConfigLayer: TaskLayer[UserConfigEnv] = makeLayer(_.user)
-  val ServerConfigLayer: TaskLayer[ServerConfigEnv] = makeLayer(_.server)
-  val ClientConfigLayer: TaskLayer[ClientConfigEnv] = makeLayer(_.client)
-  val ConcurrentConfigLayer: TaskLayer[ConcurrentConfigEnv] = makeLayer(_.concurrent)
+  val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigR] = makeLayer(_.authorization)
+  val PlaylistConfigLayer: TaskLayer[PlaylistConfigR] = makeLayer(_.playlist)
+  val ArtistConfigLayer: TaskLayer[ArtistConfigR] = makeLayer(_.artist)
+  val AlbumConfigLayer: TaskLayer[AlbumConfigR] = makeLayer(_.album)
+  val TrackConfigLayer: TaskLayer[TrackConfigR] = makeLayer(_.track)
+  val MeConfigLayer: TaskLayer[MeConfigR] = makeLayer(_.me)
+  val UserConfigLayer: TaskLayer[UserConfigR] = makeLayer(_.user)
+  val ServerConfigLayer: TaskLayer[ServerConfigR] = makeLayer(_.server)
+  val ClientConfigLayer: TaskLayer[ClientConfigR] = makeLayer(_.client)
+  val ConcurrentConfigLayer: TaskLayer[ConcurrentConfigR] = makeLayer(_.concurrent)
 
   private def makeLayer[A: Tag](f: AppConfig => A): TaskLayer[Has[A]] =
     appConfigLayer.map(_.get).map(f).map(Has(_))

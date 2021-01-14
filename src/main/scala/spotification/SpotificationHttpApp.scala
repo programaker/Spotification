@@ -2,9 +2,9 @@ package spotification
 
 import spotification.common.api.{AllProgramsLayer, makeAllApis}
 import spotification.common.httpclient.HttpClientLayer
-import spotification.common.program.AllProgramsEnv
-import spotification.concurrent.{ExecutionContextEnv, ExecutionContextLayer, executionContext}
-import spotification.config.service.{ServerConfigEnv, serverConfig}
+import spotification.common.program.AllProgramsR
+import spotification.concurrent.{ExecutionContextLayer, ExecutionContextR, executionContext}
+import spotification.config.service.{ServerConfigR, serverConfig}
 import spotification.config.source._
 import spotification.httpserver.{addCors, addLogger, makeHttpApp, runHttpServer}
 import spotification.log.service.error
@@ -15,9 +15,9 @@ import zio.interop.catz._
 import scala.util.control.NonFatal
 
 object SpotificationHttpApp extends zio.App {
-  type HttpAppEnv = ServerConfigEnv with ExecutionContextEnv with AllProgramsEnv with Clock
+  type HttpAppR = ServerConfigR with ExecutionContextR with AllProgramsR with Clock
 
-  val HttpAppLayer: TaskLayer[HttpAppEnv] =
+  val HttpAppLayer: TaskLayer[HttpAppR] =
     ServerConfigLayer >+>
       ConcurrentConfigLayer >+>
       ExecutionContextLayer >+>
@@ -35,16 +35,16 @@ object SpotificationHttpApp extends zio.App {
       .provideCustomLayer(HttpAppLayer)
       .exitCode
 
-  private def runHttpApp: RIO[HttpAppEnv, Unit] =
-    ZIO.runtime[HttpAppEnv].flatMap { implicit rt =>
+  private def runHttpApp: RIO[HttpAppR, Unit] =
+    ZIO.runtime[HttpAppR].flatMap { implicit rt =>
       for {
         config <- serverConfig
         ex     <- executionContext
 
-        controllers = makeAllApis[HttpAppEnv]
+        controllers = makeAllApis[HttpAppR]
         app = addCors(addLogger(makeHttpApp(controllers)))
 
-        _ <- runHttpServer[RIO[HttpAppEnv, *]](config, app, ex)
+        _ <- runHttpServer[RIO[HttpAppR, *]](config, app, ex)
       } yield ()
     }
 }

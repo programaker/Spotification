@@ -5,9 +5,9 @@ import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.RequestAccessTokenProgramLayer
 import spotification.common.GenericResponse
 import spotification.common.api.{doRequest, handleGenericError}
-import spotification.common.httpclient.HttpClientEnv
+import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
-import spotification.config.service.{AuthorizationConfigEnv, PlaylistConfigEnv}
+import spotification.config.service.{AuthorizationConfigR, PlaylistConfigR}
 import spotification.config.source.PlaylistConfigLayer
 import spotification.log.impl.LogLayer
 import spotification.playlist.httpclient.{
@@ -23,7 +23,7 @@ import zio.{RIO, RLayer}
 
 package object api {
   val ReleaseRadarNoSinglesProgramLayer
-    : RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, ReleaseRadarNoSinglesProgramEnv] =
+    : RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, ReleaseRadarNoSinglesProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -32,7 +32,7 @@ package object api {
       AddItemsToPlaylistServiceLayer
 
   val MergePlaylistsProgramLayer
-    : RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, MergePlaylistsProgramEnv] =
+    : RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, MergePlaylistsProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -41,10 +41,10 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  val PlaylistsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with PlaylistConfigEnv, PlaylistProgramsEnv] =
+  val PlaylistsLayer: RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, PlaylistProgramsR] =
     ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer
 
-  def makePlaylistsApi[R <: PlaylistProgramsEnv]: HttpRoutes[RIO[R, *]] = {
+  def makePlaylistsApi[R <: PlaylistProgramsR]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

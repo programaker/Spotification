@@ -5,19 +5,19 @@ import eu.timepit.refined.cats._
 import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.album.json.implicits.GetAlbumSampleTrackResponseDecoder
-import spotification.album.service.{GetAlbumSampleTrackService, GetAlbumSampleTrackServiceEnv}
+import spotification.album.service.{GetAlbumSampleTrackService, GetAlbumSampleTrackServiceR}
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.AlbumConfig
-import spotification.config.service.AlbumConfigEnv
+import spotification.config.service.AlbumConfigR
 import zio.interop.catz.monadErrorInstance
 import zio.{Task, URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
 
-  val GetAlbumSampleTrackServiceLayer: URLayer[AlbumConfigEnv with HttpClientEnv, GetAlbumSampleTrackServiceEnv] =
+  val GetAlbumSampleTrackServiceLayer: URLayer[AlbumConfigR with HttpClientR, GetAlbumSampleTrackServiceR] =
     ZLayer.fromServices[AlbumConfig, H4sClient, GetAlbumSampleTrackService] { (config, http) => req =>
       val h4sUri = eitherUriStringToH4s(albumsTracksUri(config.albumApiUri, req.albumId)).map {
         _.withQueryParam("limit", req.limit.show)

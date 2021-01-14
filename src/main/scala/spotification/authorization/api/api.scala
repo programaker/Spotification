@@ -12,25 +12,25 @@ import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, A
 import spotification.authorization.program._
 import spotification.common.NonBlankStringP
 import spotification.common.api.handleGenericError
-import spotification.common.httpclient.HttpClientEnv
+import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.entityEncoderF
-import spotification.config.service.AuthorizationConfigEnv
+import spotification.config.service.AuthorizationConfigR
 import spotification.config.source.AuthorizationConfigLayer
 import spotification.effect.refineRIO
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import zio.{RIO, RLayer, ZIO}
 
 package object api {
-  val AuthorizeCallbackProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, AuthorizeCallbackProgramEnv] =
+  val AuthorizeCallbackProgramLayer: RLayer[AuthorizationConfigR with HttpClientR, AuthorizeCallbackProgramR] =
     AuthorizationConfigLayer ++ RequestTokenServiceLayer
 
-  val RequestAccessTokenProgramLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, RequestAccessTokenProgramEnv] =
+  val RequestAccessTokenProgramLayer: RLayer[AuthorizationConfigR with HttpClientR, RequestAccessTokenProgramR] =
     AuthorizationConfigLayer ++ RefreshTokenServiceLayer
 
-  val AuthorizationProgramsLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv, AuthorizationProgramsEnv] =
+  val AuthorizationProgramsLayer: RLayer[AuthorizationConfigR with HttpClientR, AuthorizationProgramsR] =
     AuthorizeCallbackProgramLayer ++ RequestAccessTokenProgramLayer
 
-  def makeAuthorizationApi[R <: AuthorizationProgramsEnv]: HttpRoutes[RIO[R, *]] = {
+  def makeAuthorizationApi[R <: AuthorizationProgramsR]: HttpRoutes[RIO[R, *]] = {
     val Callback: String = "callback"
 
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]

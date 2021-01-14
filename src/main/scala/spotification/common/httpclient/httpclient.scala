@@ -9,9 +9,9 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.Logger
 import org.http4s.{Request, Uri}
-import spotification.concurrent.ExecutionContextEnv
+import spotification.concurrent.ExecutionContextR
 import spotification.config.ClientConfig
-import spotification.config.service.ClientConfigEnv
+import spotification.config.service.ClientConfigR
 import zio._
 import zio.interop.catz.{catsIOResourceSyntax, taskConcurrentInstance, taskEffectInstance}
 
@@ -28,8 +28,9 @@ package object httpclient {
     val Dsl: Http4sClientDsl[Task] = new Http4sClientDsl[Task] {}
   }
 
-  type HttpClientEnv = Has[H4sClient]
-  val HttpClientLayer: RLayer[ExecutionContextEnv with ClientConfigEnv, HttpClientEnv] = {
+  type HttpClientR = Has[H4sClient]
+
+  val HttpClientLayer: RLayer[ExecutionContextR with ClientConfigR, HttpClientR] = {
     def makeHttpClient: URIO[ExecutionContext, RManaged[ExecutionContext, H4sClient]] =
       ZIO.runtime[ExecutionContext].map(implicit rt => BlazeClientBuilder[Task](rt.environment).resource.toManaged)
 

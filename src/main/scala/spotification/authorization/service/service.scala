@@ -4,14 +4,14 @@ import zio.{Has, RIO, Task, ZIO}
 
 package object service {
   type RequestTokenService = AccessTokenRequest => Task[AccessTokenResponse]
-  type RequestTokenServiceEnv = Has[RequestTokenService]
+  type RequestTokenServiceR = Has[RequestTokenService]
 
   type RefreshTokenService = RefreshTokenRequest => Task[RefreshTokenResponse]
-  type RefreshTokenServiceEnv = Has[RefreshTokenService]
+  type RefreshTokenServiceR = Has[RefreshTokenService]
 
-  def requestToken(req: AccessTokenRequest): RIO[RequestTokenServiceEnv, AccessTokenResponse] =
+  def requestToken(req: AccessTokenRequest): RIO[RequestTokenServiceR, AccessTokenResponse] =
     ZIO.accessM(_.get.apply(req))
 
-  def refreshToken(req: RefreshTokenRequest): RIO[RefreshTokenServiceEnv, RefreshTokenResponse] =
+  def refreshToken(req: RefreshTokenRequest): RIO[RefreshTokenServiceR, RefreshTokenResponse] =
     ZIO.accessM(_.get.apply(req))
 }

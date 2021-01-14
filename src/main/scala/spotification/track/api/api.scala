@@ -5,23 +5,23 @@ import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.{RequestAccessTokenProgramLayer, requiredRefreshTokenFromRequest}
 import spotification.common.GenericResponse
 import spotification.common.api.handleGenericError
-import spotification.common.httpclient.HttpClientEnv
+import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
-import spotification.config.service.{AuthorizationConfigEnv, TrackConfigEnv}
+import spotification.config.service.{AuthorizationConfigR, TrackConfigR}
 import spotification.track.httpclient.GetTrackServiceLayer
-import spotification.track.program.{MakeShareTrackMessageProgramEnv, TrackProgramsEnv, makeShareTrackMessageProgram}
+import spotification.track.program.{MakeShareTrackMessageProgramR, TrackProgramsR, makeShareTrackMessageProgram}
 import zio.interop.catz.{deferInstance, monadErrorInstance}
 import zio.{RIO, RLayer}
 
 package object api {
   val MakeShareTrackMessageProgramLayer
-    : RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, MakeShareTrackMessageProgramEnv] =
+    : RLayer[AuthorizationConfigR with HttpClientR with TrackConfigR, MakeShareTrackMessageProgramR] =
     RequestAccessTokenProgramLayer ++ GetTrackServiceLayer
 
-  val TracksLayer: RLayer[AuthorizationConfigEnv with HttpClientEnv with TrackConfigEnv, TrackProgramsEnv] =
+  val TracksLayer: RLayer[AuthorizationConfigR with HttpClientR with TrackConfigR, TrackProgramsR] =
     MakeShareTrackMessageProgramLayer
 
-  def makeTracksApi[R <: TrackProgramsEnv]: HttpRoutes[RIO[R, *]] = {
+  def makeTracksApi[R <: TrackProgramsR]: HttpRoutes[RIO[R, *]] = {
     val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 

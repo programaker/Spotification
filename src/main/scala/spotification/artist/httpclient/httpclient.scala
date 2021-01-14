@@ -8,19 +8,19 @@ import org.http4s.Method.GET
 import org.http4s.Uri
 import spotification.artist.GetArtistsAlbumsRequest.RequestType
 import spotification.artist.json.implicits.GetArtistsAlbumsResponseDecoder
-import spotification.artist.service.{GetArtistsAlbumsService, GetArtistsAlbumsServiceEnv}
+import spotification.artist.service.{GetArtistsAlbumsService, GetArtistsAlbumsServiceR}
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.ArtistConfig
-import spotification.config.service.ArtistConfigEnv
+import spotification.config.service.ArtistConfigR
 import zio.interop.catz.monadErrorInstance
 import zio.{Task, URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
 
-  val GetArtistsAlbumsServiceLayer: URLayer[ArtistConfigEnv with HttpClientEnv, GetArtistsAlbumsServiceEnv] =
+  val GetArtistsAlbumsServiceLayer: URLayer[ArtistConfigR with HttpClientR, GetArtistsAlbumsServiceR] =
     ZLayer.fromServices[ArtistConfig, H4sClient, GetArtistsAlbumsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
         case RequestType.First(artistId, include_groups, limit, offset) =>

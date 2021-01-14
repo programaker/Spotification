@@ -11,15 +11,15 @@ import org.http4s.{MediaType, Uri, UrlForm}
 import spotification.authorization.json.implicits.{AccessTokenResponseDecoder, RefreshTokenResponseDecoder}
 import spotification.authorization.service.{
   RefreshTokenService,
-  RefreshTokenServiceEnv,
+  RefreshTokenServiceR,
   RequestTokenService,
-  RequestTokenServiceEnv
+  RequestTokenServiceR
 }
-import spotification.common.httpclient.{H4sClient, HttpClientEnv, doRequest, jPost}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, jPost}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.common.{ParamMap, encodeUrl, makeQueryString}
 import spotification.config.AuthorizationConfig
-import spotification.config.service.AuthorizationConfigEnv
+import spotification.config.service.AuthorizationConfigR
 import spotification.effect.leftStringEitherToTask
 import zio.interop.catz.monadErrorInstance
 import zio.{Task, URLayer, ZLayer}
@@ -30,7 +30,7 @@ package object httpclient {
   type H4sAuthorization = org.http4s.headers.Authorization
   val H4sAuthorization: org.http4s.headers.Authorization.type = org.http4s.headers.Authorization
 
-  val RequestTokenServiceLayer: URLayer[AuthorizationConfigEnv, RequestTokenServiceEnv] =
+  val RequestTokenServiceLayer: URLayer[AuthorizationConfigR, RequestTokenServiceR] =
     ZLayer.fromService[AuthorizationConfig, RequestTokenService] { config => req =>
       val params: ParamMap = Map(
         "grant_type"   -> Some(req.grant_type),
@@ -50,7 +50,7 @@ package object httpclient {
         .flatMap(Task.fromEither(_))
     }
 
-  val RefreshTokenServiceLayer: URLayer[AuthorizationConfigEnv with HttpClientEnv, RefreshTokenServiceEnv] =
+  val RefreshTokenServiceLayer: URLayer[AuthorizationConfigR with HttpClientR, RefreshTokenServiceR] =
     ZLayer.fromServices[AuthorizationConfig, H4sClient, RefreshTokenService] { (config, http) => req =>
       val urlForm = UrlForm(
         "grant_type"    -> req.grant_type,

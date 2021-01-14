@@ -2,7 +2,7 @@ package spotification.user
 
 import cats.syntax.show._
 import eu.timepit.refined._
-import spotification.common.{MonthDay, NonBlankString, NonBlankStringR}
+import spotification.common.{MonthDay, NonBlankString, NonBlankStringP}
 
 final case class AnniversaryPlaylistInfo(name: NonBlankString, description: Option[NonBlankString])
 object AnniversaryPlaylistInfo {
@@ -11,8 +11,8 @@ object AnniversaryPlaylistInfo {
     val description = show"Songs from albums released on $md by the bands you follow"
 
     AnniversaryPlaylistInfo(
-      refineV[NonBlankStringR].unsafeFrom(name),
-      Some(refineV[NonBlankStringR].unsafeFrom(description))
+      refineV[NonBlankStringP].unsafeFrom(name),
+      Some(refineV[NonBlankStringP].unsafeFrom(description))
     )
   }
 }

@@ -19,28 +19,28 @@ import spotification.common.{
   ParamMap,
   SpotifyId,
   UriString,
-  UriStringR,
-  YearMonthDayStringR,
+  UriStringP,
+  YearMonthDayStringP,
   addRefinedStringParam,
   joinRefinedStrings
 }
 
 package object artist {
-  type IncludeAlbumGroupR =
+  type IncludeAlbumGroupP =
     Equal["album"] Or
       Equal["single"] Or
       Equal["appears_on"] Or
       Equal["compilation"]
-  type IncludeAlbumGroup = String Refined IncludeAlbumGroupR
+  type IncludeAlbumGroup = String Refined IncludeAlbumGroupP
 
-  type IncludeAlbumGroupsStringR = MatchesRegex["""^[a-z]([a-z_])+(\,([a-z_])+)*[a-z]$"""]
-  type IncludeAlbumGroupsString = String Refined IncludeAlbumGroupsStringR
+  type IncludeAlbumGroupsStringP = MatchesRegex["""^[a-z]([a-z_])+(\,([a-z_])+)*[a-z]$"""]
+  type IncludeAlbumGroupsString = String Refined IncludeAlbumGroupsStringP
 
   type ArtistAlbumsToProcessMax = 50
-  type ArtistAlbumsLimitR = Interval.Closed[1, ArtistAlbumsToProcessMax]
-  type ArtistAlbumsLimit = Int Refined ArtistAlbumsLimitR
+  type ArtistAlbumsLimitP = Interval.Closed[1, ArtistAlbumsToProcessMax]
+  type ArtistAlbumsLimit = Int Refined ArtistAlbumsLimitP
   object ArtistAlbumsLimit {
-    val MaxValue: ArtistAlbumsLimit = refineV[ArtistAlbumsLimitR].unsafeFrom(valueOf[ArtistAlbumsToProcessMax])
+    val MaxValue: ArtistAlbumsLimit = refineV[ArtistAlbumsLimitP].unsafeFrom(valueOf[ArtistAlbumsToProcessMax])
   }
 
   @newtype case class ArtistId(value: SpotifyId)
@@ -60,13 +60,13 @@ package object artist {
     joinIncludeAlbumGroups(groups).map(addRefinedStringParam("include_groups", params, _))
 
   def artistsAlbumsUri(artistApiUri: ArtistApiUri, artistId: ArtistId): Either[String, UriString] =
-    refineV[UriStringR](show"$artistApiUri/$artistId/albums")
+    refineV[UriStringP](show"$artistApiUri/$artistId/albums")
 
   def hasReleaseDatePrecision(album: GetArtistsAlbumsResponse.Album, precision: ReleaseDatePrecision): Boolean =
     album.release_date_precision === precision
 
   def hasReleaseDate(album: GetArtistsAlbumsResponse.Album, date: MonthDay): Boolean =
-    refineV[YearMonthDayStringR](album.release_date.value)
+    refineV[YearMonthDayStringP](album.release_date.value)
       .map(MonthDay.fromYearMonthDayString)
       .contains(date)
 

@@ -23,51 +23,51 @@ import java.time.format.DateTimeFormatter.ofPattern
 import java.time.temporal.TemporalAccessor
 
 package object common {
-  type NonBlankStringR = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
-  type NonBlankString = String Refined NonBlankStringR
+  type NonBlankStringP = MinSize[1] And Not[MatchesRegex["""^\s+$"""]] And Trimmed
+  type NonBlankString = String Refined NonBlankStringP
 
   // Size[N] refinement does not work for Strings,
   // but MinSize[N] and MaxSize[N] do somehow =S
   type StringLength[N] = MinSize[N] And MaxSize[N]
 
-  type HexString32R = StringLength[32] And HexStringSpec
-  type HexString32 = String Refined HexString32R
+  type HexString32P = StringLength[32] And HexStringSpec
+  type HexString32 = String Refined HexString32P
 
-  type UriStringR = Uri
-  type UriString = String Refined UriStringR
+  type UriStringP = Uri
+  type UriString = String Refined UriStringP
   type CurrentUri = UriString
   type NextUri = UriString
 
-  type PositiveIntR = Positive
-  type PositiveInt = Int Refined PositiveIntR
+  type PositiveIntP = Positive
+  type PositiveInt = Int Refined PositiveIntP
 
-  type NonNegativeIntR = NonNegative
-  type NonNegativeInt = Int Refined NonNegativeIntR
+  type NonNegativeIntP = NonNegative
+  type NonNegativeInt = Int Refined NonNegativeIntP
 
-  type HostR = IPv4
-  type Host = String Refined HostR
+  type HostP = IPv4
+  type Host = String Refined HostP
 
   // Some Spotify API's allow to select which fields we want to get
   // through a String like this one for playlist's tracks: "next,total,items.track.album(id,album_type)"
-  type FieldsToReturnR = MatchesRegex["""^[a-z]([a-z_.()])+(\,([a-z_.()])+)*[a-z)]$"""]
-  type FieldsToReturn = String Refined FieldsToReturnR
+  type FieldsToReturnP = MatchesRegex["""^[a-z]([a-z_.()])+(\,([a-z_.()])+)*[a-z)]$"""]
+  type FieldsToReturn = String Refined FieldsToReturnP
 
   // The base-62 identifier that you can find at the end of
   // the Spotify URI for an artist, track, album, playlist, etc
-  type SpotifyIdR = MatchesRegex["^[0-9a-zA-Z]+$"]
-  type SpotifyId = String Refined SpotifyIdR
+  type SpotifyIdP = MatchesRegex["^[0-9a-zA-Z]+$"]
+  type SpotifyId = String Refined SpotifyIdP
 
   type ParamMap = Map[String, Option[String]]
 
-  type DayMonthStringR = ValidMonthDay["dd-MM"]
-  type DayMonthString = String Refined DayMonthStringR
+  type DayMonthStringP = ValidMonthDay["dd-MM"]
+  type DayMonthString = String Refined DayMonthStringP
   object DayMonthString {
     val DashFormatter: DateTimeFormatter = ofPattern("dd-MM")
     val SlashFormatter: DateTimeFormatter = ofPattern("dd/MM")
   }
 
-  type YearMonthDayStringR = ValidDate["yyyy-MM-dd"]
-  type YearMonthDayString = String Refined YearMonthDayStringR
+  type YearMonthDayStringP = ValidDate["yyyy-MM-dd"]
+  type YearMonthDayString = String Refined YearMonthDayStringP
   object YearMonthDayString {
     val DashFormatter: DateTimeFormatter = ofPattern("yyyy-MM-dd")
   }

@@ -22,7 +22,7 @@ object RemoveItemsFromPlaylistRequest {
       Body(
         // Since `PlaylistItemsToProcess[TrackUri]` is already valid, we don't need to refine again
         // We know the result of `map` will respect the refinement
-        refineV[PlaylistItemsToProcessR].unsafeFrom(tracks.value.map(TrackToRemove))
+        refineV[PlaylistItemsToProcessP].unsafeFrom(tracks.value.map(TrackToRemove))
       ),
       playlistId,
       accessToken

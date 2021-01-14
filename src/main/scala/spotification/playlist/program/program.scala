@@ -151,7 +151,7 @@ package object program {
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
-        .map(refineRIO[AddItemsToPlaylistServiceEnv, PlaylistItemsToProcessR](_))
+        .map(refineRIO[AddItemsToPlaylistServiceEnv, PlaylistItemsToProcessP](_))
         .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
         .to(Iterable)
 
@@ -168,7 +168,7 @@ package object program {
         .map(_.uri)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
-        .map(refineRIO[RemoveItemsFromPlaylistServiceEnv, PlaylistItemsToProcessR](_))
+        .map(refineRIO[RemoveItemsFromPlaylistServiceEnv, PlaylistItemsToProcessP](_))
         .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.requestType.playlistId, req.accessToken)))
         .map(_.flatMap(removeItemsFromPlaylist))
         .to(Iterable)

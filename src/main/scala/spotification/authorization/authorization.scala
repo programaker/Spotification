@@ -17,45 +17,45 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 package object authorization {
-  type AuthorizationResponseTypeR = Equal["code"] //it's the only one that appeared until now
-  type AuthorizationResponseType = String Refined AuthorizationResponseTypeR
+  type AuthorizationResponseTypeP = Equal["code"] //it's the only one that appeared until now
+  type AuthorizationResponseType = String Refined AuthorizationResponseTypeP
   object AuthorizationResponseType {
     val Code: AuthorizationResponseType = "code"
   }
 
-  type AccessTokenGrantTypeR = Equal["authorization_code"]
-  type AccessTokenGrantType = String Refined AccessTokenGrantTypeR
+  type AccessTokenGrantTypeP = Equal["authorization_code"]
+  type AccessTokenGrantType = String Refined AccessTokenGrantTypeP
   object AccessTokenGrantType {
     val AuthorizationCode: AccessTokenGrantType = "authorization_code"
   }
 
-  type RefreshTokenGrantTypeR = Equal["refresh_token"]
-  type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeR
+  type RefreshTokenGrantTypeP = Equal["refresh_token"]
+  type RefreshTokenGrantType = String Refined RefreshTokenGrantTypeP
   object RefreshTokenGrantType {
     val RefreshToken: RefreshTokenGrantType = "refresh_token"
   }
 
-  type TokenTypeR = Equal["Bearer"]
-  type TokenType = String Refined TokenTypeR
+  type TokenTypeP = Equal["Bearer"]
+  type TokenType = String Refined TokenTypeP
 
   // ScopeString = space-separated kebab-case strings
   // ex: "playlist-read-private playlist-modify-private playlist-modify-public"
-  type ScopeStringR = MatchesRegex["""^[a-z]([a-z-])+(\s([a-z-])+)*[a-z]$"""]
-  type ScopeString = String Refined ScopeStringR
+  type ScopeStringP = MatchesRegex["""^[a-z]([a-z-])+(\s([a-z-])+)*[a-z]$"""]
+  type ScopeString = String Refined ScopeStringP
 
-  type PlaylistScopeR =
+  type PlaylistScopeP =
     Equal["playlist-read-collaborative"] Or
       Equal["playlist-modify-public"] Or
       Equal["playlist-read-private"] Or
       Equal["playlist-modify-private"]
 
-  type UserScopeR =
+  type UserScopeP =
     Equal["user-read-private"] Or
       Equal["user-read-email"] Or
       Equal["user-follow-read"]
 
-  type ScopeR = PlaylistScopeR Or UserScopeR
-  type Scope = String Refined ScopeR
+  type ScopeP = PlaylistScopeP Or UserScopeP
+  type Scope = String Refined ScopeP
 
   @newtype case class AccessToken(value: NonBlankString)
   object AccessToken {
@@ -93,7 +93,7 @@ package object authorization {
   }
 
   def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =
-    rawScope.split("\\s").toList.map(refineV[ScopeR](_)).sequence[Either[String, *], Scope]
+    rawScope.split("\\s").toList.map(refineV[ScopeP](_)).sequence[Either[String, *], Scope]
 
   def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
     joinRefinedStrings(scopes, " ")
@@ -121,6 +121,6 @@ package object authorization {
       .getOrElse(Right(params))
       .map(makeQueryString)
       .map(q => show"$authorizeUri?$q")
-      .flatMap(refineV[UriStringR](_))
+      .flatMap(refineV[UriStringP](_))
   }
 }

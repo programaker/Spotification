@@ -10,7 +10,7 @@ import org.http4s.{HttpRoutes, Request, Uri}
 import spotification.authorization.httpclient.{RefreshTokenServiceLayer, RequestTokenServiceLayer}
 import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
 import spotification.authorization.program._
-import spotification.common.NonBlankStringR
+import spotification.common.NonBlankStringP
 import spotification.common.api.handleGenericError
 import spotification.common.httpclient.HttpClientEnv
 import spotification.common.json.implicits.entityEncoderF
@@ -65,7 +65,7 @@ package object api {
         case Token(Bearer, refreshTokenString) => Some(refreshTokenString)
         case _                                 => None
       }
-      .map(refineRIO[R, NonBlankStringR](_))
+      .map(refineRIO[R, NonBlankStringP](_))
       .sequence
       .map(_.map(RefreshToken(_)))
 }

@@ -10,29 +10,29 @@ import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import spotification.common.{SpotifyId, UriString, UriStringR}
+import spotification.common.{SpotifyId, UriString, UriStringP}
 
 package object album {
-  type AlbumTypeR = Equal["album"] Or Equal["single"] Or Equal["compilation"]
-  type AlbumType = String Refined AlbumTypeR
+  type AlbumTypeP = Equal["album"] Or Equal["single"] Or Equal["compilation"]
+  type AlbumType = String Refined AlbumTypeP
   object AlbumType {
     val Album: AlbumType = "album"
   }
 
-  type ReleaseDateStringR = MatchesRegex["""^\d{4}(-\d{2})?(-\d{2})?$"""]
-  type ReleaseDateString = String Refined ReleaseDateStringR
+  type ReleaseDateStringP = MatchesRegex["""^\d{4}(-\d{2})?(-\d{2})?$"""]
+  type ReleaseDateString = String Refined ReleaseDateStringP
 
-  type ReleaseDatePrecisionR = Equal["year"] Or Equal["month"] Or Equal["day"]
-  type ReleaseDatePrecision = String Refined ReleaseDatePrecisionR
+  type ReleaseDatePrecisionP = Equal["year"] Or Equal["month"] Or Equal["day"]
+  type ReleaseDatePrecision = String Refined ReleaseDatePrecisionP
   object ReleaseDatePrecision {
     val Day: ReleaseDatePrecision = "day"
   }
 
   type AlbumTrackSampleLimitValue = 1
-  type AlbumTrackSampleLimitR = Equal[AlbumTrackSampleLimitValue]
-  type AlbumTrackSampleLimit = Int Refined AlbumTrackSampleLimitR
+  type AlbumTrackSampleLimitP = Equal[AlbumTrackSampleLimitValue]
+  type AlbumTrackSampleLimit = Int Refined AlbumTrackSampleLimitP
   object AlbumTrackSampleLimit {
-    val Value: AlbumTrackSampleLimit = refineV[AlbumTrackSampleLimitR].unsafeFrom(valueOf[AlbumTrackSampleLimitValue])
+    val Value: AlbumTrackSampleLimit = refineV[AlbumTrackSampleLimitP].unsafeFrom(valueOf[AlbumTrackSampleLimitValue])
   }
 
   @newtype case class AlbumId(value: SpotifyId)
@@ -46,5 +46,5 @@ package object album {
   }
 
   def albumsTracksUri(albumApiUri: AlbumApiUri, albumId: AlbumId): Either[String, UriString] =
-    refineV[UriStringR](show"$albumApiUri/$albumId/tracks")
+    refineV[UriStringP](show"$albumApiUri/$albumId/tracks")
 }

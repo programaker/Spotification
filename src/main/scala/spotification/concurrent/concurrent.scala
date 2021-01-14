@@ -1,7 +1,6 @@
 package spotification
 
 import eu.timepit.refined.auto._
-import spotification.config.ConcurrentConfig
 import spotification.config.service.ConcurrentConfigEnv
 import spotification.effect.accessRIO
 import zio.{Has, RIO, URLayer, ZLayer}

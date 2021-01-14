@@ -8,7 +8,7 @@ import eu.timepit.refined.cats.refTypeShow
 import eu.timepit.refined.numeric.Interval
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
-import spotification.common.{UriString, UriStringR}
+import spotification.common.{UriString, UriStringP}
 
 package object me {
   @newtype case class MeApiUri(value: UriString)
@@ -17,13 +17,13 @@ package object me {
   }
 
   type MyFollowedArtistsToProcessMax = 50
-  type MyFollowedArtistsLimitR = Interval.Closed[1, MyFollowedArtistsToProcessMax]
-  type MyFollowedArtistsLimit = Int Refined MyFollowedArtistsLimitR
+  type MyFollowedArtistsLimitP = Interval.Closed[1, MyFollowedArtistsToProcessMax]
+  type MyFollowedArtistsLimit = Int Refined MyFollowedArtistsLimitP
   object MyFollowedArtistsLimit {
     val MaxValue: MyFollowedArtistsLimit =
-      refineV[MyFollowedArtistsLimitR].unsafeFrom(valueOf[MyFollowedArtistsToProcessMax])
+      refineV[MyFollowedArtistsLimitP].unsafeFrom(valueOf[MyFollowedArtistsToProcessMax])
   }
 
   def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[String, UriString] =
-    refineV[UriStringR](show"$meApiUri/following")
+    refineV[UriStringP](show"$meApiUri/following")
 }

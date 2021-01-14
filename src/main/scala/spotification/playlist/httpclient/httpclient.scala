@@ -26,57 +26,42 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val GetPlaylistsItemsServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, GetPlaylistItemsServiceEnv] =
-    ContextLayer >>> ZLayer.fromService(ctx => getPlaylistsItems(ctx, _))
+    ZLayer.fromServices[PlaylistConfig, H4sClient, GetPlaylistItemsService] { (config, http) => req =>
+      val h4sUri = req.requestType match {
+        case First(playlistId, limit, offset) =>
+          tracksUri(config.playlistApiUri, playlistId).map {
+            _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
+              .withQueryParam("limit", limit.show)
+              .withQueryParam("offset", offset.show)
+          }
+
+        case Next(nextUri) =>
+          Uri.fromString(nextUri)
+      }
+
+      val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
+      Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](http, _)(get))
+    }
 
   val AddItemsToPlaylistServiceLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, AddItemsToPlaylistServiceEnv] =
-    ContextLayer >>> ZLayer.fromService(ctx => addItemsToPlaylist(ctx, _))
+    ZLayer.fromServices[PlaylistConfig, H4sClient, AddItemsToPlaylistService] { (config, http) => req =>
+      val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
+
+      Task
+        .fromEither(tracksUri(config.playlistApiUri, req.playlistId))
+        .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(post))
+    }
 
   val RemoveItemsFromPlaylistServiceLayer
     : URLayer[PlaylistConfigEnv with HttpClientEnv, RemoveItemsFromPlaylistServiceEnv] =
-    ContextLayer >>> ZLayer.fromService(ctx => removeItemsFromPlaylist(ctx, _))
+    ZLayer.fromServices[PlaylistConfig, H4sClient, RemoveItemsFromPlaylistService] { (config, http) => req =>
+      val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
 
-  private def getPlaylistsItems(ctx: Context, req: GetPlaylistsItemsRequest[_]): Task[GetPlaylistsItemsResponse] = {
-    val h4sUri = req.requestType match {
-      case First(playlistId, limit, offset) =>
-        tracksUri(ctx.playlistApiUri, playlistId).map {
-          _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
-            .withQueryParam("limit", limit.show)
-            .withQueryParam("offset", offset.show)
-        }
-
-      case Next(nextUri) =>
-        Uri.fromString(nextUri)
+      Task
+        .fromEither(tracksUri(config.playlistApiUri, req.playlistId))
+        .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(delete))
     }
-
-    val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-    Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](ctx.httpClient, _)(get))
-  }
-
-  private def addItemsToPlaylist(ctx: Context, req: AddItemsToPlaylistRequest): Task[PlaylistSnapshotResponse] = {
-    val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(tracksUri(ctx.playlistApiUri, req.playlistId))
-      .flatMap(doRequest[PlaylistSnapshotResponse](ctx.httpClient, _)(post))
-  }
-
-  private def removeItemsFromPlaylist(
-    ctx: Context,
-    req: RemoveItemsFromPlaylistRequest
-  ): Task[PlaylistSnapshotResponse] = {
-    val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-    Task
-      .fromEither(tracksUri(ctx.playlistApiUri, req.playlistId))
-      .flatMap(doRequest[PlaylistSnapshotResponse](ctx.httpClient, _)(delete))
-  }
 
   private def tracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[Throwable, Uri] =
     eitherUriStringToH4s(playlistTracksUri(playlistApiUri, playlistId))
-
-  private final case class Context(playlistApiUri: PlaylistApiUri, httpClient: H4sClient)
-  private lazy val ContextLayer: URLayer[PlaylistConfigEnv with HttpClientEnv, Has[Context]] =
-    ZLayer.fromServices[PlaylistConfig, H4sClient, Context] { (playlistConfig, httpClient) =>
-      Context(playlistConfig.playlistApiUri, httpClient)
-    }
 }

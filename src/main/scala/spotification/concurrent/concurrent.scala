@@ -13,7 +13,7 @@ package object concurrent {
   type ExecutionContextEnv = Has[ExecutionContext]
 
   val ExecutionContextLayer: URLayer[ConcurrentConfigEnv, ExecutionContextEnv] =
-    ZLayer.fromService[ConcurrentConfig, ExecutionContext] { config =>
+    ZLayer.fromService { config =>
       ExecutionContext.fromExecutor(Executors.newFixedThreadPool(config.numberOfThreads))
     }
 

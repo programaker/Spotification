@@ -12,7 +12,12 @@ import spotification.config.MeConfig
 import spotification.config.service.MeConfigEnv
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import spotification.me.json.implicits.{GetMyFollowedArtistsResponseDecoder, GetMyProfileResponseDecoder}
-import spotification.me.service.{GetMyFollowedArtistsServiceEnv, GetMyProfileServiceEnv}
+import spotification.me.service.{
+  GetMyFollowedArtistsService,
+  GetMyFollowedArtistsServiceEnv,
+  GetMyProfileService,
+  GetMyProfileServiceEnv
+}
 import zio._
 import zio.interop.catz.monadErrorInstance
 
@@ -20,39 +25,27 @@ package object httpclient {
   import H4sClient.Dsl._
 
   val GetMyProfileServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyProfileServiceEnv] =
-    ContextLayer >>> ZLayer.fromService(ctx => getMyProfile(ctx, _))
-
-  val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyFollowedArtistsServiceEnv] =
-    ContextLayer >>> ZLayer.fromService(ctx => getMyFollowedArtists(ctx, _))
-
-  private def getMyProfile(ctx: Context, req: GetMyProfileRequest): Task[GetMyProfileResponse] =
-    Task
-      .fromEither(Uri.fromString(ctx.meApiUri.show))
-      .flatMap(doRequest[GetMyProfileResponse](ctx.httpClient, _)(GET(_, authorizationBearerHeader(req.accessToken))))
-
-  private def getMyFollowedArtists(
-    ctx: Context,
-    req: GetMyFollowedArtistsRequest[_]
-  ): Task[GetMyFollowedArtistsResponse] = {
-    val h4sUri = req.requestType match {
-      case First(followType, limit) =>
-        val addQueryParams: Uri => Uri =
-          _.withQueryParam("type", followType.show)
-            .withOptionQueryParam("limit", limit.map(_.show))
-
-        eitherUriStringToH4s(makeMyFollowedArtistsUri(ctx.meApiUri)).map(addQueryParams)
-
-      case Next(nextUri) =>
-        Uri.fromString(nextUri)
+    ZLayer.fromServices[MeConfig, H4sClient, GetMyProfileService] { (config, http) => req =>
+      Task
+        .fromEither(Uri.fromString(config.meApiUri.show))
+        .flatMap(doRequest[GetMyProfileResponse](http, _)(GET(_, authorizationBearerHeader(req.accessToken))))
     }
 
-    val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-    Task.fromEither(h4sUri).flatMap(doRequest[GetMyFollowedArtistsResponse](ctx.httpClient, _)(get))
-  }
+  val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigEnv with HttpClientEnv, GetMyFollowedArtistsServiceEnv] =
+    ZLayer.fromServices[MeConfig, H4sClient, GetMyFollowedArtistsService] { (config, http) => req =>
+      val h4sUri = req.requestType match {
+        case First(followType, limit) =>
+          val addQueryParams: Uri => Uri =
+            _.withQueryParam("type", followType.show)
+              .withOptionQueryParam("limit", limit.map(_.show))
 
-  private final case class Context(meApiUri: MeApiUri, httpClient: H4sClient)
-  private lazy val ContextLayer: URLayer[MeConfigEnv with HttpClientEnv, Has[Context]] =
-    ZLayer.fromServices[MeConfig, H4sClient, Context] { (meConfig, httpClient) =>
-      Context(meConfig.meApiUri, httpClient)
+          eitherUriStringToH4s(makeMyFollowedArtistsUri(config.meApiUri)).map(addQueryParams)
+
+        case Next(nextUri) =>
+          Uri.fromString(nextUri)
+      }
+
+      val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
+      Task.fromEither(h4sUri).flatMap(doRequest[GetMyFollowedArtistsResponse](http, _)(get))
     }
 }

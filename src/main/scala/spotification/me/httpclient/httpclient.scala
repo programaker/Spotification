@@ -11,25 +11,13 @@ import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.MeConfig
 import spotification.config.service.MeConfigR
 import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
-import spotification.me.json.implicits.{GetMyFollowedArtistsResponseDecoder, GetMyProfileResponseDecoder}
-import spotification.me.service.{
-  GetMyFollowedArtistsService,
-  GetMyFollowedArtistsServiceR,
-  GetMyProfileService,
-  GetMyProfileServiceR
-}
+import spotification.me.json.implicits.GetMyFollowedArtistsResponseDecoder
+import spotification.me.service.{GetMyFollowedArtistsService, GetMyFollowedArtistsServiceR}
 import zio._
 import zio.interop.catz.monadErrorInstance
 
 package object httpclient {
   import H4sClient.Dsl._
-
-  val GetMyProfileServiceLayer: URLayer[MeConfigR with HttpClientR, GetMyProfileServiceR] =
-    ZLayer.fromServices[MeConfig, H4sClient, GetMyProfileService] { (config, http) => req =>
-      Task
-        .fromEither(Uri.fromString(config.meApiUri.show))
-        .flatMap(doRequest[GetMyProfileResponse](http, _)(GET(_, authorizationBearerHeader(req.accessToken))))
-    }
 
   val GetMyFollowedArtistsServiceLayer: URLayer[MeConfigR with HttpClientR, GetMyFollowedArtistsServiceR] =
     ZLayer.fromServices[MeConfig, H4sClient, GetMyFollowedArtistsService] { (config, http) => req =>

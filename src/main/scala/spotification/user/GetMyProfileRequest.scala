@@ -1,4 +1,4 @@
-package spotification.me
+package spotification.user
 
 import spotification.authorization.AccessToken
 

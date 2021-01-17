@@ -12,6 +12,9 @@ package object service {
   type RemoveItemsFromPlaylistService = RemoveItemsFromPlaylistRequest => Task[PlaylistSnapshotResponse]
   type RemoveItemsFromPlaylistServiceR = Has[RemoveItemsFromPlaylistService]
 
+  type CreatePlaylistService = CreatePlaylistRequest => Task[CreatePlaylistResponse]
+  type CreatePlaylistServiceR = Has[CreatePlaylistService]
+
   def getPlaylistItems(req: GetPlaylistsItemsRequest[_]): RIO[GetPlaylistItemsServiceR, GetPlaylistsItemsResponse] =
     ZIO.accessM(_.get.apply(req))
 
@@ -21,5 +24,8 @@ package object service {
   def removeItemsFromPlaylist(
     req: RemoveItemsFromPlaylistRequest
   ): RIO[RemoveItemsFromPlaylistServiceR, PlaylistSnapshotResponse] =
+    ZIO.accessM(_.get.apply(req))
+
+  def createPlaylist(req: CreatePlaylistRequest): RIO[CreatePlaylistServiceR, CreatePlaylistResponse] =
     ZIO.accessM(_.get.apply(req))
 }

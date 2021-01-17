@@ -7,6 +7,8 @@ import io.estatico.newtype.ops.toCoercibleIdOps
 import spotification.common.SpotifyId
 import spotification.playlist.{
   AddItemsToPlaylistRequest,
+  CreatePlaylistRequest,
+  CreatePlaylistResponse,
   GetPlaylistsItemsResponse,
   MergePlaylistsRequest,
   PlaylistId,
@@ -47,5 +49,11 @@ object implicits {
     deriveDecoder
 
   implicit val MergePlaylistsRequestDecoder: Decoder[MergePlaylistsRequest] =
+    deriveDecoder
+
+  implicit val CreatePlaylistRequestBodyEncoder: Encoder[CreatePlaylistRequest.Body] =
+    deriveEncoder
+
+  implicit val CreatePlaylistResponseDecoder: Decoder[CreatePlaylistResponse] =
     deriveDecoder
 }

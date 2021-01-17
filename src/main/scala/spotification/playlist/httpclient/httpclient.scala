@@ -9,11 +9,13 @@ import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.{ErrorResponseDecoder, entityEncoderF}
-import spotification.config.PlaylistConfig
-import spotification.config.service.PlaylistConfigR
+import spotification.config.{PlaylistConfig, UserConfig}
+import spotification.config.service.{PlaylistConfigR, UserConfigR}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 import spotification.playlist.json.implicits.{
   AddItemsToPlaylistRequestBodyEncoder,
+  CreatePlaylistRequestBodyEncoder,
+  CreatePlaylistResponseDecoder,
   GetPlaylistsItemsResponseDecoder,
   PlaylistSnapshotResponseDecoder,
   RemoveItemsFromPlaylistRequestEncoder
@@ -59,6 +61,13 @@ package object httpclient {
       Task
         .fromEither(tracksUri(config.playlistApiUri, req.playlistId))
         .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(delete))
+    }
+
+  val CreatePlaylistServiceLayer: URLayer[UserConfigR with HttpClientR, CreatePlaylistServiceR] =
+    ZLayer.fromServices[UserConfig, H4sClient, CreatePlaylistService] { (config, http) => req =>
+      val h4sUri = eitherUriStringToH4s(userPlaylistsUri(config.userApiUri, req.userId))
+      val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
+      Task.fromEither(h4sUri).flatMap(doRequest[CreatePlaylistResponse](http, _)(post))
     }
 
   private def tracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[Throwable, Uri] =

@@ -1,4 +1,4 @@
-package spotification.user
+package spotification.playlist
 
 import cats.syntax.show._
 import eu.timepit.refined._

@@ -1,7 +1,8 @@
-package spotification.user
+package spotification.playlist
 
 import spotification.authorization.AccessToken
 import spotification.common.NonBlankString
+import spotification.user.UserId
 
 final case class CreatePlaylistRequest(
   accessToken: AccessToken,
@@ -14,7 +15,7 @@ object CreatePlaylistRequest {
     description: Option[NonBlankString]
   )
 
-  def make(
+  def forAnniversaryPlaylist(
     accessToken: AccessToken,
     userId: UserId,
     anniversaryPlaylistInfo: AnniversaryPlaylistInfo

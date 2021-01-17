@@ -10,7 +10,7 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import spotification.album.AlbumType
-import spotification.common.{SpotifyId, UriString, UriStringP}
+import spotification.common.{DayMonthString, MonthDay, SpotifyId, UriString, UriStringP}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import spotification.user.{UserApiUri, UserId}
@@ -44,4 +44,7 @@ package object playlist {
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
     if (track.album.album_type === AlbumType.Album) Some(track.uri)
     else None
+
+  def makeAnniversaryPlaylistInfo(dayMonth: DayMonthString): AnniversaryPlaylistInfo =
+    AnniversaryPlaylistInfo.fromMonthDay(MonthDay.fromDayMonthString(dayMonth))
 }

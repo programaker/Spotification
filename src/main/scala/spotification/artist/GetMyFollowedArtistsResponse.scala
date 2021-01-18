@@ -1,6 +1,5 @@
-package spotification.me
+package spotification.artist
 
-import spotification.artist.ArtistId
 import spotification.common.UriString
 
 final case class GetMyFollowedArtistsResponse(artists: GetMyFollowedArtistsResponse.Artists)

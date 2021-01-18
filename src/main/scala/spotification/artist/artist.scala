@@ -24,6 +24,7 @@ import spotification.common.{
   addRefinedStringParam,
   joinRefinedStrings
 }
+import spotification.me.MeApiUri
 
 package object artist {
   type IncludeAlbumGroupP =
@@ -35,6 +36,14 @@ package object artist {
 
   type IncludeAlbumGroupsStringP = MatchesRegex["""^[a-z]([a-z_])+(\,([a-z_])+)*[a-z]$"""]
   type IncludeAlbumGroupsString = String Refined IncludeAlbumGroupsStringP
+
+  type MyFollowedArtistsToProcessMax = 50
+  type MyFollowedArtistsLimitP = Interval.Closed[1, MyFollowedArtistsToProcessMax]
+  type MyFollowedArtistsLimit = Int Refined MyFollowedArtistsLimitP
+  object MyFollowedArtistsLimit {
+    val MaxValue: MyFollowedArtistsLimit =
+      refineV[MyFollowedArtistsLimitP].unsafeFrom(valueOf[MyFollowedArtistsToProcessMax])
+  }
 
   type ArtistAlbumsToProcessMax = 50
   type ArtistAlbumsLimitP = Interval.Closed[1, ArtistAlbumsToProcessMax]
@@ -70,4 +79,6 @@ package object artist {
       .map(MonthDay.fromYearMonthDayString)
       .contains(date)
 
+  def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[String, UriString] =
+    refineV[UriStringP](show"$meApiUri/following")
 }

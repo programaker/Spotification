@@ -1,10 +1,10 @@
-package spotification.me
+package spotification.artist
 
+import spotification.artist.GetMyFollowedArtistsRequest.RequestType
+import spotification.artist.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 import spotification.authorization.AccessToken
 import spotification.common.UriString
 import spotification.follow.FollowType
-import spotification.me.GetMyFollowedArtistsRequest.RequestType
-import spotification.me.GetMyFollowedArtistsRequest.RequestType.{First, Next}
 
 final case class GetMyFollowedArtistsRequest[T <: RequestType](accessToken: AccessToken, requestType: T)
 object GetMyFollowedArtistsRequest {

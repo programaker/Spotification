@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import cats.syntax.show._
 import cats.syntax.eq._
 import cats.syntax.foldable._
+import cats.syntax.either._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.api.{Refined, Validate}
 import eu.timepit.refined.boolean.{And, Not}
@@ -108,9 +109,23 @@ package object common {
     separator: String
   )(implicit
     v: Validate[String, P2]
-  ): Either[String, Refined[String, P2]] =
-    refineV[P2](strings.mkString_(separator))
+  ): Either[RefinementError, Refined[String, P2]] =
+    refineE[P2](strings.mkString_(separator))
 
   def addRefinedStringParam[P](paramName: String, params: ParamMap, string: Refined[String, P]): ParamMap =
     params + (paramName -> Some(encodeUrl(string)))
+
+  /** Refinement function that models Predicate errors as [[RefinementError]] */
+  def refineE[P]: PartialRefineE[P] = new PartialRefineE
+  final class PartialRefineE[P] {
+    def apply[T](t: T)(implicit v: Validate[T, P]): Either[RefinementError, Refined[T, P]] =
+      refineV[P](t).leftMap(RefinementError)
+  }
+
+  /** Unsafe refinement function; throws [[IllegalArgumentException]] when Predicate fails */
+  def refineU[P]: PartialRefineU[P] = new PartialRefineU
+  final class PartialRefineU[P] {
+    def apply[T](t: T)(implicit v: Validate[T, P]): Refined[T, P] =
+      refineV[P].unsafeFrom(t)
+  }
 }

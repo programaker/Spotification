@@ -7,10 +7,10 @@ import io.circe.syntax.EncoderOps
 import org.http4s.Method.{DELETE, GET, POST}
 import org.http4s.Uri
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, uriStringToUri}
 import spotification.common.json.implicits.{ErrorResponseDecoder, entityEncoderF}
-import spotification.config.{PlaylistConfig, UserConfig}
 import spotification.config.service.{PlaylistConfigR, UserConfigR}
+import spotification.config.{PlaylistConfig, UserConfig}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 import spotification.playlist.json.implicits.{
   AddItemsToPlaylistRequestBodyEncoder,
@@ -61,11 +61,11 @@ package object httpclient {
 
   val CreatePlaylistServiceLayer: URLayer[UserConfigR with HttpClientR, CreatePlaylistServiceR] =
     ZLayer.fromServices[UserConfig, H4sClient, CreatePlaylistService] { (config, http) => req =>
-      val uri = eitherUriStringToH4s(userPlaylistsUri(config.userApiUri, req.userId))
       val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
+      val uri = userPlaylistsUri(config.userApiUri, req.userId).flatMap(uriStringToUri)
       doRequest[CreatePlaylistResponse](http, uri)(post)
     }
 
   private def tracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[Throwable, Uri] =
-    eitherUriStringToH4s(playlistTracksUri(playlistApiUri, playlistId))
+    playlistTracksUri(playlistApiUri, playlistId).flatMap(uriStringToUri)
 }

@@ -20,7 +20,6 @@ import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.common.{ParamMap, encodeUrl, makeQueryString}
 import spotification.config.AuthorizationConfig
 import spotification.config.service.AuthorizationConfigR
-import spotification.effect.leftStringEitherToTask
 import zio.interop.catz.monadErrorInstance
 import zio.{Task, URLayer, ZLayer}
 
@@ -74,6 +73,5 @@ package object httpclient {
     H4sAuthorization(Token(Bearer, accessToken.value))
 
   def makeAuthorizeH4sUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Task[Uri] =
-    leftStringEitherToTask(makeAuthorizeUri(authorizeUri, req))
-      .map(uriString => Uri.unsafeFromString(uriString))
+    Task.fromEither(makeAuthorizeUri(authorizeUri, req)).map(uriString => Uri.unsafeFromString(uriString))
 }

@@ -1,29 +1,17 @@
 package spotification
 
 import cats.Show
-import cats.syntax.show._
 import cats.syntax.eq._
+import cats.syntax.show._
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.cats._
-import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
-import eu.timepit.refined.cats.refTypeShow
+import eu.timepit.refined.cats.{refTypeShow, _}
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.numeric.Interval
-import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import spotification.album.ReleaseDatePrecision
-import spotification.common.{
-  MonthDay,
-  ParamMap,
-  SpotifyId,
-  UriString,
-  UriStringP,
-  YearMonthDayStringP,
-  addRefinedStringParam,
-  joinRefinedStrings
-}
+import spotification.common._
 import spotification.me.MeApiUri
 
 package object artist {
@@ -41,15 +29,14 @@ package object artist {
   type MyFollowedArtistsLimitP = Interval.Closed[1, MyFollowedArtistsToProcessMax]
   type MyFollowedArtistsLimit = Int Refined MyFollowedArtistsLimitP
   object MyFollowedArtistsLimit {
-    val MaxValue: MyFollowedArtistsLimit =
-      refineV[MyFollowedArtistsLimitP].unsafeFrom(valueOf[MyFollowedArtistsToProcessMax])
+    val MaxValue: MyFollowedArtistsLimit = refineU[MyFollowedArtistsLimitP](valueOf[MyFollowedArtistsToProcessMax])
   }
 
   type ArtistAlbumsToProcessMax = 50
   type ArtistAlbumsLimitP = Interval.Closed[1, ArtistAlbumsToProcessMax]
   type ArtistAlbumsLimit = Int Refined ArtistAlbumsLimitP
   object ArtistAlbumsLimit {
-    val MaxValue: ArtistAlbumsLimit = refineV[ArtistAlbumsLimitP].unsafeFrom(valueOf[ArtistAlbumsToProcessMax])
+    val MaxValue: ArtistAlbumsLimit = refineU[ArtistAlbumsLimitP](valueOf[ArtistAlbumsToProcessMax])
   }
 
   @newtype case class ArtistId(value: SpotifyId)
@@ -62,23 +49,23 @@ package object artist {
     implicit val ArtistApiUriShow: Show[ArtistApiUri] = deriving
   }
 
-  def joinIncludeAlbumGroups(groups: List[IncludeAlbumGroup]): Either[String, IncludeAlbumGroupsString] =
+  def joinIncludeAlbumGroups(groups: List[IncludeAlbumGroup]): Either[RefinementError, IncludeAlbumGroupsString] =
     joinRefinedStrings(groups, ",")
 
-  def addIncludeAlbumGroupsParam(params: ParamMap, groups: List[IncludeAlbumGroup]): Either[String, ParamMap] =
+  def addIncludeAlbumGroupsParam(params: ParamMap, groups: List[IncludeAlbumGroup]): Either[RefinementError, ParamMap] =
     joinIncludeAlbumGroups(groups).map(addRefinedStringParam("include_groups", params, _))
 
-  def artistsAlbumsUri(artistApiUri: ArtistApiUri, artistId: ArtistId): Either[String, UriString] =
-    refineV[UriStringP](show"$artistApiUri/$artistId/albums")
+  def artistsAlbumsUri(artistApiUri: ArtistApiUri, artistId: ArtistId): Either[RefinementError, UriString] =
+    refineE[UriStringP](show"$artistApiUri/$artistId/albums")
 
   def hasReleaseDatePrecision(album: GetArtistsAlbumsResponse.Album, precision: ReleaseDatePrecision): Boolean =
     album.release_date_precision === precision
 
   def hasReleaseDate(album: GetArtistsAlbumsResponse.Album, date: MonthDay): Boolean =
-    refineV[YearMonthDayStringP](album.release_date.value)
+    refineE[YearMonthDayStringP](album.release_date.value)
       .map(MonthDay.fromYearMonthDayString)
       .contains(date)
 
-  def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[String, UriString] =
-    refineV[UriStringP](show"$meApiUri/following")
+  def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[RefinementError, UriString] =
+    refineE[UriStringP](show"$meApiUri/following")
 }

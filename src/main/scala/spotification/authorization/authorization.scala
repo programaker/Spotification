@@ -8,7 +8,6 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
-import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import spotification.common._
@@ -92,13 +91,13 @@ package object authorization {
     implicit val RedirectUriShow: Show[RedirectUri] = deriving
   }
 
-  def parseScope(rawScope: ScopeString): Either[String, List[Scope]] =
-    rawScope.split("\\s").toList.map(refineV[ScopeP](_)).sequence[Either[String, *], Scope]
+  def parseScope(rawScope: ScopeString): Either[RefinementError, List[Scope]] =
+    rawScope.split("\\s").toList.map(refineE[ScopeP](_)).sequence[Either[RefinementError, *], Scope]
 
-  def joinScopes(scopes: List[Scope]): Either[String, ScopeString] =
+  def joinScopes(scopes: List[Scope]): Either[RefinementError, ScopeString] =
     joinRefinedStrings(scopes, " ")
 
-  def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[String, ParamMap] =
+  def addScopeParam(params: ParamMap, scopes: List[Scope]): Either[RefinementError, ParamMap] =
     joinScopes(scopes).map(addRefinedStringParam("scope", params, _))
 
   def base64Credentials(clientId: ClientId, clientSecret: ClientSecret): String =
@@ -107,7 +106,7 @@ package object authorization {
   def base64(s: String): String =
     Base64.getEncoder.encodeToString(s.getBytes(UTF_8))
 
-  def makeAuthorizeUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Either[String, UriString] = {
+  def makeAuthorizeUri(authorizeUri: AuthorizeUri, req: AuthorizeRequest): Either[RefinementError, UriString] = {
     val params = Map(
       "client_id"     -> Some(req.client_id.show),
       "response_type" -> Some(req.response_type.show),
@@ -121,6 +120,6 @@ package object authorization {
       .getOrElse(Right(params))
       .map(makeQueryString)
       .map(q => show"$authorizeUri?$q")
-      .flatMap(refineV[UriStringP](_))
+      .flatMap(refineE[UriStringP](_))
   }
 }

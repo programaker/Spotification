@@ -7,10 +7,9 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
 import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
-import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
-import spotification.common.{SpotifyId, UriString, UriStringP}
+import spotification.common._
 
 package object album {
   type AlbumTypeP = Equal["album"] Or Equal["single"] Or Equal["compilation"]
@@ -32,7 +31,7 @@ package object album {
   type AlbumTrackSampleLimitP = Equal[AlbumTrackSampleLimitValue]
   type AlbumTrackSampleLimit = Int Refined AlbumTrackSampleLimitP
   object AlbumTrackSampleLimit {
-    val Value: AlbumTrackSampleLimit = refineV[AlbumTrackSampleLimitP].unsafeFrom(valueOf[AlbumTrackSampleLimitValue])
+    val Value: AlbumTrackSampleLimit = refineU[AlbumTrackSampleLimitP](valueOf[AlbumTrackSampleLimitValue])
   }
 
   @newtype case class AlbumId(value: SpotifyId)
@@ -45,6 +44,6 @@ package object album {
     implicit val AlbumApiUriShow: Show[AlbumApiUri] = deriving
   }
 
-  def albumsTracksUri(albumApiUri: AlbumApiUri, albumId: AlbumId): Either[String, UriString] =
-    refineV[UriStringP](show"$albumApiUri/$albumId/tracks")
+  def albumsTracksUri(albumApiUri: AlbumApiUri, albumId: AlbumId): Either[RefinementError, UriString] =
+    refineE[UriStringP](show"$albumApiUri/$albumId/tracks")
 }

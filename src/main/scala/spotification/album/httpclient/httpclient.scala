@@ -7,7 +7,7 @@ import org.http4s.Uri
 import spotification.album.json.implicits.GetAlbumSampleTrackResponseDecoder
 import spotification.album.service.{GetAlbumSampleTrackService, GetAlbumSampleTrackServiceR}
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, uriStringToUri}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.AlbumConfig
 import spotification.config.service.AlbumConfigR
@@ -19,7 +19,7 @@ package object httpclient {
 
   val GetAlbumSampleTrackServiceLayer: URLayer[AlbumConfigR with HttpClientR, GetAlbumSampleTrackServiceR] =
     ZLayer.fromServices[AlbumConfig, H4sClient, GetAlbumSampleTrackService] { (config, http) => req =>
-      val h4sUri = eitherUriStringToH4s(albumsTracksUri(config.albumApiUri, req.albumId)).map {
+      val h4sUri = albumsTracksUri(config.albumApiUri, req.albumId).flatMap(uriStringToUri).map {
         _.withQueryParam("limit", req.limit.show)
           .withQueryParam("offset", req.offset.show)
       }

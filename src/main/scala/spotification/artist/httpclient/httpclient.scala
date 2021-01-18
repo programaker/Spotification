@@ -1,6 +1,5 @@
 package spotification.artist
 
-import cats.syntax.either._
 import cats.syntax.show._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.cats._
@@ -16,7 +15,7 @@ import spotification.artist.service.{
   GetMyFollowedArtistsServiceR
 }
 import spotification.authorization.httpclient.authorizationBearerHeader
-import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
+import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, uriStringToUri}
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.service.{ArtistConfigR, MeConfigR}
 import spotification.config.{ArtistConfig, MeConfig}
@@ -30,11 +29,10 @@ package object httpclient {
     ZLayer.fromServices[MeConfig, H4sClient, GetMyFollowedArtistsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
         case First(followType, limit) =>
-          val addQueryParams: Uri => Uri =
+          makeMyFollowedArtistsUri(config.meApiUri).flatMap(uriStringToUri).map {
             _.withQueryParam("type", followType.show)
               .withOptionQueryParam("limit", limit.map(_.show))
-
-          eitherUriStringToH4s(makeMyFollowedArtistsUri(config.meApiUri)).map(addQueryParams)
+          }
 
         case Next(nextUri) =>
           Uri.fromString(nextUri)
@@ -49,8 +47,9 @@ package object httpclient {
       val h4sUri = req.requestType match {
         case RequestType.First(artistId, include_groups, limit, offset) =>
           for {
-            uri <- eitherUriStringToH4s(artistsAlbumsUri(config.artistApiUri, artistId))
-            ig  <- joinIncludeAlbumGroups(include_groups).leftMap(new Exception(_))
+            uriString <- artistsAlbumsUri(config.artistApiUri, artistId)
+            uri       <- uriStringToUri(uriString)
+            ig        <- joinIncludeAlbumGroups(include_groups)
           } yield uri
             .withQueryParam("include_groups", ig.show)
             .withQueryParam("limit", limit.show)

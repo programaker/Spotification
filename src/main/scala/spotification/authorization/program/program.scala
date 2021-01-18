@@ -3,7 +3,7 @@ package spotification.authorization
 import spotification.authorization.service.{RefreshTokenServiceR, RequestTokenServiceR, refreshToken, requestToken}
 import spotification.common.{NonBlankStringP, UriString}
 import spotification.config.service.{AuthorizationConfigR, authorizationConfig}
-import spotification.effect.{leftStringEitherToRIO, refineRIO, refineTask}
+import spotification.effect.{eitherToRIO, refineRIO, refineTask}
 import zio.{RIO, Task}
 
 package object program {
@@ -24,7 +24,7 @@ package object program {
   def makeAuthorizeUriProgram: RIO[AuthorizationConfigR, UriString] =
     authorizationConfig
       .map(config => makeAuthorizeUri(config.authorizeUri, AuthorizeRequest.make(config)))
-      .flatMap(leftStringEitherToRIO)
+      .flatMap(eitherToRIO)
 
   def requestAccessTokenProgram(token: RefreshToken): RIO[RequestAccessTokenProgramR, AccessToken] =
     for {

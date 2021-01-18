@@ -1,8 +1,8 @@
 package spotification.playlist
 
 import spotification.authorization.AccessToken
+import spotification.common.refineU
 import spotification.track.TrackUri
-import eu.timepit.refined._
 
 final case class RemoveItemsFromPlaylistRequest(
   body: RemoveItemsFromPlaylistRequest.Body,
@@ -22,7 +22,7 @@ object RemoveItemsFromPlaylistRequest {
       Body(
         // Since `PlaylistItemsToProcess[TrackUri]` is already valid, we don't need to refine again
         // We know the result of `map` will respect the refinement
-        refineV[PlaylistItemsToProcessP].unsafeFrom(tracks.value.map(TrackToRemove))
+        refineU[PlaylistItemsToProcessP](tracks.value.map(TrackToRemove))
       ),
       playlistId,
       accessToken

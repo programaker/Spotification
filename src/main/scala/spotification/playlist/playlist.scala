@@ -10,7 +10,7 @@ import eu.timepit.refined.collection.{MaxSize, MinSize}
 import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import spotification.album.AlbumType
-import spotification.common.{DayMonthString, MonthDay, SpotifyId, UriString, UriStringP}
+import spotification.common.{DayMonthString, MonthDay, RefinementError, SpotifyId, UriString, UriStringP, refineE}
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import spotification.user.{UserApiUri, UserId}
@@ -35,11 +35,11 @@ package object playlist {
     implicit val PlaylistApiUriShow: Show[PlaylistApiUri] = deriving
   }
 
-  def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[String, UriString] =
-    refineV[UriStringP](show"$playlistApiUri/$playlistId/tracks")
+  def playlistTracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[RefinementError, UriString] =
+    refineE[UriStringP](show"$playlistApiUri/$playlistId/tracks")
 
-  def userPlaylistsUri(userApiUri: UserApiUri, userId: UserId): Either[String, UriString] =
-    refineV[UriStringP](show"$userApiUri/$userId/playlists")
+  def userPlaylistsUri(userApiUri: UserApiUri, userId: UserId): Either[RefinementError, UriString] =
+    refineE[UriStringP](show"$userApiUri/$userId/playlists")
 
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
     if (track.album.album_type === AlbumType.Album) Some(track.uri)

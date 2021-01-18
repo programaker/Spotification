@@ -12,7 +12,7 @@ import spotification.effect.leftStringEitherToTask
 import spotification.track.json.implicits.GetTrackResponseDecoder
 import spotification.track.service.{GetTrackService, GetTrackServiceR}
 import zio.interop.catz.monadErrorInstance
-import zio.{Task, URLayer, ZLayer}
+import zio.{URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
@@ -23,8 +23,7 @@ package object httpclient {
 
       for {
         trackUri <- leftStringEitherToTask(makeTrackUri(config.trackApiUri, req.trackId))
-        h4sUri   <- Task.fromEither(Uri.fromString(trackUri))
-        resp     <- doRequest[GetTrackResponse](http, h4sUri)(get)
+        resp     <- doRequest[GetTrackResponse](http, Uri.fromString(trackUri))(get)
       } yield resp
     }
 }

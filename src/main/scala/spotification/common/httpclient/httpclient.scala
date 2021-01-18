@@ -42,19 +42,10 @@ package object httpclient {
     }
   }
 
-  def doRequest[A: Decoder](httpClient: H4sClient, uri: Uri)(
+  def doRequest[A: Decoder](httpClient: H4sClient, h4sUri: Either[Throwable, Uri])(
     req: Uri => Task[Request[Task]]
   )(implicit der: Decoder[ErrorResponse]): Task[A] =
-    req(uri)
-      .flatMap(httpClient.expect[String])
-      .map(s => jawn.decode[A](s).leftMap(_ => jawn.decode[ErrorResponse](s)))
-      .map(_.leftMap {
-        case Left(decodeError) =>
-          decodeError
-        case Right(ErrorResponse(status, message)) =>
-          new Exception(show"Error: status=$status, message='$message', uri='${uri.renderString}'")
-      })
-      .flatMap(Task.fromEither(_))
+    Task.fromEither(h4sUri).flatMap(requestUri[A](httpClient, _)(req))
 
   /**
    * So, why did we need to appeal to Java HttpClient!?
@@ -93,4 +84,18 @@ package object httpclient {
     eitherUriString
       .leftMap(new Exception(_))
       .flatMap((s: UriString) => Uri.fromString(s))
+
+  private def requestUri[A: Decoder](httpClient: H4sClient, uri: Uri)(
+    req: Uri => Task[Request[Task]]
+  )(implicit der: Decoder[ErrorResponse]): Task[A] =
+    req(uri)
+      .flatMap(httpClient.expect[String])
+      .map(s => jawn.decode[A](s).leftMap(_ => jawn.decode[ErrorResponse](s)))
+      .map(_.leftMap {
+        case Left(decodeError) =>
+          decodeError
+        case Right(ErrorResponse(status, message)) =>
+          new Exception(show"Error: status=$status, message='$message', uri='${uri.renderString}'")
+      })
+      .flatMap(Task.fromEither(_))
 }

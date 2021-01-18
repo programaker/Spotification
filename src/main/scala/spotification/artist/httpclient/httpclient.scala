@@ -18,10 +18,10 @@ import spotification.artist.service.{
 import spotification.authorization.httpclient.authorizationBearerHeader
 import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, eitherUriStringToH4s}
 import spotification.common.json.implicits.ErrorResponseDecoder
-import spotification.config.{ArtistConfig, MeConfig}
 import spotification.config.service.{ArtistConfigR, MeConfigR}
+import spotification.config.{ArtistConfig, MeConfig}
 import zio.interop.catz.monadErrorInstance
-import zio.{Task, URLayer, ZLayer}
+import zio.{URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
@@ -41,7 +41,7 @@ package object httpclient {
       }
 
       val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-      Task.fromEither(h4sUri).flatMap(doRequest[GetMyFollowedArtistsResponse](http, _)(get))
+      doRequest[GetMyFollowedArtistsResponse](http, h4sUri)(get)
     }
 
   val GetArtistsAlbumsServiceLayer: URLayer[ArtistConfigR with HttpClientR, GetArtistsAlbumsServiceR] =
@@ -61,6 +61,6 @@ package object httpclient {
       }
 
       val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-      Task.fromEither(h4sUri).flatMap(doRequest[GetArtistsAlbumsResponse](http, _)(get))
+      doRequest[GetArtistsAlbumsResponse](http, h4sUri)(get)
     }
 }

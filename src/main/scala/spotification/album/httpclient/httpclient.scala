@@ -26,9 +26,7 @@ package object httpclient {
 
       val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
 
-      Task
-        .fromEither(h4sUri)
-        .flatMap(doRequest[GetAlbumSampleTrackResponse](http, _)(get))
+      doRequest[GetAlbumSampleTrackResponse](http, h4sUri)(get)
         .map(_.items.headOption)
         .flatMap {
           case Some(track) => Task.succeed(track.id)

@@ -64,9 +64,7 @@ package object httpclient {
         Accept(MediaType.application.json)
       )
 
-      Task
-        .fromEither(Uri.fromString(config.apiTokenUri.show))
-        .flatMap(doRequest[RefreshTokenResponse](http, _)(post))
+      doRequest[RefreshTokenResponse](http, Uri.fromString(config.apiTokenUri.show))(post)
     }
 
   def authorizationBasicHeader(clientId: ClientId, clientSecret: ClientSecret): H4sAuthorization =

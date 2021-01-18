@@ -11,15 +11,14 @@ import spotification.config.service.MeConfigR
 import spotification.user.json.implicits.GetMyProfileResponseDecoder
 import spotification.user.service.{GetMyProfileService, GetMyProfileServiceR}
 import zio.interop.catz.monadErrorInstance
-import zio.{Task, URLayer, ZLayer}
+import zio.{URLayer, ZLayer}
 
 package object httpclient {
   import H4sClient.Dsl._
 
   val GetMyProfileServiceLayer: URLayer[MeConfigR with HttpClientR, GetMyProfileServiceR] =
     ZLayer.fromServices[MeConfig, H4sClient, GetMyProfileService] { (config, http) => req =>
-      Task
-        .fromEither(Uri.fromString(config.meApiUri.show))
-        .flatMap(doRequest[GetMyProfileResponse](http, _)(GET(_, authorizationBearerHeader(req.accessToken))))
+      val uri = Uri.fromString(config.meApiUri.show)
+      doRequest[GetMyProfileResponse](http, uri)(GET(_, authorizationBearerHeader(req.accessToken)))
     }
 }

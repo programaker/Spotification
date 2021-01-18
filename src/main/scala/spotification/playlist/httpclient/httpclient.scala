@@ -42,32 +42,28 @@ package object httpclient {
       }
 
       val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-      Task.fromEither(h4sUri).flatMap(doRequest[GetPlaylistsItemsResponse](http, _)(get))
+      doRequest[GetPlaylistsItemsResponse](http, h4sUri)(get)
     }
 
   val AddItemsToPlaylistServiceLayer: URLayer[PlaylistConfigR with HttpClientR, AddItemsToPlaylistServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, AddItemsToPlaylistService] { (config, http) => req =>
       val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-      Task
-        .fromEither(tracksUri(config.playlistApiUri, req.playlistId))
-        .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(post))
+      val uri = tracksUri(config.playlistApiUri, req.playlistId)
+      doRequest[PlaylistSnapshotResponse](http, uri)(post)
     }
 
   val RemoveItemsFromPlaylistServiceLayer: URLayer[PlaylistConfigR with HttpClientR, RemoveItemsFromPlaylistServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, RemoveItemsFromPlaylistService] { (config, http) => req =>
       val delete = DELETE(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-
-      Task
-        .fromEither(tracksUri(config.playlistApiUri, req.playlistId))
-        .flatMap(doRequest[PlaylistSnapshotResponse](http, _)(delete))
+      val uri = tracksUri(config.playlistApiUri, req.playlistId)
+      doRequest[PlaylistSnapshotResponse](http, uri)(delete)
     }
 
   val CreatePlaylistServiceLayer: URLayer[UserConfigR with HttpClientR, CreatePlaylistServiceR] =
     ZLayer.fromServices[UserConfig, H4sClient, CreatePlaylistService] { (config, http) => req =>
-      val h4sUri = eitherUriStringToH4s(userPlaylistsUri(config.userApiUri, req.userId))
+      val uri = eitherUriStringToH4s(userPlaylistsUri(config.userApiUri, req.userId))
       val post = POST(req.body.asJson, _: Uri, authorizationBearerHeader(req.accessToken))
-      Task.fromEither(h4sUri).flatMap(doRequest[CreatePlaylistResponse](http, _)(post))
+      doRequest[CreatePlaylistResponse](http, uri)(post)
     }
 
   private def tracksUri(playlistApiUri: PlaylistApiUri, playlistId: PlaylistId): Either[Throwable, Uri] =

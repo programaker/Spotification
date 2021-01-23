@@ -1,7 +1,6 @@
 package spotification.playlist
 
 import cats.syntax.show._
-import eu.timepit.refined._
 import spotification.common.{MonthDay, NonBlankString, NonBlankStringP, refineU}
 
 final case class AnniversaryPlaylistInfo(name: NonBlankString, description: Option[NonBlankString])

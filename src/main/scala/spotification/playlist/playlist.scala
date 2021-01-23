@@ -7,7 +7,6 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.cats._
 import eu.timepit.refined.collection.{MaxSize, MinSize}
-import eu.timepit.refined.refineV
 import io.estatico.newtype.macros.newtype
 import spotification.album.AlbumType
 import spotification.common.{DayMonthString, MonthDay, RefinementError, SpotifyId, UriString, UriStringP, refineE}

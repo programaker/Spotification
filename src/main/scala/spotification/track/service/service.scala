@@ -1,10 +1,11 @@
 package spotification.track
 
-import zio.{Has, RIO, Task, ZIO}
+import spotification.effect.accessServiceFunction
+import zio.{Has, RIO, Task}
 
 package object service {
   type GetTrackService = GetTrackRequest => Task[GetTrackResponse]
   type GetTrackServiceR = Has[GetTrackService]
 
-  def getTrack(req: GetTrackRequest): RIO[GetTrackServiceR, GetTrackResponse] = ZIO.accessM(_.get.apply(req))
+  def getTrack(req: GetTrackRequest): RIO[GetTrackServiceR, GetTrackResponse] = accessServiceFunction(req)
 }

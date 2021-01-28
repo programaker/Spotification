@@ -28,4 +28,7 @@ package object effect {
 
   def accessRIO[A: Tag]: RIO[Has[A], A] =
     ZIO.access(_.get)
+
+  def accessServiceFunction[A: Tag, B: Tag](a: A): RIO[Has[A => Task[B]], B] =
+    ZIO.accessM(_.get.apply(a))
 }

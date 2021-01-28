@@ -1,6 +1,7 @@
 package spotification.playlist
 
-import zio._
+import spotification.effect.accessServiceFunction
+import zio.{Has, RIO, Task}
 
 package object service {
   type GetPlaylistItemsService = GetPlaylistsItemsRequest[_] => Task[GetPlaylistsItemsResponse]
@@ -16,16 +17,16 @@ package object service {
   type CreatePlaylistServiceR = Has[CreatePlaylistService]
 
   def getPlaylistItems(req: GetPlaylistsItemsRequest[_]): RIO[GetPlaylistItemsServiceR, GetPlaylistsItemsResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 
   def addItemsToPlaylist(req: AddItemsToPlaylistRequest): RIO[AddItemsToPlaylistServiceR, PlaylistSnapshotResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 
   def removeItemsFromPlaylist(
     req: RemoveItemsFromPlaylistRequest
   ): RIO[RemoveItemsFromPlaylistServiceR, PlaylistSnapshotResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 
   def createPlaylist(req: CreatePlaylistRequest): RIO[CreatePlaylistServiceR, CreatePlaylistResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 }

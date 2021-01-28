@@ -1,6 +1,7 @@
 package spotification.artist
 
-import zio.{Has, RIO, Task, ZIO}
+import spotification.effect.accessServiceFunction
+import zio.{Has, RIO, Task}
 
 package object service {
   type GetMyFollowedArtistsService = GetMyFollowedArtistsRequest[_] => Task[GetMyFollowedArtistsResponse]
@@ -12,8 +13,8 @@ package object service {
   def getMyFollowedArtists(
     req: GetMyFollowedArtistsRequest[_]
   ): RIO[GetMyFollowedArtistsServiceR, GetMyFollowedArtistsResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 
   def getArtistsAlbums(req: GetArtistsAlbumsRequest[_]): RIO[GetArtistsAlbumsServiceR, GetArtistsAlbumsResponse] =
-    ZIO.accessM(_.get.apply(req))
+    accessServiceFunction(req)
 }

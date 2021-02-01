@@ -5,7 +5,7 @@ import cats.implicits._
 import eu.timepit.refined.auto._
 import spotification.authorization.program.{RequestAccessTokenProgramR, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
-import spotification.common.{CurrentUri, NextUri, UriString}
+import spotification.common.{CurrentUri, MonthDay, NextUri, UriString}
 import spotification.config.RetryConfig
 import spotification.config.service.{PlaylistConfigR, playlistConfig}
 import spotification.effect.refineRIO
@@ -14,9 +14,11 @@ import spotification.playlist.GetPlaylistsItemsRequest.RequestType.First
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.playlist.service._
 import spotification.track.TrackUri
+import spotification.user.GetMyProfileRequest
+import spotification.user.service.getMyProfile
 import zio.clock.Clock
 import zio.duration.Duration
-import zio.{RIO, Schedule, ZIO}
+import zio.{RIO, Schedule, ZIO, clock}
 
 package object program {
   type ReleaseRadarNoSinglesProgramR =
@@ -84,7 +86,20 @@ package object program {
       _ <- info("Done!")
     } yield ()
 
-  private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](req: GetPlaylistsItemsRequest[First])(
+  def albumAnniversariesPlaylistProgram(refreshToken: RefreshToken, monthDay: Option[MonthDay]) =
+    for {
+      accessToken <- requestAccessTokenProgram(refreshToken)
+      myProfile   <- getMyProfile(GetMyProfileRequest(accessToken))
+      md          <- monthDay.fold(clock.currentDateTime.map(MonthDay.from))(ZIO.succeed(_))
+
+      playlistInfo = AnniversaryPlaylistInfo.fromMonthDay(md)
+      createPlaylistReq = CreatePlaylistRequest.forAnniversaryPlaylist(accessToken, myProfile.id, playlistInfo)
+      createPlaylistResp <- createPlaylist(createPlaylistReq)
+    } yield ()
+
+  private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](
+    req: GetPlaylistsItemsRequest[First]
+  )(
     f: NonEmptyList[TrackResponse] => RIO[R, Unit]
   ): RIO[R, Unit] =
     paginatePlaylist(req)(f)((_, nextUri) => nextUri)(_ &> _)

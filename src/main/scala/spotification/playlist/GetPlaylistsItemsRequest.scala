@@ -6,7 +6,9 @@ import spotification.common.{NonNegativeInt, PositiveInt, UriString}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 
-final case class GetPlaylistsItemsRequest[T <: RequestType](accessToken: AccessToken, requestType: T)
+final case class GetPlaylistsItemsRequest[T <: RequestType](accessToken: AccessToken, requestType: RequestType) {
+  def next(nextUri: UriString): GetPlaylistsItemsRequest[Next] = GetPlaylistsItemsRequest.next(accessToken, nextUri)
+}
 object GetPlaylistsItemsRequest {
   def first(
     accessToken: AccessToken,

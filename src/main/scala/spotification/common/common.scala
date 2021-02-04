@@ -128,4 +128,13 @@ package object common {
     def apply[T](t: T)(implicit v: Validate[T, P]): Refined[T, P] =
       refineV[P].unsafeFrom(t)
   }
+
+  def makePage[Req, Resp, A](req: Req, resp: Resp)(
+    getContent: Resp => List[A],
+    nextReq: (Req, Resp) => Option[Req]
+  ): Page[A, Req] =
+    Page(getContent(resp), nextReq(req, resp))
+
+  def makeFixedPage[Req, Resp, A](req: Req, resp: Resp)(getContent: Resp => List[A]): Page[A, Req] =
+    makePage(req, resp)(getContent, (req, _) => Some(req))
 }

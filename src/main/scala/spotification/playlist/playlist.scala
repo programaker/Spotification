@@ -9,7 +9,7 @@ import eu.timepit.refined.cats._
 import eu.timepit.refined.collection.{MaxSize, MinSize}
 import io.estatico.newtype.macros.newtype
 import spotification.album.AlbumType
-import spotification.common.{DayMonthString, MonthDay, RefinementError, SpotifyId, UriString, UriStringP, refineE}
+import spotification.common._
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.track.TrackUri
 import spotification.user.{UserApiUri, UserId}
@@ -46,4 +46,16 @@ package object playlist {
 
   def makeAnniversaryPlaylistInfo(dayMonth: DayMonthString): AnniversaryPlaylistInfo =
     AnniversaryPlaylistInfo.fromMonthDay(MonthDay.fromDayMonthString(dayMonth))
+
+  def getPlaylistItemsPage(
+    req: GetPlaylistsItemsRequest[_],
+    resp: GetPlaylistsItemsResponse
+  ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
+    makePage(req, resp)(_.tracks, (req, resp) => resp.next.map(req.next))
+
+  def getPlaylistItemsFixedPage(
+    req: GetPlaylistsItemsRequest[_],
+    resp: GetPlaylistsItemsResponse
+  ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
+    makeFixedPage(req, resp)(_.tracks)
 }

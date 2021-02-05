@@ -51,11 +51,11 @@ package object playlist {
     req: GetPlaylistsItemsRequest[_],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
-    Page(resp.tracks, resp.next.map(req.next))
+    Page(GetPlaylistsItemsResponse.tracks(resp), resp.next.map(GetPlaylistsItemsRequest.next(req, _)))
 
   def getPlaylistItemsFixedPage[T1 <: GetPlaylistsItemsRequest.RequestType](
     req: GetPlaylistsItemsRequest[T1],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[T1]] =
-    Page(resp.tracks, Some(req))
+    Page(GetPlaylistsItemsResponse.tracks(resp), Some(req))
 }

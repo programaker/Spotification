@@ -15,6 +15,7 @@ val PureConfigV = "0.14.0"
 val SimulacrumV = "1.0.1"
 val NewtypeV = "0.4.4"
 val OdinV = "0.9.1"
+val MonocleV = "2.1.0"
 
 lazy val root = (project in file(".")).settings(
   organization := "com.github.programaker",
@@ -48,6 +49,10 @@ lazy val root = (project in file(".")).settings(
     "com.github.pureconfig" %% "pureconfig" % PureConfigV,
 
     "org.typelevel" %% "simulacrum" % SimulacrumV,
+
+    "com.github.julien-truffaut"  %%  "monocle-core" % MonocleV,
+    "com.github.julien-truffaut"  %%  "monocle-macro" % MonocleV,
+    "com.github.julien-truffaut"  %%  "monocle-refined" % MonocleV,
 
     "org.specs2" %% "specs2-core" % Specs2V % Test
   ),

@@ -1,8 +1,7 @@
 package spotification.playlist
 
-import eu.timepit.refined.auto._
 import spotification.authorization.AccessToken
-import spotification.common.{NonNegativeInt, PositiveInt, UriString}
+import spotification.common.{PositiveInt, UriString}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.{First, Next}
 
@@ -15,7 +14,7 @@ object GetPlaylistsItemsRequest {
     playlistId: PlaylistId,
     limit: PositiveInt
   ): GetPlaylistsItemsRequest[First] =
-    GetPlaylistsItemsRequest(accessToken, First(playlistId, limit, offset = 0))
+    GetPlaylistsItemsRequest(accessToken, First(playlistId, limit))
 
   def next(accessToken: AccessToken, nextUri: UriString): GetPlaylistsItemsRequest[Next] =
     GetPlaylistsItemsRequest(accessToken, Next(nextUri))
@@ -24,8 +23,7 @@ object GetPlaylistsItemsRequest {
   object RequestType {
     final case class First(
       playlistId: PlaylistId,
-      limit: PositiveInt,
-      offset: NonNegativeInt
+      limit: PositiveInt
     ) extends RequestType
 
     final case class Next(

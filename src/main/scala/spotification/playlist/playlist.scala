@@ -52,12 +52,10 @@ package object playlist {
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
     Page(resp.tracks, resp.next.map(req.next))
-  //makePage(req, resp)(_.tracks, (req, resp) => resp.next.map(req.next))
 
   def getPlaylistItemsFixedPage[T1 <: GetPlaylistsItemsRequest.RequestType](
     req: GetPlaylistsItemsRequest[T1],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[T1]] =
     Page(resp.tracks, Some(req))
-  //makeFixedPage(req, resp)(_.tracks)
 }

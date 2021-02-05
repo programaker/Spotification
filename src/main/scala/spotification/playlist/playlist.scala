@@ -51,11 +51,13 @@ package object playlist {
     req: GetPlaylistsItemsRequest[_],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
-    makePage(req, resp)(_.tracks, (req, resp) => resp.next.map(req.next))
+    Page(resp.tracks, resp.next.map(req.next))
+  //makePage(req, resp)(_.tracks, (req, resp) => resp.next.map(req.next))
 
-  def getPlaylistItemsFixedPage(
-    req: GetPlaylistsItemsRequest[_],
+  def getPlaylistItemsFixedPage[T1 <: GetPlaylistsItemsRequest.RequestType](
+    req: GetPlaylistsItemsRequest[T1],
     resp: GetPlaylistsItemsResponse
-  ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
-    makeFixedPage(req, resp)(_.tracks)
+  ): Page[TrackResponse, GetPlaylistsItemsRequest[T1]] =
+    Page(resp.tracks, Some(req))
+  //makeFixedPage(req, resp)(_.tracks)
 }

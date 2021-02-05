@@ -129,12 +129,12 @@ package object common {
       refineV[P].unsafeFrom(t)
   }
 
-  def makePage[Req, Resp, A](req: Req, resp: Resp)(
-    getContent: Resp => List[A],
-    nextReq: (Req, Resp) => Option[Req]
-  ): Page[A, Req] =
+  def makePage[Req[_], Resp, T1, T2, C](req: Req[T1], resp: Resp)(
+    getContent: Resp => List[C],
+    nextReq: (Req[T1], Resp) => Option[Req[T2]]
+  ): Page[C, Req[T2]] =
     Page(getContent(resp), nextReq(req, resp))
 
-  def makeFixedPage[Req, Resp, A](req: Req, resp: Resp)(getContent: Resp => List[A]): Page[A, Req] =
+  def makeFixedPage[Req[_], Resp, T1, C](req: Req[T1], resp: Resp)(getContent: Resp => List[C]): Page[C, Req[T1]] =
     makePage(req, resp)(getContent, (req, _) => Some(req))
 }

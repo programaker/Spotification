@@ -41,8 +41,7 @@ package object playlist {
     refineE[UriStringP](show"$userApiUri/$userId/playlists")
 
   def trackUriIfAlbum(track: TrackResponse): Option[TrackUri] =
-    if (track.album.album_type === AlbumType.Album) Some(track.uri)
-    else None
+    if (track.album_type === AlbumType.Album) Some(track.uri) else None
 
   def makeAnniversaryPlaylistInfo(dayMonth: DayMonthString): AnniversaryPlaylistInfo =
     AnniversaryPlaylistInfo.fromMonthDay(MonthDay.fromDayMonthString(dayMonth))
@@ -51,11 +50,11 @@ package object playlist {
     req: GetPlaylistsItemsRequest[_],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
-    Page(GetPlaylistsItemsResponse.tracks(resp), resp.next.map(GetPlaylistsItemsRequest.next(req, _)))
+    Page(resp.tracks, resp.next.map(req.next))
 
   def getPlaylistItemsFixedPage[T <: GetPlaylistsItemsRequest.RequestType](
     req: GetPlaylistsItemsRequest[T],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[T]] =
-    Page(GetPlaylistsItemsResponse.tracks(resp), Some(req))
+    Page(resp.tracks, Some(req))
 }

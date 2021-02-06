@@ -36,8 +36,6 @@ package object common {
 
   type UriStringP = Uri
   type UriString = String Refined UriStringP
-  type CurrentUri = UriString
-  type NextUri = UriString
 
   type PositiveIntP = Positive
   type PositiveInt = Int Refined PositiveIntP

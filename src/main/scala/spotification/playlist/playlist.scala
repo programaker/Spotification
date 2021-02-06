@@ -53,9 +53,9 @@ package object playlist {
   ): Page[TrackResponse, GetPlaylistsItemsRequest[_]] =
     Page(GetPlaylistsItemsResponse.tracks(resp), resp.next.map(GetPlaylistsItemsRequest.next(req, _)))
 
-  def getPlaylistItemsFixedPage[T1 <: GetPlaylistsItemsRequest.RequestType](
-    req: GetPlaylistsItemsRequest[T1],
+  def getPlaylistItemsFixedPage[T <: GetPlaylistsItemsRequest.RequestType](
+    req: GetPlaylistsItemsRequest[T],
     resp: GetPlaylistsItemsResponse
-  ): Page[TrackResponse, GetPlaylistsItemsRequest[T1]] =
+  ): Page[TrackResponse, GetPlaylistsItemsRequest[T]] =
     Page(GetPlaylistsItemsResponse.tracks(resp), Some(req))
 }

@@ -1,14 +1,14 @@
 package spotification.playlist
 
-import cats.data.NonEmptyList
 import cats.implicits._
 import eu.timepit.refined.auto._
 import spotification.authorization.program.{RequestAccessTokenProgramR, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
-import spotification.common.{CurrentUri, MonthDay, NextUri, UriString}
+import spotification.common.MonthDay
+import spotification.common.program.{PageRIO, paginate}
 import spotification.config.RetryConfig
 import spotification.config.service.{PlaylistConfigR, playlistConfig}
-import spotification.effect.refineRIO
+import spotification.effect.{refineRIO, unitRIO}
 import spotification.log.service.{LogR, info}
 import spotification.playlist.GetPlaylistsItemsRequest.RequestType.First
 import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
@@ -57,8 +57,7 @@ package object program {
 
       _ <- info(show"Feeding release-radar-no-singles using release-radar($releaseRadarId)")
       _ <- paginatePlaylistPar(firstRequest(releaseRadarId)) { tracks =>
-        val trackUris = tracks.toList.mapFilter(trackUriIfAlbum)
-        NonEmptyList.fromList(trackUris).map(importTracks(_, releaseRadarNoSinglesId, accessToken)).getOrElse(RIO.unit)
+        importTracks(tracks.mapFilter(trackUriIfAlbum), releaseRadarNoSinglesId, accessToken)
       }
 
       _ <- info("Done!")
@@ -99,70 +98,22 @@ package object program {
 
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](
     req: GetPlaylistsItemsRequest[First]
-  )(
-    f: NonEmptyList[TrackResponse] => RIO[R, Unit]
-  ): RIO[R, Unit] =
-    paginatePlaylist(req)(f)((_, nextUri) => nextUri)(_ &> _)
-
-  /**
-   * Uses GetPlaylistsItemsRequest to fetch items from a playlist with pagination.
-   * This function has a strange signature, but the trade-off is "unparalleled type-inference"
-   *
-   * @param req The initial request
-   * @param processTracks A function to process the tracks in a page
-   *
-   * @param chooseUri A function to choose whether to go to the next page
-   * or stay in the current (useful to delete tracks for instance)
-   *
-   * @param combinePageEffects A function to combine the result of processing
-   * the current page with the result of the next page request (useful to choose if parallel or not)
-   */
-  private def paginatePlaylist[R <: GetPlaylistItemsServiceR](
-    req: GetPlaylistsItemsRequest[First]
-  )(
-    processTracks: NonEmptyList[TrackResponse] => RIO[R, Unit]
-  )(
-    chooseUri: (CurrentUri, NextUri) => UriString
-  )(
-    combinePageEffects: (RIO[R, Unit], RIO[R, Unit]) => RIO[R, Unit]
-  ): RIO[R, Unit] = {
-    def loop(req: GetPlaylistsItemsRequest[_]): RIO[R, Unit] =
-      getPlaylistItems(req).flatMap { resp =>
-        NonEmptyList
-          .fromList(resp.items.flatMap(_.track))
-          .map { tracks =>
-            val thisPage = processTracks(tracks)
-
-            val nextPage = resp.next match {
-              case None =>
-                RIO.unit
-              case Some(nextUri) =>
-                val uri = chooseUri(resp.href, nextUri)
-                loop(GetPlaylistsItemsRequest.next(req.accessToken, uri))
-            }
-
-            combinePageEffects(thisPage, nextPage)
-          }
-          .getOrElse(RIO.unit)
-      }
-
-    loop(req)
-  }
+  )(f: List[TrackResponse] => RIO[R, Unit]): RIO[R, Unit] =
+    paginate(unitRIO[R])(fetchPlaylistItemsPage[R])((rio, items) => rio &> f(items))(req)
 
   private type ClearPlaylistR = GetPlaylistItemsServiceR with RemoveItemsFromPlaylistServiceR
   private def clearPlaylist[R <: ClearPlaylistR](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] =
-    // `(currentUri, _) => currentUri`:
-    // since we are deleting tracks,
-    // we should always stay in the first page
-    paginatePlaylist(req)(deleteTracks(_, req))((currentUri, _) => currentUri)(_ *> _)
+    // As we are deleting tracks, we should always stay in the first page
+    // and compose the effects sequentially
+    paginate(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])((rio, items) => rio *> deleteTracks(items, req))(req)
 
   private def importTracks[R <: AddItemsToPlaylistServiceR](
-    trackUris: NonEmptyList[TrackUri],
+    trackUris: List[TrackUri],
     destPlaylist: PlaylistId,
     accessToken: AccessToken
   ): RIO[R, Unit] = {
     val iterable =
-      trackUris.toList
+      trackUris
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
@@ -174,11 +125,11 @@ package object program {
   }
 
   private def deleteTracks[R <: RemoveItemsFromPlaylistServiceR](
-    items: NonEmptyList[TrackResponse],
+    items: List[TrackResponse],
     req: GetPlaylistsItemsRequest[First]
   ): RIO[R, Unit] = {
     val iterable =
-      items.toList
+      items
         .to(LazyList)
         .map(_.uri)
         .grouped(PlaylistItemsToProcess.MaxSize)
@@ -205,16 +156,11 @@ package object program {
     mkReq: PlaylistId => GetPlaylistsItemsRequest[First],
     retry: RetryConfig
   ): RIO[R, Unit] =
-    NonEmptyList
-      .fromList(sources)
-      .map { playlists =>
-        ZIO.foreachPar_(playlists.toIterable) { playlist =>
-          info(show"> playlist($playlist) is being imported") *>
-            importPlaylist(mkReq(playlist), dest, retry) *>
-            info(show"< playlist($playlist) done")
-        }
-      }
-      .getOrElse(RIO.unit)
+    ZIO.foreachPar_(sources) { playlist =>
+      info(show"> playlist($playlist) is being imported") *>
+        importPlaylist(mkReq(playlist), dest, retry) *>
+        info(show"< playlist($playlist) done")
+    }
 
   private type ImportPlaylistR = GetPlaylistItemsServiceR with AddItemsToPlaylistServiceR with Clock
   private def importPlaylist[R <: ImportPlaylistR](
@@ -225,4 +171,14 @@ package object program {
     paginatePlaylistPar(source) { tracks =>
       importTracks(tracks.map(_.uri), dest, source.accessToken)
     }.retry(Schedule.exponential(Duration.fromScala(retry.retryAfter)) && Schedule.recurs(retry.attempts))
+
+  private def fetchPlaylistItemsPage[R <: GetPlaylistItemsServiceR](
+    req: GetPlaylistsItemsRequest[_]
+  ): PageRIO[R, TrackResponse, GetPlaylistsItemsRequest[_]] =
+    getPlaylistItems(req).map(getPlaylistItemsPage(req, _))
+
+  private def fetchPlaylistItemsFixedPage[R <: GetPlaylistItemsServiceR, T <: GetPlaylistsItemsRequest.RequestType](
+    req: GetPlaylistsItemsRequest[T]
+  ): PageRIO[R, TrackResponse, GetPlaylistsItemsRequest[T]] =
+    getPlaylistItems(req).map(getPlaylistItemsFixedPage[T](req, _))
 }

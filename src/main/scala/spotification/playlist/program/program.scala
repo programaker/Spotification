@@ -94,6 +94,13 @@ package object program {
       playlistInfo = AnniversaryPlaylistInfo.fromMonthDay(md)
       createPlaylistReq = CreatePlaylistRequest.forAnniversaryPlaylist(accessToken, myProfile.id, playlistInfo)
       createPlaylistResp <- createPlaylist(createPlaylistReq)
+
+      //Get the artists I follow
+      //Get the albuns of these artists
+      //Get Album release date with precision = Day
+      //Filter albuns where release date as "dd.MM" === date passed (default = today)
+      //Get a sample track of the album (avoid the first and the last - intros and outros)
+      //Add sample track to the anniversary playlist
     } yield ()
 
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](

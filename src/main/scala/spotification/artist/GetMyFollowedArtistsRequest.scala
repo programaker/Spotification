@@ -6,7 +6,10 @@ import spotification.authorization.AccessToken
 import spotification.common.UriString
 import spotification.follow.FollowType
 
-final case class GetMyFollowedArtistsRequest[T <: RequestType](accessToken: AccessToken, requestType: T)
+final case class GetMyFollowedArtistsRequest[T <: RequestType](accessToken: AccessToken, requestType: T) {
+  def next(nextUri: UriString): GetMyFollowedArtistsRequest[Next] =
+    GetMyFollowedArtistsRequest.next(accessToken, nextUri)
+}
 object GetMyFollowedArtistsRequest {
   def first(accessToken: AccessToken): GetMyFollowedArtistsRequest[First] =
     GetMyFollowedArtistsRequest(accessToken, First(FollowType.Artist, Some(MyFollowedArtistsLimit.MaxValue)))

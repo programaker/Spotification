@@ -68,4 +68,10 @@ package object artist {
 
   def makeMyFollowedArtistsUri(meApiUri: MeApiUri): Either[RefinementError, UriString] =
     refineE[UriStringP](show"$meApiUri/following")
+
+  def getMyFollowedArtistsPage(
+    req: GetMyFollowedArtistsRequest[_],
+    resp: GetMyFollowedArtistsResponse
+  ): Page[ArtistId, GetMyFollowedArtistsRequest[_]] =
+    Page(resp.artistIds, resp.next.map(req.next))
 }

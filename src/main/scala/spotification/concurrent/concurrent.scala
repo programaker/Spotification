@@ -10,11 +10,10 @@ import scala.concurrent.ExecutionContext
 
 package object concurrent {
   type ExecutionContextR = Has[ExecutionContext]
+  def executionContext: RIO[ExecutionContextR, ExecutionContext] = accessRIO
 
   val ExecutionContextLayer: URLayer[ConcurrentConfigR, ExecutionContextR] =
     ZLayer.fromService { config =>
       ExecutionContext.fromExecutor(Executors.newFixedThreadPool(config.numberOfThreads))
     }
-
-  def executionContext: RIO[ExecutionContextR, ExecutionContext] = accessRIO
 }

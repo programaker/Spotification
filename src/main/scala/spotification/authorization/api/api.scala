@@ -4,14 +4,13 @@ import cats.implicits.toTraverseOps
 import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.Bearer
 import org.http4s.Credentials.Token
-import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{Authorization, Location}
 import org.http4s.{HttpRoutes, Request, Uri}
 import spotification.authorization.httpclient.{RefreshTokenServiceLayer, RequestTokenServiceLayer}
 import spotification.authorization.json.implicits.{AccessTokenResponseEncoder, AuthorizeErrorResponseEncoder}
 import spotification.authorization.program._
 import spotification.common.NonBlankStringP
-import spotification.common.api.handleGenericError
+import spotification.common.api.{handleGenericError, withDsl}
 import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.entityEncoderF
 import spotification.config.service.AuthorizationConfigR
@@ -30,10 +29,8 @@ package object api {
   val AuthorizationProgramsLayer: RLayer[AuthorizationConfigR with HttpClientR, AuthorizationProgramsR] =
     AuthorizeCallbackProgramLayer ++ RequestAccessTokenProgramLayer
 
-  def makeAuthorizationApi[R <: AuthorizationProgramsR]: HttpRoutes[RIO[R, *]] = {
+  def makeAuthorizationApi[R <: AuthorizationProgramsR]: HttpRoutes[RIO[R, *]] = withDsl { dsl =>
     val Callback: String = "callback"
-
-    val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
     import dsl._
 
     HttpRoutes.of[RIO[R, *]] {

@@ -1,10 +1,9 @@
 package spotification.playlist
 
 import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.RequestAccessTokenProgramLayer
 import spotification.common.GenericResponse
-import spotification.common.api.{doRequest, handleGenericError}
+import spotification.common.api.{doRequest, handleGenericError, withDsl}
 import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
 import spotification.config.service.{AuthorizationConfigR, PlaylistConfigR}
@@ -44,8 +43,7 @@ package object api {
   val PlaylistsLayer: RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, PlaylistProgramsR] =
     ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer
 
-  def makePlaylistsApi[R <: PlaylistProgramsR]: HttpRoutes[RIO[R, *]] = {
-    val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
+  def makePlaylistsApi[R <: PlaylistProgramsR]: HttpRoutes[RIO[R, *]] = withDsl { dsl =>
     import dsl._
 
     HttpRoutes.of[RIO[R, *]] {

@@ -1,10 +1,9 @@
 package spotification.track
 
 import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
 import spotification.authorization.api.{RequestAccessTokenProgramLayer, requiredRefreshTokenFromRequest}
 import spotification.common.GenericResponse
-import spotification.common.api.handleGenericError
+import spotification.common.api.{handleGenericError, withDsl}
 import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import spotification.config.service.{AuthorizationConfigR, TrackConfigR}
@@ -21,8 +20,7 @@ package object api {
   val TracksLayer: RLayer[AuthorizationConfigR with HttpClientR with TrackConfigR, TrackProgramsR] =
     MakeShareTrackMessageProgramLayer
 
-  def makeTracksApi[R <: TrackProgramsR]: HttpRoutes[RIO[R, *]] = {
-    val dsl: Http4sDsl[RIO[R, *]] = Http4sDsl[RIO[R, *]]
+  def makeTracksApi[R <: TrackProgramsR]: HttpRoutes[RIO[R, *]] = withDsl { dsl =>
     import dsl._
 
     HttpRoutes.of[RIO[R, *]] { case rawReq @ GET -> Root / TrackUriVar(trackUri) / "share-message" =>

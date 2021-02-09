@@ -52,4 +52,7 @@ package object api {
       a            <- rawReq.as[A]
       b            <- f(refreshToken, a)
     } yield b
+
+  def withDsl[R](f: Http4sDsl[RIO[R, *]] => HttpRoutes[RIO[R, *]]): HttpRoutes[RIO[R, *]] =
+    f(Http4sDsl[RIO[R, *]])
 }

@@ -1,13 +1,19 @@
 package spotification
 
-import spotification.common.api.{AllProgramsLayer, makeAllApis}
-import spotification.common.httpclient.HttpClientLayer
-import spotification.common.program.AllProgramsR
+import spotification.authorization.api.{AuthorizationProgramsLayer, makeAuthorizationApi}
+import spotification.authorization.program.AuthorizationProgramsR
+import spotification.common.api.Routes
+import spotification.common.httpclient.{HttpClientLayer, HttpClientR}
 import spotification.concurrent.{ExecutionContextLayer, ExecutionContextR, executionContext}
-import spotification.config.service.{ServerConfigR, serverConfig}
+import spotification.config.service._
 import spotification.config.source._
 import spotification.httpserver.{addCors, addLogger, makeHttpApp, runHttpServer}
 import spotification.log.service.error
+import spotification.monitoring.api.makeHealthCheckApi
+import spotification.playlist.api.{PlaylistsLayer, makePlaylistsApi}
+import spotification.playlist.program.PlaylistProgramsR
+import spotification.track.api.{TracksLayer, makeTracksApi}
+import spotification.track.program.TrackProgramsR
 import zio._
 import zio.clock.Clock
 import zio.interop.catz._
@@ -15,8 +21,12 @@ import zio.interop.catz._
 import scala.util.control.NonFatal
 
 object SpotificationHttpApp extends zio.App {
-  type HttpAppR = ServerConfigR with ExecutionContextR with AllProgramsR with Clock
+  type AllProgramsR = AuthorizationProgramsR with PlaylistProgramsR with TrackProgramsR
+  val AllProgramsLayer
+    : RLayer[HttpClientR with AuthorizationConfigR with PlaylistConfigR with TrackConfigR, AllProgramsR] =
+    AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
+  type HttpAppR = ServerConfigR with ExecutionContextR with AllProgramsR with Clock
   val HttpAppLayer: TaskLayer[HttpAppR] =
     ServerConfigLayer >+>
       ConcurrentConfigLayer >+>
@@ -47,4 +57,12 @@ object SpotificationHttpApp extends zio.App {
         _ <- runHttpServer[RIO[HttpAppR, *]](config, app, ex)
       } yield ()
     }
+
+  private def makeAllApis[R <: AllProgramsR]: Routes[RIO[R, *]] =
+    Seq(
+      "/health"                -> makeHealthCheckApi[R],
+      "/authorization/spotify" -> makeAuthorizationApi[R],
+      "/playlists"             -> makePlaylistsApi[R],
+      "/tracks"                -> makeTracksApi[R]
+    )
 }

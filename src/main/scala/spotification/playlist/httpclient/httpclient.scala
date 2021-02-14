@@ -30,11 +30,11 @@ package object httpclient {
   val GetPlaylistsItemsServiceLayer: URLayer[PlaylistConfigR with HttpClientR, GetPlaylistItemsServiceR] =
     ZLayer.fromServices[PlaylistConfig, H4sClient, GetPlaylistItemsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
-        case First(playlistId, limit) =>
+        case First(playlistId, limit, offset) =>
           tracksUri(config.playlistApiUri, playlistId).map {
             _.withQueryParam("fields", GetPlaylistsItemsResponse.Fields.show)
               .withQueryParam("limit", limit.show)
-              .withQueryParam("offset", "0")
+              .withQueryParam("offset", offset.show)
           }
 
         case Next(nextUri) =>

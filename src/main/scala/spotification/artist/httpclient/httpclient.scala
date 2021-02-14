@@ -45,7 +45,7 @@ package object httpclient {
   val GetArtistsAlbumsServiceLayer: URLayer[ArtistConfigR with HttpClientR, GetArtistsAlbumsServiceR] =
     ZLayer.fromServices[ArtistConfig, H4sClient, GetArtistsAlbumsService] { (config, http) => req =>
       val h4sUri = req.requestType match {
-        case RequestType.First(artistId, include_groups, limit) =>
+        case RequestType.First(artistId, include_groups, limit, offset) =>
           for {
             uriString <- artistsAlbumsUri(config.artistApiUri, artistId)
             uri       <- uriStringToUri(uriString)
@@ -53,7 +53,7 @@ package object httpclient {
           } yield uri
             .withQueryParam("include_groups", ig.show)
             .withQueryParam("limit", limit.show)
-            .withQueryParam("offset", 0.show)
+            .withQueryParam("offset", offset.show)
 
         case RequestType.Next(uri) =>
           Uri.fromString(uri)

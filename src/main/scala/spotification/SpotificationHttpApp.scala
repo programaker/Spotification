@@ -10,7 +10,7 @@ import spotification.config.source._
 import spotification.httpserver.{addCors, addLogger, makeHttpApp, runHttpServer}
 import spotification.log.service.error
 import spotification.monitoring.api.makeHealthCheckApi
-import spotification.playlist.api.{PlaylistsLayer, makePlaylistsApi}
+import spotification.playlist.api.{PlaylistsLayer, PlaylistsLayerR, makePlaylistsApi}
 import spotification.playlist.program.PlaylistProgramsR
 import spotification.track.api.{TracksLayer, makeTracksApi}
 import spotification.track.program.TrackProgramsR
@@ -21,9 +21,9 @@ import zio.interop.catz._
 import scala.util.control.NonFatal
 
 object SpotificationHttpApp extends zio.App {
+  type AllProgramsLayerR = AuthorizationConfigR with HttpClientR with PlaylistsLayerR with TrackConfigR
   type AllProgramsR = AuthorizationProgramsR with PlaylistProgramsR with TrackProgramsR
-  val AllProgramsLayer
-    : RLayer[HttpClientR with AuthorizationConfigR with PlaylistConfigR with TrackConfigR, AllProgramsR] =
+  val AllProgramsLayer: RLayer[AllProgramsLayerR, AllProgramsR] =
     AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
   type HttpAppR = ServerConfigR with ExecutionContextR with AllProgramsR with Clock
@@ -36,6 +36,10 @@ object SpotificationHttpApp extends zio.App {
       AuthorizationConfigLayer >+>
       PlaylistConfigLayer >+>
       TrackConfigLayer >+>
+      UserConfigLayer >+>
+      MeConfigLayer >+>
+      ArtistConfigLayer >+>
+      AlbumConfigLayer >+>
       AllProgramsLayer >+>
       Clock.live
 

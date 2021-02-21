@@ -11,6 +11,7 @@ import eu.timepit.refined.numeric.Interval
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import spotification.album.ReleaseDatePrecision
+import spotification.artist.GetArtistsAlbumsResponse.Album
 import spotification.common._
 import spotification.me.MeApiUri
 
@@ -58,10 +59,10 @@ package object artist {
   def artistsAlbumsUri(artistApiUri: ArtistApiUri, artistId: ArtistId): Either[RefinementError, UriString] =
     refineE[UriStringP](show"$artistApiUri/$artistId/albums")
 
-  def hasReleaseDatePrecision(album: GetArtistsAlbumsResponse.Album, precision: ReleaseDatePrecision): Boolean =
+  def hasReleaseDatePrecision(album: Album, precision: ReleaseDatePrecision): Boolean =
     album.release_date_precision === precision
 
-  def hasReleaseDate(album: GetArtistsAlbumsResponse.Album, date: MonthDay): Boolean =
+  def hasReleaseDate(album: Album, date: MonthDay): Boolean =
     refineE[YearMonthDayStringP](album.release_date.value)
       .map(MonthDay.fromYearMonthDayString)
       .contains(date)
@@ -74,4 +75,10 @@ package object artist {
     resp: GetMyFollowedArtistsResponse
   ): Page[ArtistId, GetMyFollowedArtistsRequest[_]] =
     Page(resp.artistIds, resp.next.map(req.next))
+
+  def getArtistsAlbumsPage(
+    req: GetArtistsAlbumsRequest[_],
+    resp: GetArtistsAlbumsResponse
+  ): Page[Album, GetArtistsAlbumsRequest[_]] =
+    Page(resp.items, resp.next.map(req.next))
 }

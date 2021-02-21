@@ -18,7 +18,7 @@ package object httpclient {
   val GetTrackServiceLayer: URLayer[TrackConfigR with HttpClientR, GetTrackServiceR] =
     ZLayer.fromServices[TrackConfig, H4sClient, GetTrackService] { (config, http) => req =>
       val get = GET(_: Uri, authorizationBearerHeader(req.accessToken))
-      val uri = makeTrackUri(config.trackApiUri, req.trackId).flatMap(uriStringToUri)
+      val uri = makeTrackEndpoint(config.trackApiUri, req.trackId).flatMap(uriStringToUri)
       doRequest[GetTrackResponse](http, uri)(get)
     }
 }

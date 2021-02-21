@@ -2,6 +2,11 @@ package spotification.playlist
 
 import cats.implicits._
 import eu.timepit.refined.auto._
+import spotification.album.service.{GetAlbumSampleTrackServiceR, getAlbumSampleTrack}
+import spotification.album.{GetAlbumSampleTrackRequest, isAnniversaryAlbum}
+import spotification.artist.program.{paginateArtistsAlbumsPar, paginateMyFollowedArtistsPar}
+import spotification.artist.service.{GetArtistsAlbumsServiceR, GetMyFollowedArtistsServiceR}
+import spotification.artist.{GetArtistsAlbumsRequest, GetArtistsAlbumsResponse, GetMyFollowedArtistsRequest}
 import spotification.authorization.program.{RequestAccessTokenProgramR, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.MonthDay
@@ -15,7 +20,7 @@ import spotification.playlist.GetPlaylistsItemsResponse.TrackResponse
 import spotification.playlist.service._
 import spotification.track.TrackUri
 import spotification.user.GetMyProfileRequest
-import spotification.user.service.getMyProfile
+import spotification.user.service.{GetMyProfileServiceR, getMyProfile}
 import zio.clock.Clock
 import zio.duration.Duration
 import zio.{RIO, Schedule, ZIO, clock}
@@ -38,7 +43,18 @@ package object program {
       with AddItemsToPlaylistServiceR
       with Clock
 
-  type PlaylistProgramsR = ReleaseRadarNoSinglesProgramR with MergePlaylistsProgramR
+  type AlbumAnniversariesPlaylistProgramR = AddItemsToPlaylistServiceR
+    with GetAlbumSampleTrackServiceR
+    with GetArtistsAlbumsServiceR
+    with GetMyFollowedArtistsServiceR
+    with CreatePlaylistServiceR
+    with Clock
+    with GetMyProfileServiceR
+    with RequestAccessTokenProgramR
+
+  type PlaylistProgramsR = ReleaseRadarNoSinglesProgramR
+    with MergePlaylistsProgramR
+    with AlbumAnniversariesPlaylistProgramR
 
   def releaseRadarNoSinglesProgram(
     refreshToken: RefreshToken,
@@ -85,7 +101,10 @@ package object program {
       _ <- info("Done!")
     } yield ()
 
-  def albumAnniversariesPlaylistProgram(refreshToken: RefreshToken, monthDay: Option[MonthDay]) =
+  def albumAnniversariesPlaylistProgram(
+    refreshToken: RefreshToken,
+    monthDay: Option[MonthDay]
+  ): RIO[AlbumAnniversariesPlaylistProgramR, Unit] =
     for {
       accessToken <- requestAccessTokenProgram(refreshToken)
       myProfile   <- getMyProfile(GetMyProfileRequest(accessToken))
@@ -95,12 +114,23 @@ package object program {
       createPlaylistReq = CreatePlaylistRequest.forAnniversaryPlaylist(accessToken, myProfile.id, playlistInfo)
       createPlaylistResp <- createPlaylist(createPlaylistReq)
 
-      //Get the artists I follow
-      //Get the albums of these artists
-      //Get Album release date with precision = Day
-      //Filter albums where release date as "dd.MM" === date passed (default = today)
-      //Get a sample track of the album (avoid the first and the last - intros and outros)
-      //Add sample track to the anniversary playlist
+      anniversaryPlaylistId = createPlaylistResp.id
+      getMyFollowedArtistsReq = GetMyFollowedArtistsRequest.first(accessToken)
+      _ <- paginateMyFollowedArtistsPar(getMyFollowedArtistsReq) { artistIds =>
+        import GetArtistsAlbumsResponse.Album
+
+        val makeSampleReq = GetAlbumSampleTrackRequest.make(accessToken, _)
+        val maybeSampleReq = Some(_: Album).filter(isAnniversaryAlbum(_, md)).map(_.id).map(makeSampleReq)
+        val getSampleTrackUri = getAlbumSampleTrack(_: GetAlbumSampleTrackRequest).map(TrackUri.fromTrackId)
+        val sampleReqs = (_: List[Album]).mapFilter(maybeSampleReq)
+        val sampleTrackUris = ZIO.foreachPar(_: List[GetAlbumSampleTrackRequest])(getSampleTrackUri)
+        val getSampleTrackUrisFromAlbums = sampleReqs andThen sampleTrackUris
+        val importSampleTracks = importTracks(_: List[TrackUri], anniversaryPlaylistId, accessToken)
+        val importSampleTracksFromAlbums = getSampleTrackUrisFromAlbums(_: List[Album]).flatMap(importSampleTracks)
+
+        val getArtistsAlbumsReqs = artistIds.map(GetArtistsAlbumsRequest.first(accessToken, _))
+        ZIO.foreachPar_(getArtistsAlbumsReqs)(paginateArtistsAlbumsPar(_)(importSampleTracksFromAlbums))
+      }
     } yield ()
 
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](

@@ -11,6 +11,10 @@ import spotification.common._
 package object track {
   type TrackUriP = MatchesRegex["^spotify:track:[0-9a-zA-Z]+$"]
   type TrackUri = String Refined TrackUriP
+  object TrackUri {
+    def fromTrackId(trackId: TrackId): TrackUri =
+      refineU[TrackUriP](show"spotify:track:$trackId")
+  }
 
   @newtype case class TrackId(value: SpotifyId)
   object TrackId {
@@ -29,7 +33,7 @@ package object track {
     implicit val TrackApiUriShow: Show[TrackApiUri] = deriving
   }
 
-  def makeTrackUri(trackApiUri: TrackApiUri, trackId: TrackId): Either[RefinementError, UriString] =
+  def makeTrackEndpoint(trackApiUri: TrackApiUri, trackId: TrackId): Either[RefinementError, UriString] =
     refineE[UriStringP](show"$trackApiUri/$trackId")
 
   def makeShareTrackString(resp: GetTrackResponse): String =

@@ -5,7 +5,7 @@ import spotification.common.UriString
 
 final case class GetArtistsAlbumsResponse(
   items: List[GetArtistsAlbumsResponse.Album],
-  next: UriString
+  next: Option[UriString]
 )
 object GetArtistsAlbumsResponse {
   final case class Album(

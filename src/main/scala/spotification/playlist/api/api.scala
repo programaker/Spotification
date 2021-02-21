@@ -1,28 +1,32 @@
 package spotification.playlist
 
 import org.http4s.HttpRoutes
+import spotification.album.httpclient.GetAlbumSampleTrackServiceLayer
+import spotification.artist.httpclient.{GetArtistsAlbumsServiceLayer, GetMyFollowedArtistsServiceLayer}
 import spotification.authorization.api.RequestAccessTokenProgramLayer
 import spotification.common.GenericResponse
 import spotification.common.api.{doRequest, handleGenericError, withDsl}
 import spotification.common.httpclient.HttpClientR
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityDecoderF, entityEncoderF}
-import spotification.config.service.{AuthorizationConfigR, PlaylistConfigR}
+import spotification.config.service._
 import spotification.config.source.PlaylistConfigLayer
 import spotification.log.impl.LogLayer
 import spotification.playlist.httpclient.{
   AddItemsToPlaylistServiceLayer,
+  CreatePlaylistServiceLayer,
   GetPlaylistsItemsServiceLayer,
   RemoveItemsFromPlaylistServiceLayer
 }
 import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
 import spotification.playlist.program._
+import spotification.user.httpclient.GetMyProfileServiceLayer
 import zio.clock.Clock
 import zio.interop.catz.taskConcurrentInstance
 import zio.{RIO, RLayer}
 
 package object api {
-  val ReleaseRadarNoSinglesProgramLayer
-    : RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, ReleaseRadarNoSinglesProgramR] =
+  type ReleaseRadarNoSinglesProgramLayerR = AuthorizationConfigR with HttpClientR with PlaylistConfigR
+  val ReleaseRadarNoSinglesProgramLayer: RLayer[ReleaseRadarNoSinglesProgramLayerR, ReleaseRadarNoSinglesProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -30,8 +34,8 @@ package object api {
       RemoveItemsFromPlaylistServiceLayer ++
       AddItemsToPlaylistServiceLayer
 
-  val MergePlaylistsProgramLayer
-    : RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, MergePlaylistsProgramR] =
+  type MergePlaylistsProgramLayerR = AuthorizationConfigR with HttpClientR with PlaylistConfigR
+  val MergePlaylistsProgramLayer: RLayer[MergePlaylistsProgramLayerR, MergePlaylistsProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
       LogLayer ++
@@ -40,8 +44,29 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  val PlaylistsLayer: RLayer[AuthorizationConfigR with HttpClientR with PlaylistConfigR, PlaylistProgramsR] =
-    ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer
+  type AlbumAnniversariesPlaylistProgramLayerR = PlaylistConfigR
+    with HttpClientR
+    with AlbumConfigR
+    with ArtistConfigR
+    with MeConfigR
+    with UserConfigR
+    with AuthorizationConfigR
+  val AlbumAnniversariesPlaylistProgramLayer
+    : RLayer[AlbumAnniversariesPlaylistProgramLayerR, AlbumAnniversariesPlaylistProgramR] =
+    AddItemsToPlaylistServiceLayer ++
+      GetAlbumSampleTrackServiceLayer ++
+      GetArtistsAlbumsServiceLayer ++
+      GetMyFollowedArtistsServiceLayer ++
+      CreatePlaylistServiceLayer ++
+      Clock.live ++
+      GetMyProfileServiceLayer ++
+      RequestAccessTokenProgramLayer
+
+  type PlaylistsLayerR = ReleaseRadarNoSinglesProgramLayerR
+    with MergePlaylistsProgramLayerR
+    with AlbumAnniversariesPlaylistProgramLayerR
+  val PlaylistsLayer: RLayer[PlaylistsLayerR, PlaylistProgramsR] =
+    ReleaseRadarNoSinglesProgramLayer ++ MergePlaylistsProgramLayer ++ AlbumAnniversariesPlaylistProgramLayer
 
   def makePlaylistsApi[R <: PlaylistProgramsR]: HttpRoutes[RIO[R, *]] = withDsl { dsl =>
     import dsl._

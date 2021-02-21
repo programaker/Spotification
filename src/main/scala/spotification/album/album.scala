@@ -2,6 +2,7 @@ package spotification
 
 import cats.Show
 import cats.syntax.show._
+import cats.syntax.eq._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.Or
@@ -9,6 +10,7 @@ import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
+import spotification.artist.GetArtistsAlbumsResponse
 import spotification.common._
 
 package object album {
@@ -46,4 +48,13 @@ package object album {
 
   def albumsTracksUri(albumApiUri: AlbumApiUri, albumId: AlbumId): Either[RefinementError, UriString] =
     refineE[UriStringP](show"$albumApiUri/$albumId/tracks")
+
+  def releaseDateToMonthDay(releaseDate: ReleaseDateString): Either[RefinementError, MonthDay] =
+    refineE[YearMonthDayStringP](releaseDate.value).map(MonthDay.fromYearMonthDayString)
+
+  def isDayPrecision(precision: ReleaseDatePrecision): Boolean =
+    precision === ReleaseDatePrecision.Day
+
+  def isAnniversaryAlbum(album: GetArtistsAlbumsResponse.Album, releaseMonthDay: MonthDay): Boolean =
+    isDayPrecision(album.release_date_precision) && releaseDateToMonthDay(album.release_date).contains(releaseMonthDay)
 }

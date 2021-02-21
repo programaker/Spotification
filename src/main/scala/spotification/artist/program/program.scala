@@ -1,6 +1,12 @@
 package spotification.artist
 
-import spotification.artist.service.{GetMyFollowedArtistsServiceR, getMyFollowedArtists}
+import spotification.artist.GetArtistsAlbumsResponse.Album
+import spotification.artist.service.{
+  GetArtistsAlbumsServiceR,
+  GetMyFollowedArtistsServiceR,
+  getArtistsAlbums,
+  getMyFollowedArtists
+}
 import spotification.common.program.{PageRIO, paginate}
 import spotification.effect.unitRIO
 import zio.RIO
@@ -11,8 +17,18 @@ package object program {
   ): RIO[R, Unit] =
     paginate(unitRIO[R])(fetchMyFollowedArtistsPage[R])((rio, artistIds) => rio &> f(artistIds))(req)
 
+  def paginateArtistsAlbumsPar[R <: GetArtistsAlbumsServiceR](req: GetArtistsAlbumsRequest[_])(
+    f: List[Album] => RIO[R, Unit]
+  ): RIO[R, Unit] =
+    paginate(unitRIO[R])(fetchArtistsAlbumsPage[R])((rio, albums) => rio &> f(albums))(req)
+
   def fetchMyFollowedArtistsPage[R <: GetMyFollowedArtistsServiceR](
     req: GetMyFollowedArtistsRequest[_]
   ): PageRIO[R, ArtistId, GetMyFollowedArtistsRequest[_]] =
     getMyFollowedArtists(req).map(getMyFollowedArtistsPage(req, _))
+
+  def fetchArtistsAlbumsPage[R <: GetArtistsAlbumsServiceR](
+    req: GetArtistsAlbumsRequest[_]
+  ): PageRIO[R, Album, GetArtistsAlbumsRequest[_]] =
+    getArtistsAlbums(req).map(getArtistsAlbumsPage(req, _))
 }

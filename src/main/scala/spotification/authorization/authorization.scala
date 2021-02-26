@@ -92,7 +92,7 @@ package object authorization {
   }
 
   def parseScope(rawScope: ScopeString): Either[RefinementError, List[Scope]] =
-    rawScope.split("\\s").toList.map(refineE[ScopeP](_)).sequence[Either[RefinementError, *], Scope]
+    rawScope.split("\\s").toList.traverse(refineE[ScopeP](_))
 
   def joinScopes(scopes: List[Scope]): Either[RefinementError, ScopeString] =
     joinRefinedStrings(scopes, " ")

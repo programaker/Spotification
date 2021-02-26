@@ -62,7 +62,6 @@ package object api {
         case Token(Bearer, refreshTokenString) => Some(refreshTokenString)
         case _                                 => None
       }
-      .map(refineRIO[R, NonBlankStringP](_))
-      .sequence
+      .traverse(refineRIO[R, NonBlankStringP](_))
       .map(_.map(RefreshToken(_)))
 }

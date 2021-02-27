@@ -60,7 +60,8 @@ package object api {
       CreatePlaylistServiceLayer ++
       Clock.live ++
       GetMyProfileServiceLayer ++
-      RequestAccessTokenProgramLayer
+      RequestAccessTokenProgramLayer ++
+      LogLayer
 
   type PlaylistsLayerR = ReleaseRadarNoSinglesProgramLayerR
     with MergePlaylistsProgramLayerR

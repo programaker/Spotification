@@ -51,6 +51,7 @@ package object program {
     with Clock
     with GetMyProfileServiceR
     with RequestAccessTokenProgramR
+    with LogR
 
   type PlaylistProgramsR = ReleaseRadarNoSinglesProgramR
     with MergePlaylistsProgramR
@@ -110,11 +111,14 @@ package object program {
       myProfile   <- getMyProfile(GetMyProfileRequest(accessToken))
       md          <- monthDay.fold(clock.currentDateTime.map(MonthDay.from))(ZIO.succeed(_))
 
+      _ <- info(show"Creating anniversary-playlist for $md")
       playlistInfo = AnniversaryPlaylistInfo.fromMonthDay(md)
       createPlaylistReq = CreatePlaylistRequest.forAnniversaryPlaylist(accessToken, myProfile.id, playlistInfo)
       createPlaylistResp <- createPlaylist(createPlaylistReq)
-
       anniversaryPlaylistId = createPlaylistResp.id
+      _ <- info(show"anniversary-playlist($anniversaryPlaylistId) created")
+
+      _ <- info("Searching anniversary albums from my followed artists")
       getMyFollowedArtistsReq = GetMyFollowedArtistsRequest.first(accessToken)
       _ <- paginateMyFollowedArtistsPar(getMyFollowedArtistsReq) { artistIds =>
         import GetArtistsAlbumsResponse.Album
@@ -131,6 +135,8 @@ package object program {
         val getArtistsAlbumsReqs = artistIds.map(GetArtistsAlbumsRequest.first(accessToken, _))
         ZIO.foreachPar_(getArtistsAlbumsReqs)(paginateArtistsAlbumsPar(_)(importSampleTracksFromAlbums))
       }
+
+      _ <- info("Done!")
     } yield ()
 
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](

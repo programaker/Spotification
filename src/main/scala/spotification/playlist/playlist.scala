@@ -56,5 +56,5 @@ package object playlist {
     req: GetPlaylistsItemsRequest[T],
     resp: GetPlaylistsItemsResponse
   ): Page[TrackResponse, GetPlaylistsItemsRequest[T]] =
-    Page(resp.tracks, Some(req))
+    Page(resp.tracks, resp.next.map(_ => req))
 }

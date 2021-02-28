@@ -10,7 +10,7 @@ import spotification.artist.{GetArtistsAlbumsRequest, GetArtistsAlbumsResponse, 
 import spotification.authorization.program.{RequestAccessTokenProgramR, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.MonthDay
-import spotification.common.program.{PageRIO, paginate}
+import spotification.common.program.{PageRIO, paginate_}
 import spotification.config.RetryConfig
 import spotification.config.service.{PlaylistConfigR, playlistConfig}
 import spotification.effect.{refineRIO, unitRIO}
@@ -142,13 +142,15 @@ package object program {
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](
     req: GetPlaylistsItemsRequest[First]
   )(f: List[TrackResponse] => RIO[R, Unit]): RIO[R, Unit] =
-    paginate(unitRIO[R])(fetchPlaylistItemsPage[R])((rio, items) => rio &> f(items))(req)
+    paginate_(unitRIO[R])(fetchPlaylistItemsPage[R])(f)(_ &> _)(req)
 
   private type ClearPlaylistR = GetPlaylistItemsServiceR with RemoveItemsFromPlaylistServiceR
   private def clearPlaylist[R <: ClearPlaylistR](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] =
     // As we are deleting tracks, we should always stay in the first page
     // and compose the effects sequentially
-    paginate(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])((rio, items) => rio *> deleteTracks(items, req))(req)
+    paginate_(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])(
+      deleteTracks(_, req.requestType.playlistId, req.accessToken)
+    )(_ *> _)(req)
 
   private def importTracks[R <: AddItemsToPlaylistServiceR](
     trackUris: List[TrackUri],
@@ -162,14 +164,15 @@ package object program {
         .map(_.toVector)
         .map(refineRIO[AddItemsToPlaylistServiceR, PlaylistItemsToProcessP](_))
         .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
-        .to(Iterable)
+        .toList
 
     ZIO.foreachPar_(iterable)(identity)
   }
 
   private def deleteTracks[R <: RemoveItemsFromPlaylistServiceR](
     items: List[TrackResponse],
-    req: GetPlaylistsItemsRequest[First]
+    playlistId: PlaylistId,
+    accessToken: AccessToken
   ): RIO[R, Unit] = {
     val iterable =
       items
@@ -178,9 +181,9 @@ package object program {
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map(_.toVector)
         .map(refineRIO[RemoveItemsFromPlaylistServiceR, PlaylistItemsToProcessP](_))
-        .map(_.map(RemoveItemsFromPlaylistRequest.make(_, req.requestType.playlistId, req.accessToken)))
+        .map(_.map(RemoveItemsFromPlaylistRequest.make(_, playlistId, accessToken)))
         .map(_.flatMap(removeItemsFromPlaylist))
-        .to(Iterable)
+        .toList
 
     ZIO.foreachPar_(iterable)(identity)
   }

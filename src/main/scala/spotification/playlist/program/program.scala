@@ -10,7 +10,7 @@ import spotification.artist.{GetArtistsAlbumsRequest, GetArtistsAlbumsResponse, 
 import spotification.authorization.program.{RequestAccessTokenProgramR, requestAccessTokenProgram}
 import spotification.authorization.{AccessToken, RefreshToken}
 import spotification.common.MonthDay
-import spotification.common.program.{PageRIO, paginate_}
+import spotification.common.program.{PageRIO, paginate}
 import spotification.config.RetryConfig
 import spotification.config.service.{PlaylistConfigR, playlistConfig}
 import spotification.effect.{refineRIO, unitRIO}
@@ -142,15 +142,15 @@ package object program {
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](
     req: GetPlaylistsItemsRequest[First]
   )(f: List[TrackResponse] => RIO[R, Unit]): RIO[R, Unit] =
-    paginate_(unitRIO[R])(fetchPlaylistItemsPage[R])(f)(_ &> _)(req)
+    paginate(unitRIO[R])(fetchPlaylistItemsPage[R])(f)(_ &> _)(req)
 
   private type ClearPlaylistR = GetPlaylistItemsServiceR with RemoveItemsFromPlaylistServiceR
-  private def clearPlaylist[R <: ClearPlaylistR](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] =
+  private def clearPlaylist[R <: ClearPlaylistR](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] = {
     // As we are deleting tracks, we should always stay in the first page
     // and compose the effects sequentially
-    paginate_(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])(
-      deleteTracks(_, req.requestType.playlistId, req.accessToken)
-    )(_ *> _)(req)
+    val f = deleteTracks(_: List[TrackResponse], req.requestType.playlistId, req.accessToken)
+    paginate(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])(f)(_ *> _)(req)
+  }
 
   private def importTracks[R <: AddItemsToPlaylistServiceR](
     trackUris: List[TrackUri],

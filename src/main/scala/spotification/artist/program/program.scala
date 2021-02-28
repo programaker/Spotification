@@ -15,12 +15,12 @@ package object program {
   def paginateMyFollowedArtistsPar[R <: GetMyFollowedArtistsServiceR](req: GetMyFollowedArtistsRequest[_])(
     f: List[ArtistId] => RIO[R, Unit]
   ): RIO[R, Unit] =
-    paginate(unitRIO[R])(fetchMyFollowedArtistsPage[R])((rio, artistIds) => rio &> f(artistIds))(req)
+    paginate(unitRIO[R])(fetchMyFollowedArtistsPage[R])(f)(_ &> _)(req)
 
   def paginateArtistsAlbumsPar[R <: GetArtistsAlbumsServiceR](req: GetArtistsAlbumsRequest[_])(
     f: List[Album] => RIO[R, Unit]
   ): RIO[R, Unit] =
-    paginate(unitRIO[R])(fetchArtistsAlbumsPage[R])((rio, albums) => rio &> f(albums))(req)
+    paginate(unitRIO[R])(fetchArtistsAlbumsPage[R])(f)(_ &> _)(req)
 
   def fetchMyFollowedArtistsPage[R <: GetMyFollowedArtistsServiceR](
     req: GetMyFollowedArtistsRequest[_]

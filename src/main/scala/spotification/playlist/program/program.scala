@@ -161,10 +161,11 @@ package object program {
       trackUris
         .to(LazyList)
         .grouped(PlaylistItemsToProcess.MaxSize)
-        .map(_.toVector)
-        .map(refineRIO[AddItemsToPlaylistServiceR, PlaylistItemsToProcessP](_))
-        .map(_.flatMap(importTrackChunk(_, destPlaylist, accessToken)))
-        .toList
+        .map { trackUriGroup =>
+          refineRIO[R, PlaylistItemsToProcessP](trackUriGroup.toVector)
+            .flatMap(importTrackChunk(_, destPlaylist, accessToken))
+        }
+        .to(LazyList)
 
     ZIO.foreachPar_(iterable)(identity)
   }
@@ -179,11 +180,12 @@ package object program {
         .to(LazyList)
         .map(_.uri)
         .grouped(PlaylistItemsToProcess.MaxSize)
-        .map(_.toVector)
-        .map(refineRIO[RemoveItemsFromPlaylistServiceR, PlaylistItemsToProcessP](_))
-        .map(_.map(RemoveItemsFromPlaylistRequest.make(_, playlistId, accessToken)))
-        .map(_.flatMap(removeItemsFromPlaylist))
-        .toList
+        .map { trackUriGroup =>
+          refineRIO[R, PlaylistItemsToProcessP](trackUriGroup.toVector)
+            .map(RemoveItemsFromPlaylistRequest.make(_, playlistId, accessToken))
+            .flatMap(removeItemsFromPlaylist)
+        }
+        .to(LazyList)
 
     ZIO.foreachPar_(iterable)(identity)
   }

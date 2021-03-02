@@ -142,14 +142,14 @@ package object program {
   private def paginatePlaylistPar[R <: GetPlaylistItemsServiceR](
     req: GetPlaylistsItemsRequest[First]
   )(f: List[TrackResponse] => RIO[R, Unit]): RIO[R, Unit] =
-    paginate(unitRIO[R])(fetchPlaylistItemsPage[R])(f)(_ &> _)(req)
+    paginate(unitRIO[R])(fetchPlaylistItemsPage[R])((tracks, acc) => f(tracks) &> acc)(req)
 
   private type ClearPlaylistR = GetPlaylistItemsServiceR with RemoveItemsFromPlaylistServiceR
   private def clearPlaylist[R <: ClearPlaylistR](req: GetPlaylistsItemsRequest[First]): RIO[R, Unit] = {
     // As we are deleting tracks, we should always stay in the first page
     // and compose the effects sequentially
-    val f = deleteTracks(_: List[TrackResponse], req.requestType.playlistId, req.accessToken)
-    paginate(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])(f)(_ *> _)(req)
+    val delete = deleteTracks(_: List[TrackResponse], req.requestType.playlistId, req.accessToken)
+    paginate(unitRIO[R])(fetchPlaylistItemsFixedPage[R, First])((tracks, acc) => delete(tracks) *> acc)(req)
   }
 
   private def importTracks[R <: AddItemsToPlaylistServiceR](

@@ -4,6 +4,8 @@ import eu.timepit.refined.api.{Refined, Validate}
 import spotification.common.{RefinementError, refineE}
 import zio._
 
+import scala.annotation.nowarn
+
 package object effect {
   def refineZIO[R, P]: PartialRefineZIO[R, P] = new PartialRefineZIO
   final class PartialRefineZIO[R, P] {
@@ -29,6 +31,7 @@ package object effect {
   def accessRIO[A: Tag]: RIO[Has[A], A] =
     ZIO.access(_.get)
 
+  @nowarn //I've failed to solve the "unused context bound" warning =/
   def accessServiceFunction[A: Tag, B: Tag](a: A): RIO[Has[A => Task[B]], B] =
     ZIO.accessM(_.get.apply(a))
 

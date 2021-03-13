@@ -4,7 +4,6 @@ import spotification.authorization.api.{AuthorizationProgramsLayer, makeAuthoriz
 import spotification.authorization.program.AuthorizationProgramsR
 import spotification.common.api.Routes
 import spotification.common.httpclient.{HttpClientLayer, HttpClientR}
-import spotification.concurrent.{ExecutionContextLayer, ExecutionContextR, executionContext}
 import spotification.config.service._
 import spotification.config.source._
 import spotification.httpserver.{addCors, addLogger, makeHttpApp, runHttpServer}
@@ -26,11 +25,10 @@ object SpotificationHttpApp extends zio.App {
   val AllProgramsLayer: RLayer[AllProgramsLayerR, AllProgramsR] =
     AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
-  type HttpAppR = ServerConfigR with ExecutionContextR with AllProgramsR with Clock
+  type HttpAppR = ServerConfigR with AllProgramsR with Clock
   val HttpAppLayer: TaskLayer[HttpAppR] =
     ServerConfigLayer >+>
       ConcurrentConfigLayer >+>
-      ExecutionContextLayer >+>
       ClientConfigLayer >+>
       HttpClientLayer >+>
       AuthorizationConfigLayer >+>
@@ -53,8 +51,8 @@ object SpotificationHttpApp extends zio.App {
     ZIO.runtime[HttpAppR].flatMap { implicit rt =>
       for {
         config <- serverConfig
-        ex     <- executionContext
 
+        ex = rt.platform.executor.asEC
         controllers = makeAllApis[HttpAppR]
         app = addCors(addLogger(makeHttpApp(controllers)))
 

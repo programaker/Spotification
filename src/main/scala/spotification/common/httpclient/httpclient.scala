@@ -55,27 +55,31 @@ package object httpclient {
    * PS - I'm impressed about how simple the new Java HttpClient is!
    * It looks like a library
    */
-  def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] =
-    Task {
-      val client = HttpClient
+  def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] = {
+    val client = Task {
+      HttpClient
         .newBuilder()
         .version(HttpClient.Version.HTTP_2)
         .build()
+    }
 
-      val request = {
-        val builder = HttpRequest
-          .newBuilder(URI.create(uri))
-          .POST(BodyPublishers.ofString(body, UTF_8))
+    val request = Task {
+      val builder = HttpRequest
+        .newBuilder(URI.create(uri))
+        .POST(BodyPublishers.ofString(body, UTF_8))
 
-        val builder2 = headers.foldLeft(builder) { case (builder, (key, value)) =>
-          builder.header(key, value)
-        }
-
-        builder2.build()
+      val builder2 = headers.foldLeft(builder) { case (builder, (key, value)) =>
+        builder.header(key, value)
       }
 
-      client.send(request, BodyHandlers.ofString()).body()
+      builder2.build()
     }
+
+    client
+      .zipWithPar(request)((client, request) => client.sendAsync(request, BodyHandlers.ofString()))
+      .flatMap(Task.fromCompletionStage(_))
+      .map(_.body())
+  }
 
   def uriStringToUri(uriString: UriString): Either[Throwable, Uri] =
     Uri.fromString(uriString)

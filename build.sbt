@@ -1,4 +1,4 @@
-val SpotificationV = "3.2.20"
+val SpotificationV = "3.2.21"
 
 val ScalaV = "2.13.5"
 val DockerImageV = "adoptopenjdk/openjdk15:x86_64-alpine-jre-15.0.2_7"

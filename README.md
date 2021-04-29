@@ -20,7 +20,7 @@ You will need the id of your "Release Radar" playlist. You can get it from the S
 
 For the "Release Radar No Singles", you must create the empty playlist yourself on Spotify app and get its ID like you did above.
 
-Now that you have `CLIENT_ID`, `CLIENT_SECRET` and `REDIRECT_URI`, create a file called ".env" in the root of the project containing this variables (their values will be injected in the application.conf file).
+Now that you have `CLIENT_ID`, `CLIENT_SECRET` and `REDIRECT_URI`, create a file called ".env" in the root of the project containing this variables (their values will be injected in the application.conf file). You can just copy the `dotenv.template` file, rename it and modify it.
 
 Save `Release Radar ID` and `Release Radar No Singles ID`. You'll need them!
 

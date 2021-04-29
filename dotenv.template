@@ -1,0 +1,4 @@
+CLIENT_ID=<your spotify app id>
+CLIENT_SECRET=<your spotify app secrete>
+REDIRECT_URI=<your spotify app redirect uri>
+NUMBER_OF_THREADS=<number of threads>

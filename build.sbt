@@ -114,7 +114,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-Ymacro-annotations"
 )
 
-mainClass in Compile := Some("spotification.SpotificationHttpApp")
+Compile / mainClass := Some("spotification.SpotificationHttpApp")
 
 dockerBaseImage := DockerImageV
 dockerExposedPorts += 8080

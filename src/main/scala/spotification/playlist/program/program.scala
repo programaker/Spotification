@@ -158,14 +158,13 @@ package object program {
     accessToken: AccessToken
   ): RIO[R, Unit] = {
     val iterable =
-      trackUris
-        .to(LazyList)
+      trackUris.iterator
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map { trackUriGroup =>
           refineRIO[R, PlaylistItemsToProcessP](trackUriGroup.toVector)
             .flatMap(importTrackChunk(_, destPlaylist, accessToken))
         }
-        .to(LazyList)
+        .toList
 
     ZIO.foreachPar_(iterable)(identity)
   }
@@ -176,8 +175,7 @@ package object program {
     accessToken: AccessToken
   ): RIO[R, Unit] = {
     val iterable =
-      items
-        .to(LazyList)
+      items.iterator
         .map(_.uri)
         .grouped(PlaylistItemsToProcess.MaxSize)
         .map { trackUriGroup =>
@@ -185,7 +183,7 @@ package object program {
             .map(RemoveItemsFromPlaylistRequest.make(_, playlistId, accessToken))
             .flatMap(removeItemsFromPlaylist)
         }
-        .to(LazyList)
+        .toList
 
     ZIO.foreachPar_(iterable)(identity)
   }

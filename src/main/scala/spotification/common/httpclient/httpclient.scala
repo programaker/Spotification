@@ -5,14 +5,16 @@ import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.circe.{Decoder, jawn}
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.Logger
-import org.http4s.{Request, Uri}
+import org.http4s.{EntityDecoder, Request, Uri}
 import spotification.config.ClientConfig
 import spotification.config.service.ClientConfigR
 import zio._
-import zio.interop.catz.{catsIOResourceSyntax, taskConcurrentInstance, taskEffectInstance}
+import zio.interop.catz.asyncRuntimeInstance
+import zio.interop.catz.catsIOResourceSyntax
+import zio.interop.catz.implicits.rts
 
 import java.net.URI
 import java.net.http.HttpRequest.BodyPublishers
@@ -31,7 +33,7 @@ package object httpclient {
   val HttpClientLayer: RLayer[ClientConfigR, HttpClientR] =
     ZLayer.fromServiceManaged[ClientConfig, Any, Throwable, H4sClient] { config =>
       val makeHttpClient =
-        ZIO.runtime[Any].map(implicit rt => BlazeClientBuilder[Task](rt.platform.executor.asEC).resource.toManaged)
+        ZIO.runtime[Any].map(_ => BlazeClientBuilder[Task].resource.toManaged)
 
       val addLogger =
         (config: ClientConfig) => Logger(config.logHeaders, config.logBody)(_: H4sClient)
@@ -40,20 +42,18 @@ package object httpclient {
     }
 
   def doRequest[A: Decoder](httpClient: H4sClient, h4sUri: Either[Throwable, Uri])(
-    req: Uri => Task[Request[Task]]
-  )(implicit der: Decoder[ErrorResponse]): Task[A] =
+    req: Uri => Request[Task]
+  )(implicit der: Decoder[ErrorResponse], ed: EntityDecoder[Task, String]): Task[A] =
     Task.fromEither(h4sUri).flatMap(requestUri[A](httpClient, _)(req))
 
   /**
-   * So, why did we need to appeal to Java HttpClient!?
-   * The problem is this issue in Http4s https://github.com/http4s/http4s/issues/2445
-   * The way they choose to encode uri's is not accepted by Spotify.
+   * So, why did we need to appeal to Java HttpClient!? The problem is this issue in Http4s
+   * https://github.com/http4s/http4s/issues/2445 The way they choose to encode uri's is not accepted by Spotify.
    *
-   * We have managed to found a workaround for the 1st step using Uri.unsafeFromString("free-style String"),
-   * but no similar workaround existed for UrlForm.
+   * We have managed to found a workaround for the 1st step using Uri.unsafeFromString("free-style String"), but no
+   * similar workaround existed for UrlForm.
    *
-   * PS - I'm impressed about how simple the new Java HttpClient is!
-   * It looks like a library
+   * PS - I'm impressed about how simple the new Java HttpClient is! It looks like a library
    */
   def jPost(uri: String, body: String, headers: Map[String, String]): Task[String] = {
     val client = Task {
@@ -85,9 +85,9 @@ package object httpclient {
     Uri.fromString(uriString)
 
   private def requestUri[A: Decoder](httpClient: H4sClient, uri: Uri)(
-    req: Uri => Task[Request[Task]]
-  )(implicit der: Decoder[ErrorResponse]): Task[A] =
-    req(uri)
+    req: Uri => Request[Task]
+  )(implicit der: Decoder[ErrorResponse], ed: EntityDecoder[Task, String]): Task[A] =
+    Task(req(uri))
       .flatMap(httpClient.expect[String])
       .map(s => jawn.decode[A](s).leftMap(_ => jawn.decode[ErrorResponse](s)))
       .map(_.leftMap {

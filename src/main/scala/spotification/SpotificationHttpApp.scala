@@ -15,7 +15,8 @@ import spotification.track.api.{TracksLayer, makeTracksApi}
 import spotification.track.program.TrackProgramsR
 import zio._
 import zio.clock.Clock
-import zio.interop.catz._
+import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.asyncRuntimeInstance
 
 import scala.util.control.NonFatal
 
@@ -52,11 +53,10 @@ object SpotificationHttpApp extends zio.App {
       for {
         config <- serverConfig
 
-        ex = rt.platform.executor.asEC
         controllers = makeAllApis[HttpAppR]
         app = addCors(addLogger(makeHttpApp(controllers)))
 
-        _ <- runHttpServer[RIO[HttpAppR, *]](config, app, ex)
+        _ <- runHttpServer[RIO[HttpAppR, *]](config, app)
       } yield ()
     }
 

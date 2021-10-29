@@ -13,14 +13,14 @@ import spotification.config.ClientConfig
 import spotification.config.service.ClientConfigR
 import zio._
 import zio.interop.catz.asyncRuntimeInstance
-import zio.interop.catz.catsIOResourceSyntax
-import zio.interop.catz.implicits.rts
 
 import java.net.URI
 import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
+import zio.clock.Clock
+import zio.blocking.Blocking
 
 package object httpclient {
   type H4sClient = Client[Task]
@@ -33,7 +33,9 @@ package object httpclient {
   val HttpClientLayer: RLayer[ClientConfigR, HttpClientR] =
     ZLayer.fromServiceManaged[ClientConfig, Any, Throwable, H4sClient] { config =>
       val makeHttpClient =
-        ZIO.runtime[Any].map(_ => BlazeClientBuilder[Task].resource.toManaged)
+        ZIO.runtime[Clock with Blocking].map { implicit rts =>
+          BlazeClientBuilder[Task].resource.toManaged
+        }
 
       val addLogger =
         (config: ClientConfig) => Logger(config.logHeaders, config.logBody)(_: H4sClient)

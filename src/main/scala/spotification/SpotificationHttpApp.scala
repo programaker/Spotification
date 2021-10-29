@@ -14,9 +14,9 @@ import spotification.playlist.program.PlaylistProgramsR
 import spotification.track.api.{TracksLayer, makeTracksApi}
 import spotification.track.program.TrackProgramsR
 import zio._
+import zio.blocking.Blocking
 import zio.clock.Clock
-import zio.interop.catz.monadErrorInstance
-import zio.interop.catz.asyncRuntimeInstance
+import zio.interop.catz.asyncInstance
 
 import scala.util.control.NonFatal
 
@@ -26,7 +26,7 @@ object SpotificationHttpApp extends zio.App {
   val AllProgramsLayer: RLayer[AllProgramsLayerR, AllProgramsR] =
     AuthorizationProgramsLayer ++ PlaylistsLayer ++ TracksLayer
 
-  type HttpAppR = ServerConfigR with AllProgramsR with Clock
+  type HttpAppR = ServerConfigR with AllProgramsR with Clock with Blocking
   val HttpAppLayer: TaskLayer[HttpAppR] =
     ServerConfigLayer >+>
       ConcurrentConfigLayer >+>
@@ -40,7 +40,8 @@ object SpotificationHttpApp extends zio.App {
       ArtistConfigLayer >+>
       AlbumConfigLayer >+>
       AllProgramsLayer >+>
-      Clock.live
+      Clock.live >+>
+      Blocking.live
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] =
     runHttpApp
@@ -49,7 +50,7 @@ object SpotificationHttpApp extends zio.App {
       .exitCode
 
   private def runHttpApp: RIO[HttpAppR, Unit] =
-    ZIO.runtime[HttpAppR].flatMap { implicit rt =>
+    ZIO.runtime[HttpAppR].flatMap { _ =>
       for {
         config <- serverConfig
 

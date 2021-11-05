@@ -29,6 +29,8 @@ object SpotificationHttpApp extends zio.App {
   type HttpAppR = ServerConfigR with AllProgramsR with Clock with Blocking
   val HttpAppLayer: TaskLayer[HttpAppR] =
     ServerConfigLayer >+>
+      Clock.live >+>
+      Blocking.live >+>
       ConcurrentConfigLayer >+>
       ClientConfigLayer >+>
       HttpClientLayer >+>
@@ -39,9 +41,7 @@ object SpotificationHttpApp extends zio.App {
       MeConfigLayer >+>
       ArtistConfigLayer >+>
       AlbumConfigLayer >+>
-      AllProgramsLayer >+>
-      Clock.live >+>
-      Blocking.live
+      AllProgramsLayer
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] =
     runHttpApp
@@ -50,16 +50,14 @@ object SpotificationHttpApp extends zio.App {
       .exitCode
 
   private def runHttpApp: RIO[HttpAppR, Unit] =
-    ZIO.runtime[HttpAppR].flatMap { _ =>
-      for {
-        config <- serverConfig
+    for {
+      config <- serverConfig
 
-        controllers = makeAllApis[HttpAppR]
-        app = addCors(addLogger(makeHttpApp(controllers)))
+      controllers = makeAllApis[HttpAppR]
+      app = addCors(addLogger(makeHttpApp(controllers)))
 
-        _ <- runHttpServer[RIO[HttpAppR, *]](config, app)
-      } yield ()
-    }
+      _ <- runHttpServer[RIO[HttpAppR, *]](config, app)
+    } yield ()
 
   private def makeAllApis[R <: AllProgramsR]: Routes[RIO[R, *]] =
     Seq(

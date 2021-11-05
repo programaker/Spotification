@@ -21,7 +21,7 @@ import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, Rele
 import spotification.playlist.program._
 import spotification.user.httpclient.GetMyProfileServiceLayer
 import zio.clock.Clock
-import zio.interop.catz.taskConcurrentInstance
+import zio.interop.catz.concurrentInstance
 import zio.{RIO, RLayer}
 
 package object api {

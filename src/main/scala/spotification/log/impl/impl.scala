@@ -2,17 +2,19 @@ package spotification.log
 
 import io.odin.consoleLogger
 import io.odin.syntax.LoggerSyntax
+import spotification.effect.{managedTaskDispatcher, managedZIORuntime}
 import spotification.log.service.LogR
-import zio.{Task, TaskLayer, ZLayer, ZManaged}
-import zio.interop.catz._
-import zio.interop.catz.implicits._
+import zio.blocking.Blocking
+import zio.clock.Clock
+import zio.interop.catz.{asyncRuntimeInstance, catsIOResourceSyntax}
+import zio.{RLayer, Task, ZLayer}
 
 package object impl {
-  val LogLayer: TaskLayer[LogR] = ZLayer.fromManaged {
-    // Why not just combine the logs and call `toManaged`?
-    // This way to construct the ZManaged provides all the needed implicits through the `ceff` argument
-    ZManaged.fromEffect(Task.concurrentEffect).flatMap { implicit ceff =>
-      consoleLogger[Task]().withAsync().toManaged
+  val LogLayer: RLayer[Clock with Blocking, LogR] = ZLayer.fromManaged {
+    managedZIORuntime[Clock with Blocking].flatMap { implicit rt =>
+      managedTaskDispatcher.flatMap { implicit dispatcher =>
+        consoleLogger[Task]().withAsync().toManaged
+      }
     }
   }
 }

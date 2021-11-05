@@ -1,8 +1,13 @@
 package spotification
 
+import cats.effect.kernel.Async
+import cats.effect.std.Dispatcher
+import cats.syntax.functor._
 import eu.timepit.refined.api.{Refined, Validate}
 import spotification.common.{RefinementError, refineE}
 import zio._
+import zio.blocking.Blocking
+import zio.clock.Clock
 
 import scala.annotation.nowarn
 
@@ -36,4 +41,12 @@ package object effect {
     ZIO.accessM(_.get.apply(a))
 
   def unitRIO[R]: RIO[R, Unit] = RIO.unit
+
+  def managedTaskDispatcher(implicit A: Async[Task]): TaskManaged[Dispatcher[Task]] =
+    makeDispatcher[Task].toManaged_
+
+  def makeDispatcher[F[_]: Async]: F[Dispatcher[F]] =
+    Dispatcher[F].allocated.map { case (dispatcher, _) => dispatcher }
+
+  def managedZIORuntime[R]: RManaged[R, Runtime[R]] = ZIO.runtime[R].toManaged_
 }

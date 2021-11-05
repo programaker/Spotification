@@ -13,7 +13,7 @@ import spotification.playlist.api.{PlaylistsLayer, PlaylistsLayerR, makePlaylist
 import spotification.playlist.program.PlaylistProgramsR
 import spotification.track.api.{TracksLayer, makeTracksApi}
 import spotification.track.program.TrackProgramsR
-import zio._
+import zio.{ExitCode, RIO, RLayer, TaskLayer, ZEnv, ZIO}
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz.asyncInstance

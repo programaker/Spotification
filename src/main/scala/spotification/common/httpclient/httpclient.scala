@@ -1,7 +1,5 @@
 package spotification.common
 
-import cats.effect.kernel.Async
-import cats.effect.std.Dispatcher
 import cats.syntax.either._
 import cats.syntax.show._
 import eu.timepit.refined.auto._
@@ -13,11 +11,11 @@ import org.http4s.client.middleware.Logger
 import org.http4s.{EntityDecoder, Request, Uri}
 import spotification.config.ClientConfig
 import spotification.config.service.ClientConfigR
-import zio.{Has, RLayer, Task, ZIO, ZLayer}
+import spotification.effect.{managedTaskDispatcher, managedZIORuntime}
 import zio.blocking.Blocking
 import zio.clock.Clock
-import zio.interop.catz.catsIOResourceSyntax
-import zio.interop.catz.asyncRuntimeInstance
+import zio.interop.catz.{asyncRuntimeInstance, catsIOResourceSyntax}
+import zio.{Has, RLayer, Task, ZLayer}
 
 import java.net.URI
 import java.net.http.HttpRequest.BodyPublishers
@@ -35,17 +33,13 @@ package object httpclient {
 
   val HttpClientLayer: RLayer[ClientConfigR with Clock with Blocking, HttpClientR] =
     ZLayer.fromServiceManaged[ClientConfig, Clock with Blocking, Throwable, H4sClient] { config =>
-      ZIO
-        .runtime[Clock with Blocking]
-        .toManaged_
-        .flatMap { implicit rts =>
-          val addLogger = Logger(config.logHeaders, config.logBody)(_: H4sClient)
+      managedZIORuntime[Clock with Blocking].flatMap { implicit rt =>
+        val addLogger = Logger(config.logHeaders, config.logBody)(_: H4sClient)
 
-          Dispatcher[Task].allocated.map { case (dispatcher, _) => dispatcher }.toManaged_.flatMap {
-            implicit dispatcher =>
-              BlazeClientBuilder[Task].resource.map(addLogger).toManaged
-          }
+        managedTaskDispatcher.flatMap { implicit dispatcher =>
+          BlazeClientBuilder[Task].resource.map(addLogger).toManaged
         }
+      }
     }
 
   def doRequest[A: Decoder](httpClient: H4sClient, h4sUri: Either[Throwable, Uri])(

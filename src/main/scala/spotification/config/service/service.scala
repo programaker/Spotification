@@ -31,7 +31,4 @@ package object service {
 
   type ClientConfigR = Has[ClientConfig]
   def clientConfig: RIO[ClientConfigR, ClientConfig] = accessRIO
-
-  type ConcurrentConfigR = Has[ConcurrentConfig]
-  def concurrentConfig: RIO[ConcurrentConfigR, ConcurrentConfig] = accessRIO
 }

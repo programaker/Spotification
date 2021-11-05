@@ -38,7 +38,6 @@ object implicits {
   implicit val UserConfigReader: ConfigReader[UserConfig] = deriveReader
   implicit val ServerConfigReader: ConfigReader[ServerConfig] = deriveReader
   implicit val ClientConfigReader: ConfigReader[ClientConfig] = deriveReader
-  implicit val ConcurrentConfigReader: ConfigReader[ConcurrentConfig] = deriveReader
   implicit val AppConfigReader: ConfigReader[AppConfig] = deriveReader
 
   private def deriveNewtypeReader[A: ConfigReader, B](f: A => B): ConfigReader[B] = implicitly[ConfigReader[A]].map(f)

@@ -31,7 +31,6 @@ object SpotificationHttpApp extends zio.App {
     ServerConfigLayer >+>
       Clock.live >+>
       Blocking.live >+>
-      ConcurrentConfigLayer >+>
       ClientConfigLayer >+>
       HttpClientLayer >+>
       AuthorizationConfigLayer >+>

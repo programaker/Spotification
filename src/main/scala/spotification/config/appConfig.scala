@@ -20,8 +20,7 @@ final case class AppConfig(
   me: MeConfig,
   user: UserConfig,
   server: ServerConfig,
-  client: ClientConfig,
-  concurrent: ConcurrentConfig
+  client: ClientConfig
 )
 
 final case class AuthorizationConfig(
@@ -72,8 +71,4 @@ final case class ClientConfig(
 final case class RetryConfig(
   retryAfter: FiniteDuration,
   attempts: PositiveInt
-)
-
-final case class ConcurrentConfig(
-  numberOfThreads: PositiveInt
 )

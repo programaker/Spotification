@@ -1,20 +1,9 @@
 package spotification.config
 
 import pureconfig.ConfigSource
-import spotification.config.service.{
-  AlbumConfigR,
-  ArtistConfigR,
-  AuthorizationConfigR,
-  ClientConfigR,
-  ConcurrentConfigR,
-  MeConfigR,
-  PlaylistConfigR,
-  ServerConfigR,
-  TrackConfigR,
-  UserConfigR
-}
-import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 import spotification.config.implicits.AppConfigReader
+import spotification.config.service._
+import zio.{Has, IO, Tag, TaskLayer, ZLayer}
 
 package object source {
   val AuthorizationConfigLayer: TaskLayer[AuthorizationConfigR] = makeLayer(_.authorization)
@@ -26,7 +15,6 @@ package object source {
   val UserConfigLayer: TaskLayer[UserConfigR] = makeLayer(_.user)
   val ServerConfigLayer: TaskLayer[ServerConfigR] = makeLayer(_.server)
   val ClientConfigLayer: TaskLayer[ClientConfigR] = makeLayer(_.client)
-  val ConcurrentConfigLayer: TaskLayer[ConcurrentConfigR] = makeLayer(_.concurrent)
 
   private def makeLayer[A: Tag](f: AppConfig => A): TaskLayer[Has[A]] =
     appConfigLayer.map(_.get).map(f).map(Has(_))

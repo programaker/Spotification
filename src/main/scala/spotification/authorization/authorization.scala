@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Base64
 
 package object authorization {
-  type AuthorizationResponseTypeP = Equal["code"] //it's the only one that appeared until now
+  type AuthorizationResponseTypeP = Equal["code"] // it's the only one that appeared until now
   type AuthorizationResponseType = String Refined AuthorizationResponseTypeP
   object AuthorizationResponseType {
     val Code: AuthorizationResponseType = "code"

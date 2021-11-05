@@ -13,7 +13,7 @@ final case class GetPlaylistsItemsResponse(
   def tracks: List[GetPlaylistsItemsResponse.TrackResponse] = items.flatMap(_.track)
 }
 object GetPlaylistsItemsResponse {
-  final case class ItemResponse(track: Option[TrackResponse]) //`"track": null` = track unavailable
+  final case class ItemResponse(track: Option[TrackResponse]) // `"track": null` = track unavailable
 
   final case class TrackResponse(album: AlbumResponse, uri: TrackUri) {
     def album_type: AlbumType = album.album_type

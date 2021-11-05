@@ -13,8 +13,7 @@ final case class GetAlbumSampleTrackRequest(
 object GetAlbumSampleTrackRequest {
 
   /**
-   * Creates a request to get a single Track from the Album, avoiding
-   * the first and the last (possible intro and outro)
+   * Creates a request to get a single Track from the Album, avoiding the first and the last (possible intro and outro)
    */
   def make(accessToken: AccessToken, albumId: AlbumId): GetAlbumSampleTrackRequest =
     GetAlbumSampleTrackRequest(

@@ -9,7 +9,8 @@ import scala.util.Try
 
 /**
  * Predicate that checks if a `String` is a parsable `MonthDay`
- * @tparam S string representing MonthDay date format (i.e. "MM-dd", "dd/MM", ...)
+ * @tparam S
+ *   string representing MonthDay date format (i.e. "MM-dd", "dd/MM", ...)
  */
 final case class ValidMonthDay[S <: String]()
 object ValidMonthDay {

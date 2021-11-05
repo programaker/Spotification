@@ -9,7 +9,8 @@ import scala.util.Try
 
 /**
  * Predicate that checks if a `String` is a parsable `Date`
- * @tparam S string representing Date date format (i.e. "yyyy-MM-dd", "dd/MM/yyy", ...)
+ * @tparam S
+ *   string representing Date date format (i.e. "yyyy-MM-dd", "dd/MM/yyy", ...)
  */
 final case class ValidDate[S <: String]()
 object ValidDate {

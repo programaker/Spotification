@@ -1,17 +1,22 @@
 package spotification.common
 
+import cats.effect.kernel.Async
+import cats.effect.std.Dispatcher
 import cats.syntax.either._
 import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.circe.{Decoder, jawn}
-import org.http4s.client.Client
 import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.Logger
 import org.http4s.{EntityDecoder, Request, Uri}
 import spotification.config.ClientConfig
 import spotification.config.service.ClientConfigR
-import zio._
+import zio.{Has, RLayer, Task, ZIO, ZLayer}
+import zio.blocking.Blocking
+import zio.clock.Clock
+import zio.interop.catz.catsIOResourceSyntax
 import zio.interop.catz.asyncRuntimeInstance
 
 import java.net.URI
@@ -19,8 +24,6 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.{HttpClient, HttpRequest}
 import java.nio.charset.StandardCharsets.UTF_8
-import zio.clock.Clock
-import zio.blocking.Blocking
 
 package object httpclient {
   type H4sClient = Client[Task]
@@ -30,17 +33,19 @@ package object httpclient {
 
   type HttpClientR = Has[H4sClient]
 
-  val HttpClientLayer: RLayer[ClientConfigR, HttpClientR] =
-    ZLayer.fromServiceManaged[ClientConfig, Any, Throwable, H4sClient] { config =>
-      val makeHttpClient =
-        ZIO.runtime[Clock with Blocking].map { implicit rts =>
-          BlazeClientBuilder[Task].resource.toManaged
+  val HttpClientLayer: RLayer[ClientConfigR with Clock with Blocking, HttpClientR] =
+    ZLayer.fromServiceManaged[ClientConfig, Clock with Blocking, Throwable, H4sClient] { config =>
+      ZIO
+        .runtime[Clock with Blocking]
+        .toManaged_
+        .flatMap { implicit rts =>
+          val addLogger = Logger(config.logHeaders, config.logBody)(_: H4sClient)
+
+          Dispatcher[Task].allocated.map { case (dispatcher, _) => dispatcher }.toManaged_.flatMap {
+            implicit dispatcher =>
+              BlazeClientBuilder[Task].resource.map(addLogger).toManaged
+          }
         }
-
-      val addLogger =
-        (config: ClientConfig) => Logger(config.logHeaders, config.logBody)(_: H4sClient)
-
-      makeHttpClient.toManaged_.flatten.map(addLogger(config))
     }
 
   def doRequest[A: Decoder](httpClient: H4sClient, h4sUri: Either[Throwable, Uri])(

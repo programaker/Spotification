@@ -9,7 +9,7 @@ import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entit
 import spotification.config.service.{AuthorizationConfigR, TrackConfigR}
 import spotification.track.httpclient.GetTrackServiceLayer
 import spotification.track.program.{MakeShareTrackMessageProgramR, TrackProgramsR, makeShareTrackMessageProgram}
-import zio.interop.catz.{deferInstance, monadErrorInstance}
+import zio.interop.catz.monadErrorInstance
 import zio.{RIO, RLayer}
 
 package object api {

@@ -5,7 +5,7 @@ import spotification.common.GenericResponse
 import spotification.common.api.withDsl
 import spotification.common.json.implicits.{GenericResponseSuccessEncoder, entityEncoderF}
 import zio.RIO
-import zio.interop.catz.{deferInstance, monadErrorInstance}
+import zio.interop.catz.monadErrorInstance
 
 package object api {
   def makeHealthCheckApi[R]: HttpRoutes[RIO[R, *]] = withDsl { dsl =>

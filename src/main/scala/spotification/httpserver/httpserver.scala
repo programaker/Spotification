@@ -34,5 +34,5 @@ package object httpserver {
     Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
 
   def addCors[F[_]: Concurrent](httpApp: HttpApp[F]): HttpApp[F] =
-    CORS(httpApp)
+    CORS.policy(httpApp)
 }

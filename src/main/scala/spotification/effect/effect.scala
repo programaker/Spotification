@@ -5,9 +5,7 @@ import cats.effect.std.Dispatcher
 import cats.syntax.functor._
 import eu.timepit.refined.api.{Refined, Validate}
 import spotification.common.{RefinementError, refineE}
-import zio._
-import zio.blocking.Blocking
-import zio.clock.Clock
+import zio.{Has, IO, RIO, RManaged, Runtime, Tag, Task, TaskManaged, ZIO}
 
 import scala.annotation.nowarn
 
@@ -40,7 +38,8 @@ package object effect {
   def accessServiceFunction[A: Tag, B: Tag](a: A): RIO[Has[A => Task[B]], B] =
     ZIO.accessM(_.get.apply(a))
 
-  def unitRIO[R]: RIO[R, Unit] = RIO.unit
+  def unitRIO[R]: RIO[R, Unit] =
+    RIO.unit
 
   def managedTaskDispatcher(implicit A: Async[Task]): TaskManaged[Dispatcher[Task]] =
     makeDispatcher[Task].toManaged_

@@ -19,7 +19,7 @@ import spotification.common.httpclient.{H4sClient, HttpClientR, doRequest, uriSt
 import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.config.service.{ArtistConfigR, MeConfigR}
 import spotification.config.{ArtistConfig, MeConfig}
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.concurrentInstance
 import zio.{URLayer, ZLayer}
 
 package object httpclient {

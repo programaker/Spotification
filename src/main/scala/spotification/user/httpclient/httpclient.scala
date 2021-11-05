@@ -10,7 +10,7 @@ import spotification.config.MeConfig
 import spotification.config.service.MeConfigR
 import spotification.user.json.implicits.GetMyProfileResponseDecoder
 import spotification.user.service.{GetMyProfileService, GetMyProfileServiceR}
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.concurrentInstance
 import zio.{URLayer, ZLayer}
 
 package object httpclient {

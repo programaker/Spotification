@@ -20,7 +20,7 @@ import spotification.common.json.implicits.ErrorResponseDecoder
 import spotification.common.{ParamMap, encodeUrl, makeQueryString}
 import spotification.config.AuthorizationConfig
 import spotification.config.service.AuthorizationConfigR
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.concurrentInstance
 import zio.{Task, URLayer, ZLayer}
 
 package object httpclient {

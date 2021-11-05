@@ -9,7 +9,7 @@ import spotification.config.TrackConfig
 import spotification.config.service.TrackConfigR
 import spotification.track.json.implicits.GetTrackResponseDecoder
 import spotification.track.service.{GetTrackService, GetTrackServiceR}
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.concurrentInstance
 import zio.{URLayer, ZLayer}
 
 package object httpclient {

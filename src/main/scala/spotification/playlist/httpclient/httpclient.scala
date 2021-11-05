@@ -22,7 +22,7 @@ import spotification.playlist.json.implicits.{
 }
 import spotification.playlist.service._
 import zio._
-import zio.interop.catz.monadErrorInstance
+import zio.interop.catz.concurrentInstance
 
 package object httpclient {
   import H4sClient.Dsl._

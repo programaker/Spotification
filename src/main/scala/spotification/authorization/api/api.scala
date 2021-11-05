@@ -1,6 +1,6 @@
 package spotification.authorization
 
-import cats.implicits.toTraverseOps
+import cats.syntax.traverse._
 import eu.timepit.refined.auto._
 import org.http4s.AuthScheme.Bearer
 import org.http4s.Credentials.Token
@@ -16,7 +16,7 @@ import spotification.common.json.implicits.entityEncoderF
 import spotification.config.service.AuthorizationConfigR
 import spotification.config.source.AuthorizationConfigLayer
 import spotification.effect.refineRIO
-import zio.interop.catz.{deferInstance, monadErrorInstance}
+import zio.interop.catz.concurrentInstance
 import zio.{RIO, RLayer, ZIO}
 
 package object api {
@@ -56,7 +56,7 @@ package object api {
 
   def refreshTokenFromRequest[R](req: Request[RIO[R, *]]): RIO[R, Option[RefreshToken]] =
     req.headers
-      .get(Authorization)
+      .get[Authorization]
       .map(_.credentials)
       .flatMap {
         case Token(Bearer, refreshTokenString) => Some(refreshTokenString)

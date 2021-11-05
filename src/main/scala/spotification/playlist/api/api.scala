@@ -20,12 +20,14 @@ import spotification.playlist.httpclient.{
 import spotification.playlist.json.implicits.{MergePlaylistsRequestDecoder, ReleaseRadarNoSinglesRequestDecoder}
 import spotification.playlist.program._
 import spotification.user.httpclient.GetMyProfileServiceLayer
+import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz.concurrentInstance
 import zio.{RIO, RLayer}
 
 package object api {
-  type ReleaseRadarNoSinglesProgramLayerR = AuthorizationConfigR with HttpClientR with PlaylistConfigR
+  type ReleaseRadarNoSinglesProgramLayerR =
+    AuthorizationConfigR with HttpClientR with PlaylistConfigR with Clock with Blocking
   val ReleaseRadarNoSinglesProgramLayer: RLayer[ReleaseRadarNoSinglesProgramLayerR, ReleaseRadarNoSinglesProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
@@ -34,7 +36,8 @@ package object api {
       RemoveItemsFromPlaylistServiceLayer ++
       AddItemsToPlaylistServiceLayer
 
-  type MergePlaylistsProgramLayerR = AuthorizationConfigR with HttpClientR with PlaylistConfigR
+  type MergePlaylistsProgramLayerR =
+    AuthorizationConfigR with HttpClientR with PlaylistConfigR with Clock with Blocking
   val MergePlaylistsProgramLayer: RLayer[MergePlaylistsProgramLayerR, MergePlaylistsProgramR] =
     RequestAccessTokenProgramLayer ++
       PlaylistConfigLayer ++
@@ -44,13 +47,16 @@ package object api {
       AddItemsToPlaylistServiceLayer ++
       Clock.live
 
-  type AlbumAnniversariesPlaylistProgramLayerR = PlaylistConfigR
-    with HttpClientR
-    with AlbumConfigR
-    with ArtistConfigR
-    with MeConfigR
-    with UserConfigR
-    with AuthorizationConfigR
+  type AlbumAnniversariesPlaylistProgramLayerR =
+    PlaylistConfigR
+      with HttpClientR
+      with AlbumConfigR
+      with ArtistConfigR
+      with MeConfigR
+      with UserConfigR
+      with AuthorizationConfigR
+      with Clock
+      with Blocking
   val AlbumAnniversariesPlaylistProgramLayer
     : RLayer[AlbumAnniversariesPlaylistProgramLayerR, AlbumAnniversariesPlaylistProgramR] =
     AddItemsToPlaylistServiceLayer ++

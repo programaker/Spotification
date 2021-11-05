@@ -34,9 +34,8 @@ package object httpclient {
   val HttpClientLayer: RLayer[ClientConfigR with Clock with Blocking, HttpClientR] =
     ZLayer.fromServiceManaged[ClientConfig, Clock with Blocking, Throwable, H4sClient] { config =>
       managedZIORuntime[Clock with Blocking].flatMap { implicit rt =>
-        val addLogger = Logger(config.logHeaders, config.logBody)(_: H4sClient)
-
         managedTaskDispatcher.flatMap { implicit dispatcher =>
+          val addLogger = Logger(config.logHeaders, config.logBody)(_: H4sClient)
           BlazeClientBuilder[Task].resource.map(addLogger).toManaged
         }
       }

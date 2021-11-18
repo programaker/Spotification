@@ -1,120 +1,106 @@
-val SpotificationV = "3.3.0"
+import Dependencies._
 
-val ScalaV = "2.13.7"
-val DockerImageV = "adoptopenjdk/openjdk15:x86_64-alpine-jre-15.0.2_7"
+val Spotification = "3.3.1"
+val Scala = "2.13.7"
+val DockerImage = "adoptopenjdk/openjdk15:x86_64-alpine-jre-15.0.2_7"
+val MainClass = "spotification.SpotificationHttpApp"
 
-val Http4sV = "0.23.6"
-val CirceV = "0.14.1"
-val Specs2V = "4.13.0"
-val LogbackV = "1.2.6"
-val BetterMonadicForV = "0.3.1"
-val KindProjectorV = "0.10.3"
-val RefinedV = "0.9.27"
-val ZioV = "1.0.12"
-val ZioInteropCatsV = "3.1.1.0"
-val PureConfigV = "0.17.0"
-val SimulacrumV = "1.0.1"
-val NewtypeV = "0.4.4"
-val OdinV = "0.13.0"
-val MonocleV = "2.1.0"
+lazy val root = project.in(file("."))
+  .settings(
+    organization := "com.github.programaker",
+    name := "spotification",
+    version := Spotification,
+    scalaVersion := Scala,
 
-lazy val root = (project in file(".")).settings(
-  organization := "com.github.programaker",
-  name := "spotification",
-  version := SpotificationV,
-  scalaVersion := ScalaV,
+    libraryDependencies ++= Seq(
+      Http4sBlazeServer, 
+      Http4sBlazeClient, 
+      Http4sCirce, 
+      Http4sDsl, 
 
-  libraryDependencies ++= Seq(
-    "org.http4s" %% "http4s-blaze-server" % Http4sV,
-    "org.http4s" %% "http4s-blaze-client" % Http4sV,
-    "org.http4s" %% "http4s-circe" % Http4sV,
-    "org.http4s" %% "http4s-dsl" % Http4sV,
+      CirceGeneric, 
+      CirceRefined, 
 
-    "io.circe" %% "circe-generic" % CirceV,
-    "io.circe" %% "circe-refined" % CirceV,
+      LogbackClassic, 
 
-    "ch.qos.logback" % "logback-classic" % LogbackV,
+      OdinCore, 
+      OdinZio, 
 
-    "com.github.valskalla" %% "odin-core" % OdinV,
-    "com.github.valskalla" %% "odin-zio" % OdinV,
+      Refined, 
+      RefinedCats, 
+      RefinedPureconfig, 
 
-    "eu.timepit" %% "refined" % RefinedV,
-    "eu.timepit" %% "refined-cats" % RefinedV,
-    "eu.timepit" %% "refined-pureconfig" % RefinedV,
+      Newtype, 
 
-    "io.estatico" %% "newtype" % NewtypeV,
+      Zio, 
+      ZioInteropCats, 
 
-    "dev.zio" %% "zio" % ZioV,
-    "dev.zio" %% "zio-interop-cats" % ZioInteropCatsV,
+      Pureconfig, 
 
-    "com.github.pureconfig" %% "pureconfig" % PureConfigV,
+      Simulacrum, 
 
-    "org.typelevel" %% "simulacrum" % SimulacrumV,
+      MonocleCore, 
+      MonocleMacro, 
+      MonocleRefined, 
 
-    "com.github.julien-truffaut"  %%  "monocle-core" % MonocleV,
-    "com.github.julien-truffaut"  %%  "monocle-macro" % MonocleV,
-    "com.github.julien-truffaut"  %%  "monocle-refined" % MonocleV,
+      Specs2Core, 
+    ),
 
-    "org.specs2" %% "specs2-core" % Specs2V % Test
-  ),
+    Seq(
+      KindProjector,
+      BetterMonadicFor
+    ).map(addCompilerPlugin),
 
-  Seq(
-    "org.typelevel" %% "kind-projector" % KindProjectorV,
-    "com.olegpy" %% "better-monadic-for" % BetterMonadicForV
-  ).map(addCompilerPlugin)
-)
+    wartremoverErrors ++= Seq(
+      Wart.FinalCaseClass,
+      Wart.Throw,
+      Wart.Return
+    ),
+    wartremoverWarnings ++= Warts.allBut(
+      Wart.Recursion,
+      Wart.ImplicitParameter,
+      Wart.Any,
+      Wart.Nothing,
+      Wart.ImplicitConversion,
+      Wart.Overloading,
+      Wart.JavaSerializable,
+      Wart.Serializable,
+      Wart.Product
+    ),
+    // disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2+
+    Compile / console / scalacOptions := (console / scalacOptions).value.filterNot(_.contains("wartremover")),
 
-enablePlugins(
-  JavaServerAppPackaging,
-  DockerPlugin,
-  AshScriptPlugin
-)
+    scalacOptions ++= Seq(
+      "-encoding", "utf8",
+      "-feature",
+      "-explaintypes",
+      "-deprecation",
 
-ThisBuild / wartremoverErrors ++= Seq(
-  Wart.FinalCaseClass,
-  Wart.Throw,
-  Wart.Return
-)
-ThisBuild / wartremoverWarnings ++= Warts.allBut(
-  Wart.Recursion,
-  Wart.ImplicitParameter,
-  Wart.Any,
-  Wart.Nothing,
-  Wart.ImplicitConversion,
-  Wart.Overloading,
-  Wart.JavaSerializable,
-  Wart.Serializable,
-  Wart.Product
-)
+      "-language:experimental.macros",
+      "-language:existentials",
+      "-language:higherKinds",
+      "-language:implicitConversions",
 
-// disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2+
-Compile / console / scalacOptions := (console / scalacOptions).value.filterNot(_.contains("wartremover"))
+      "-Ywarn-dead-code",
+      "-Ywarn-value-discard",
+      "-Ywarn-unused:imports",
+      "-Ywarn-unused:implicits",
+      "-Ywarn-unused:explicits",
+      "-Ywarn-unused:locals",
+      "-Ywarn-unused:params",
+      "-Ywarn-unused:patvars",
+      "-Ywarn-unused:privates",
 
-ThisBuild / scalacOptions ++= Seq(
-  "-encoding", "utf8",
-  "-feature",
-  "-explaintypes",
-  "-deprecation",
+      "-Ymacro-annotations"
+    ),
 
-  "-language:experimental.macros",
-  "-language:existentials",
-  "-language:higherKinds",
-  "-language:implicitConversions",
+    Compile / mainClass := Some(MainClass),
 
-  "-Ywarn-dead-code",
-  "-Ywarn-value-discard",
-  "-Ywarn-unused:imports",
-  "-Ywarn-unused:implicits",
-  "-Ywarn-unused:explicits",
-  "-Ywarn-unused:locals",
-  "-Ywarn-unused:params",
-  "-Ywarn-unused:patvars",
-  "-Ywarn-unused:privates",
-
-  "-Ymacro-annotations"
-)
-
-Compile / mainClass := Some("spotification.SpotificationHttpApp")
-
-dockerBaseImage := DockerImageV
-dockerExposedPorts += 8080
+    dockerBaseImage := DockerImage,
+    dockerExposedPorts += 8080
+  )
+  .enablePlugins(
+    JavaServerAppPackaging,
+    DockerPlugin,
+    AshScriptPlugin
+  )

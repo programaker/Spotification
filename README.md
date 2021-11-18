@@ -24,50 +24,65 @@ Now that you have `CLIENT_ID`, `CLIENT_SECRET` and `REDIRECT_URI`, create a file
 
 Save `Release Radar ID` and `Release Radar No Singles ID`. You'll need them!
 
-## Running
+## Running locally
 
-With the environment variables in place, run the application with the command:
+With the environment variables in place, export them to make them available to sbt:
+
+```bash
+./load-dot-env.sh
 ```
+
+Then run the application with the command:
+
+```bash
 sbt "~reStart" 
 ```
 
-You can see if everything is ok accessing: 
+You can see if everything is ok accessing:
 [http://localhost:8080/health](http://localhost:8080/health)
-
-## Authorization
-
-To be able to manipulate the playlists, the app must get authorization from Spotify. To do so, access [http://localhost:8080/authorization](http://localhost:8080/authorization) and agree with the asked permissions. This will give you an `access_token` and a `refresh_token`.
-
-Save the `refresh_token` somewhere, you'll need it to operate the app!
-
-## Filling the Release Radar No Singles playlist
-
-Just execute the following command (of course you can use Postman or something like this):
-```
-curl -H "Authorization: Bearer <refresh_token>" -X PATCH "http://localhost:8080/playlists/release-radar-no-singles" -d '{"releaseRadarId": "???", "releaseRadarNoSinglesId": "???"}'
-```
-
-Then go to Spotify app and enjoy your brand new full albums! 🎶🎵
 
 ## Docker
 
 It's possible to run locally inside docker too. For this:
 
-1) Build the image
-```
+- Build the image
+
+```bash
 ./docker-build.sh
 ```
-2) Run it
-```
+
+- Run it
+
+```bash
 ./docker-run.sh
 ```
 
 The logs can be watched with the command:
-```
+
+```bash
 ./docker-logs.sh
 ```
 
 To stop the app:
-```
+
+```bash
 ./docker-stop.sh
 ```
+
+## Features
+
+### Authorization
+
+To be able to manipulate the playlists, the app must get authorization from Spotify. To do so, access [http://localhost:8080/authorization](http://localhost:8080/authorization) and agree with the asked permissions. This will give you an `access_token` and a `refresh_token`.
+
+Save the `refresh_token` somewhere, you'll need it to operate the app!
+
+### Filling the "Release Radar No Singles" playlist
+
+Just execute the following command (of course you can use Postman or something like this):
+
+```bash
+curl -H "Authorization: Bearer <refresh_token>" -X PATCH "http://localhost:8080/playlists/release-radar-no-singles" -d '{"releaseRadarId": "???", "releaseRadarNoSinglesId": "???"}'
+```
+
+Then go to Spotify app and enjoy your brand new full albums! 🎶🎵

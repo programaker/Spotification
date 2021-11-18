@@ -1,8 +1,8 @@
 import Dependencies._
 
-val Spotification = "3.3.1"
+val Spotification = "3.3.2"
 val Scala = "2.13.7"
-val DockerImage = "adoptopenjdk/openjdk15:x86_64-alpine-jre-15.0.2_7"
+val DockerImage = "bellsoft/liberica-openjre-alpine:17.0.1"
 val MainClass = "spotification.SpotificationHttpApp"
 
 lazy val root = project.in(file("."))

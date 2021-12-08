@@ -1,6 +1,4 @@
-import Dependencies._
-
-val Spotification = "3.3.2"
+val Spotification = "3.3.3"
 val Scala = "2.13.7"
 val DockerImage = "bellsoft/liberica-openjre-alpine:17.0.1"
 val MainClass = "spotification.SpotificationHttpApp"
@@ -12,44 +10,8 @@ lazy val root = project.in(file("."))
     version := Spotification,
     scalaVersion := Scala,
 
-    libraryDependencies ++= Seq(
-      Http4sBlazeServer, 
-      Http4sBlazeClient, 
-      Http4sCirce, 
-      Http4sDsl, 
-
-      CirceGeneric, 
-      CirceRefined, 
-
-      LogbackClassic, 
-
-      OdinCore, 
-      OdinZio, 
-
-      Refined, 
-      RefinedCats, 
-      RefinedPureconfig, 
-
-      Newtype, 
-
-      Zio, 
-      ZioInteropCats, 
-
-      Pureconfig, 
-
-      Simulacrum, 
-
-      MonocleCore, 
-      MonocleMacro, 
-      MonocleRefined, 
-
-      Specs2Core, 
-    ),
-
-    Seq(
-      KindProjector,
-      BetterMonadicFor
-    ).map(addCompilerPlugin),
+    libraryDependencies ++= Dependencies.libraries,
+    Dependencies.compilerPlugins.map(addCompilerPlugin),
 
     wartremoverErrors ++= Seq(
       Wart.FinalCaseClass,

@@ -37,14 +37,14 @@ object Dependencies {
 }
 
 private object Versions {
-  val Http4s = "0.23.7"
+  val Http4s = "0.23.11"
   val Circe = "0.14.1"
   val Specs2Core = "4.13.1"
-  val Logback = "1.2.9"
+  val Logback = "1.2.11"
   val BetterMonadicFor = "0.3.1"
   val KindProjector = "0.10.3"
   val Refined = "0.9.28"
-  val Zio = "1.0.13"
+  val Zio = "1.0.14"
   val ZioInteropCats = "3.2.9.0"
   val PureConfig = "0.17.1"
   val Simulacrum = "1.0.1"

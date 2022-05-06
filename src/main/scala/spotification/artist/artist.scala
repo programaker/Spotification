@@ -5,7 +5,7 @@ import cats.syntax.eq._
 import cats.syntax.show._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.Or
-import eu.timepit.refined.cats.{refTypeShow, _}
+import eu.timepit.refined.cats._
 import eu.timepit.refined.generic.Equal
 import eu.timepit.refined.numeric.Interval
 import eu.timepit.refined.string.MatchesRegex

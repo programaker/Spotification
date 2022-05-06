@@ -1,5 +1,5 @@
 val Spotification = "3.3.4"
-val Scala = "2.13.7"
+val Scala = "2.13.8"
 val DockerImage = "bellsoft/liberica-openjre-alpine:17.0.1"
 val MainClass = "spotification.SpotificationHttpApp"
 

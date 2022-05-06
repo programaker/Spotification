@@ -4,7 +4,7 @@ As a Spotify user, I always keep up with new releases through the "Release Radar
 
 The way I normally use Release Radar is clicking in "Go to Album" to listen to the whole release (I like to listen to full albums) but to my frustration, most new releases are Singles =(
 
-But, hey... I'm a programmer and Spotify has an API! Let's solve the problem! It's also an opportunity to apply some cool stuff like FP Scala, ZIO with Http4s, Refined and Newtypes, etc.
+But, hey... I'm a programmer and Spotify has an [API](https://developer.spotify.com/documentation/web-api/reference/#/)! Let's solve the problem! It's also an opportunity to apply some cool stuff like FP Scala, ZIO with Http4s, Refined and Newtypes, etc.
 
 The "Release Radar (no singles)" use case is just the beginning; the possibilities are unlimited.
 
@@ -73,7 +73,7 @@ To stop the app:
 
 ### Authorization
 
-To be able to manipulate the playlists, the app must get authorization from Spotify. To do so, access [http://localhost:8080/authorization](http://localhost:8080/authorization) and agree with the asked permissions. This will give you an `access_token` and a `refresh_token`.
+To be able to manipulate the playlists, the app must get authorization from Spotify. To do so, access [http://localhost:8080/authorization/spotify](http://localhost:8080/authorization/spotify) and agree with the asked permissions. This will give you an `access_token` and a `refresh_token`.
 
 Save the `refresh_token` somewhere, you'll need it to operate the app!
 

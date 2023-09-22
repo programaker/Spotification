@@ -1,6 +1,6 @@
-val Spotification = "3.3.6"
-val Scala = "2.13.8"
-val DockerImage = "bellsoft/liberica-openjre-alpine:17.0.1"
+val Spotification = "3.3.7"
+val Scala = "2.13.12"
+val DockerImage = "eclipse-temurin:19.0.1_10-jre-focal"
 val MainClass = "spotification.SpotificationHttpApp"
 
 lazy val root = project.in(file("."))
@@ -12,25 +12,6 @@ lazy val root = project.in(file("."))
 
     libraryDependencies ++= Dependencies.libraries,
     Dependencies.compilerPlugins.map(addCompilerPlugin),
-
-    wartremoverErrors ++= Seq(
-      Wart.FinalCaseClass,
-      Wart.Throw,
-      Wart.Return
-    ),
-    wartremoverWarnings ++= Warts.allBut(
-      Wart.Recursion,
-      Wart.ImplicitParameter,
-      Wart.Any,
-      Wart.Nothing,
-      Wart.ImplicitConversion,
-      Wart.Overloading,
-      Wart.JavaSerializable,
-      Wart.Serializable,
-      Wart.Product
-    ),
-    // disable Wartremover in console. Not only it's unnecessary but also cause error in Scala 2.13.2+
-    Compile / console / scalacOptions := (console / scalacOptions).value.filterNot(_.contains("wartremover")),
 
     scalacOptions ++= Seq(
       "-encoding", "utf8",
@@ -63,6 +44,5 @@ lazy val root = project.in(file("."))
   )
   .enablePlugins(
     JavaServerAppPackaging,
-    DockerPlugin,
-    AshScriptPlugin
+    DockerPlugin
   )

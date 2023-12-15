@@ -1,4 +1,4 @@
-val Spotification = "3.3.7"
+val Spotification = "3.3.8"
 val Scala = "2.13.12"
 val DockerImage = "eclipse-temurin:19.0.1_10-jre-focal"
 val MainClass = "spotification.SpotificationHttpApp"

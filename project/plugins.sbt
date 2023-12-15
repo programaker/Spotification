@@ -1,7 +1,7 @@
-val SbtRevolver = "0.9.1"
-val SbtDependencyUpdates = "1.2.2"
-val SbtNativePackager = "1.9.9"
-val SbtScalaFmt = "2.4.6"
+val SbtRevolver = "0.10.0"
+val SbtDependencyUpdates = "1.2.7"
+val SbtNativePackager = "1.9.16"
+val SbtScalaFmt = "2.5.2"
 
 Seq(
   "io.spray" % "sbt-revolver" % SbtRevolver,

@@ -1,6 +1,7 @@
-val Spotification = "3.3.8"
+val Spotification = "3.3.9"
 val Scala = "2.13.12"
-val DockerImage = "eclipse-temurin:19.0.1_10-jre-focal"
+val Java = "21"
+val DockerImage = "eclipse-temurin:21.0.1_12-jre-alpine"
 val MainClass = "spotification.SpotificationHttpApp"
 
 lazy val root = project.in(file("."))
@@ -14,6 +15,8 @@ lazy val root = project.in(file("."))
     Dependencies.compilerPlugins.map(addCompilerPlugin),
 
     scalacOptions ++= Seq(
+      "-release", Java,
+
       "-encoding", "utf8",
       "-feature",
       "-explaintypes",
@@ -36,6 +39,11 @@ lazy val root = project.in(file("."))
 
       "-Ymacro-annotations"
     ),
+    
+    javacOptions ++= Seq(
+      "-source", Java, 
+      "-target", Java
+    ),
 
     Compile / mainClass := Some(MainClass),
 
@@ -44,5 +52,6 @@ lazy val root = project.in(file("."))
   )
   .enablePlugins(
     JavaServerAppPackaging,
-    DockerPlugin
+    DockerPlugin,
+    AshScriptPlugin
   )
